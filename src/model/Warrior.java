@@ -4,17 +4,24 @@
 package model;
 
 /**
- * Description
+ * The Warrior is a Hero that has high health, high damage, low atatck speed, high hit chance, and
+ * low block chance. Their special attack has a low chance to deal even higher damage.
  * 
  * @author Justin Le
- * @version 11 Feb 2025
+ * @version 18 Feb 2025
  */
 public class Warrior extends Hero {
 	
+	/**
+	 * Constructs a Warrior.
+	 */
 	protected Warrior() {
 		super("Warrior", 125, 35, 60, 4, 0.8, 0.2);
 	}
-
+	
+	/**
+	 * {@inheritDoc} This special attack has a low chance to deal even higher damage.
+	 */
 	@Override
 	protected void specialAttack(DungeonCharacter otherCharacter) {
 		double thisHitChance = random.nextDouble(0, 0.4);
