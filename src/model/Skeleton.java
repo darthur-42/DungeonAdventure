@@ -4,29 +4,37 @@
 package model;
 
 /**
- * Represents a Skeleton monster.
+ * Represents a Skeleton monster, loading stats from the database.
  * 
  * @author Anna Brewer
- * @version 11 Feb 2025
+ * @version 18 Feb 2025
  */
 public class Skeleton extends Monster {
-    
-    /**
-     * Constructs a Skeleton..
-     */
-	protected Skeleton() {
-        super("Skeleton", 100, 30, 50, 3.0, 0.8, 30, 50, 0.3);
-    }
 
 	/**
-     * Attacks the target and may heal.
-     * 
-     * @param theTarget the character being attacked
-     */
-    @Override
-    protected void castAttackOn(final DungeonCharacter theTarget) {
-        System.out.println(getName() + " attacks " + theTarget.getName() + "!");
-        attack(theTarget);
-        heal();
-    }
+	 * Constructs a Skeleton by retrieving its stats from the database.
+	 */
+	protected Skeleton() {
+		super("Skeleton",
+				MonsterDatabase.getMonster("Skeleton").getHealthPoints(),
+				MonsterDatabase.getMonster("Skeleton").getDamageMin(),
+				MonsterDatabase.getMonster("Skeleton").getDamageMax(),
+				MonsterDatabase.getMonster("Skeleton").getAttackSpeed(),
+				MonsterDatabase.getMonster("Skeleton").getHitChance(),
+				MonsterDatabase.getMonster("Skeleton").getHealMin(),
+				MonsterDatabase.getMonster("Skeleton").getHealMax(),
+				MonsterDatabase.getMonster("Skeleton").getHealChance());
+	}
+
+	/**
+	 * Attacks the target and may heal.
+	 * 
+	 * @param theTarget The character being attacked.
+	 */
+	@Override
+	protected void castAttackOn(final DungeonCharacter theTarget) {
+		System.out.println(getName() + " attacks " + theTarget.getName() + "!");
+		attack(theTarget);
+		heal();
+	}
 }
