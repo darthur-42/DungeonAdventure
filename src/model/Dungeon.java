@@ -41,10 +41,18 @@ public class Dungeon {
 	
 	/**
 	 * Constructs a Dungeon which is essentially a 2D array of Rooms.
+	 * Sets all of the Rooms coordinate tracking fields (roomX and roomY).
 	 */
 	Dungeon() {
 		map = new Room[MAP_SIZE][MAP_SIZE];
-		activeRooms = new ArrayList<Room>();
+		for (int y = 0; y < MAP_SIZE; y++) {
+			for (int x = 0; x < MAP_SIZE; x++) {
+				map[y][x].roomX = x;
+				map[y][x].roomY = y;
+			}
+		}
+		
+		activeRooms = new ArrayList<Room>(DUNGEON_SIZE);
 		generateMaze();
 	}
 	
@@ -54,7 +62,8 @@ public class Dungeon {
 	 */
 	private void placeEntrance() {
 		Room room = randomActiveRoom();
-		room = new Room(room.hasNorth, room.hasEast, room.hasSouth, room.hasWest);
+		room = new Room(room.roomX, room.roomY, room.hasNorth, 
+				room.hasEast, room.hasSouth, room.hasWest);
 		room.hasEntrance = true;
 	}
 	
@@ -68,7 +77,8 @@ public class Dungeon {
 			room = randomActiveRoom();
 		}
 		
-		room = new Room(room.hasNorth, room.hasEast, room.hasSouth, room.hasWest);
+		room = new Room(room.roomX, room.roomY, room.hasNorth, 
+				room.hasEast, room.hasSouth, room.hasWest);
 		room.hasExit = true;
 	}
 	
@@ -115,14 +125,31 @@ public class Dungeon {
 	 * Then calls place methods to put objects into rooms that can be reached. 
 	 */
 	void generateMaze() {
-		Room nextRoom = randomRoom();
+		Room currentRoom = randomRoom(); 
+		activeRooms.add(currentRoom);
 		while (activeRooms.size() < DUNGEON_SIZE) {
+			int nextDirection = randomNextInt(1, 4);
+			//TODO need to add out of bounds checking 
+			if (nextDirection == 1) { //north
+				currentRoom.hasNorth = true;
+				Room nextRoom = map[currentRoom.roomY + 1][currentRoom.roomX];//here
+				nextRoom.hasSouth = true;
+				activeRooms.add(nextRoom);
+				currentRoom = nextRoom;
+			} else if (nextDirection == 2) { //east
+				
+			} else if (nextDirection == 3) { //south
+				
+			} else /*(nextDirection == 4)*/ { //west
+				
+			}
+			
 			if (!activeRooms.contains(nextRoom)) {
 				activeRooms.add(nextRoom);
 			}
 			nextRoom = randomRoom();
 		}
-		//TODO Create a maze (randomly generate) by placing the doors, 
+		//TODO  WIP ABOVE Create a maze (randomly generate) by placing the doors, 
 		//currently just picks random disconnected Rooms 
 		placeEntrance();
 		placeExit();

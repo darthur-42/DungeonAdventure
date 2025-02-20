@@ -44,6 +44,12 @@ class Room {
 	/** An ID Character to Identify the Pillar of OOP in the Room, '?' if none. */
 	char pillarID;
 	
+	/** An integer marking the Rooms horizontal position in the Map. */
+	int roomX;
+	
+	/** An integer marking the Rooms verticle position in the Map. */
+	int roomY;
+	
 	/**
 	 * Constructs a Room which is an element of the 2D array of Dungeon. 
 	 * This is an empty Room with no connecting Rooms.
@@ -60,6 +66,8 @@ class Room {
 		this.hasSouth = false;
 		this.hasWest = false;
 		this.pillarID = '?';
+		this.roomX = 0;
+		this.roomY = 0;
 	}
 	
 	/**
@@ -71,13 +79,16 @@ class Room {
 	 * @param theSouth if there is a Room south of this Room
 	 * @param theWest if there is a Room west of this Room
 	 */
-	Room(final boolean theNorth, final boolean theEast, final boolean theSouth, 
-			final boolean theWest) {
+	Room(final int theX, final int theY, final boolean theNorth, final boolean theEast, 
+			final boolean theSouth, final boolean theWest) {
 		this();
+		this.roomX = theX;
+		this.roomY = theY;
 		this.hasNorth = theNorth;
 		this.hasEast = theEast;
 		this.hasSouth = theSouth;
 		this.hasWest = theWest;
+		
 	}
 	
 	/**
@@ -99,7 +110,7 @@ class Room {
 			PillarName = "No Pillar";
 		}
 		
-		return "Room: [" + "Entrance: " + this.hasEntrance + "Exit: " + this.hasExit + 
+		return "Room at (" + this.roomX + ", " + this.roomY + "): [Entrance: " + this.hasEntrance + "Exit: " + this.hasExit + 
 				"Healing Potion: " + this.hasHealingPotion + "Vision Potion: " + 
 				this.hasVisionPotion + "Pit: " + this.hasPit + "OOPillar: " + this.hasPillarOO + 
 				"Pillar Name: " + PillarName + "Doors: {" + "North: " + this.hasNorth + "East: " +
@@ -118,6 +129,10 @@ class Room {
 	 * Vision Potion = V
 	 * Empty Room = " " (space)
 	 * Pillars = A, E, I, or P
+	 * example room with a door to the north and west, and multiple items: 
+	 * *-*
+	 * |M*
+	 * ***
 	 * 
 	 * 
 	 * @return a String that displays all of the data stored in the Room in command line UI. 
@@ -160,7 +175,7 @@ class Room {
 		} else if (this.hasPillarOO) {
 			center = pillarID;
 			accumulator++;
-		} else if (accumulator > 1 && accumulator != 0) {
+		} else if (accumulator > 1) {
 			center = 'M';
 		} else {
 			center = ' ';
