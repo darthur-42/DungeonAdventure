@@ -4,7 +4,7 @@
 package model;
 
 import java.util.Random;
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * This class represents the Dungeon in which the adventure occurs.
@@ -33,8 +33,8 @@ public class Dungeon {
 	/** Random object used to generate random numbers. */
 	private Random random = new Random();
 	
-	/** An array of Rooms which are reachable Rooms, used for Random generation. */
-	private ArrayList<Room> activeRooms;
+	/** A Set of Rooms which are reachable Rooms, used for Random generation. */
+	private HashSet<Room> activeRooms;
 	
 	/** A 2D array of Rooms which is the Map for the Dungeon. */
 	Room[][] map;
@@ -52,8 +52,14 @@ public class Dungeon {
 			}
 		}
 		
-		activeRooms = new ArrayList<Room>(DUNGEON_SIZE);
+		activeRooms = new HashSet<Room>(DUNGEON_SIZE);
 		generateMaze();
+		placeEntrance();
+		placeExit();
+		for (int i = 0; i < PILLARS; i++) { 
+			placePillars(i);
+		}
+		placeOthers();
 	}
 	
 	/**
@@ -104,8 +110,7 @@ public class Dungeon {
 	 * There is a 10% chance that each of the 3 objects are placed. 
 	 */
 	private void placeOthers() {
-		for (int i = 0; i < activeRooms.size(); i++) {
-			Room currentRoom = activeRooms.get(i);
+		for (Room currentRoom : activeRooms) {
 			if (!currentRoom.hasEntrance || !currentRoom.hasExit || !currentRoom.hasPillarOO) { 
 				if (random.nextInt(1, LOOT_CHANCE) == 1) {
 					currentRoom.hasHealingPotion = true;
@@ -121,42 +126,39 @@ public class Dungeon {
 	}
 	
 	/**
-	 * Makes all of the doors that connect the Rooms to each other creating a maze like pattern.
-	 * Then calls place methods to put objects into rooms that can be reached. 
+	 * Makes all of the doors that connect the Rooms to each other in a maze like pattern.
+	 * Adds all of the rooms that are reachable to the Set activeRooms. 
 	 */
-	void generateMaze() {
+	private void generateMaze() {
 		Room currentRoom = randomRoom(); 
+		Room nextRoom;
 		activeRooms.add(currentRoom);
 		while (activeRooms.size() < DUNGEON_SIZE) {
-			int nextDirection = randomNextInt(1, 4);
-			//TODO need to add out of bounds checking 
-			if (nextDirection == 1) { //north
+			int nextDirection = randomNextInt(1, 4); //4 cardinal directions
+			if (nextDirection == 1 && (currentRoom.roomY + 1) < MAP_SIZE) { //north
+				nextRoom = map[currentRoom.roomY + 1][currentRoom.roomX];
 				currentRoom.hasNorth = true;
-				Room nextRoom = map[currentRoom.roomY + 1][currentRoom.roomX];//here
 				nextRoom.hasSouth = true;
 				activeRooms.add(nextRoom);
-				currentRoom = nextRoom;
-			} else if (nextDirection == 2) { //east
-				
-			} else if (nextDirection == 3) { //south
-				
-			} else /*(nextDirection == 4)*/ { //west
-				
-			}
-			
-			if (!activeRooms.contains(nextRoom)) {
+			} else if (nextDirection == 2 && (currentRoom.roomX + 1) < MAP_SIZE) { //east
+				nextRoom = map[currentRoom.roomY][currentRoom.roomX + 1];
+				currentRoom.hasEast = true;
+				nextRoom.hasWest = true;
+				activeRooms.add(nextRoom);
+			} else if (nextDirection == 3 && (currentRoom.roomY - 1) >= 0) { //south
+				nextRoom = map[currentRoom.roomY - 1][currentRoom.roomX];
+				currentRoom.hasSouth = true;
+				nextRoom.hasNorth = true;
+				activeRooms.add(nextRoom);
+			} else if (nextDirection == 4 && (currentRoom.roomX - 1) >= 0) { //west
+				nextRoom = map[currentRoom.roomY][currentRoom.roomX - 1];
+				currentRoom.hasWest = true;
+				nextRoom.hasEast = true;
 				activeRooms.add(nextRoom);
 			}
-			nextRoom = randomRoom();
+			
+			currentRoom = nextRoom; 
 		}
-		//TODO  WIP ABOVE Create a maze (randomly generate) by placing the doors, 
-		//currently just picks random disconnected Rooms 
-		placeEntrance();
-		placeExit();
-		for (int i = 0; i < PILLARS; i++) { 
-			placePillars(i);
-		}
-		placeOthers();
 	}
 	
 	/**
@@ -174,7 +176,14 @@ public class Dungeon {
 	 * @return a random Room from activeRooms.
 	 */
 	private Room randomActiveRoom() { 
-		return activeRooms.get(random.nextInt(0, DUNGEON_SIZE - 1)); 
+		int hit = random.nextInt(1, activeRooms.size());
+		int i = 1; 
+		for (Room room : activeRooms) {
+			if (i == hit) {
+				return room; 
+			}
+			i++;
+		}
 	}
 	
 	/**
@@ -193,7 +202,6 @@ public class Dungeon {
 		}
 		
 		output += "\n";
-		output += "List of reachable Rooms: " + activeRooms.toString() + "\n";
 		return output;
 	}
 }
