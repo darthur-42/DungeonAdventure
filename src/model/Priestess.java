@@ -3,31 +3,40 @@
  */
 package model;
 
+import java.util.Random;
+
 /**
- * The Priestess is a Hero that has low health, low damage, medium atatck speed, medium hit chance,
+ * The Priestess is a Hero that has low health, low damage, medium attack speed, medium hit chance,
  * and medium block chance. Their special attack heals themselves.
  * 
  * @author Justin Le
- * @version 18 Feb 2025
+ * @version 19 Feb 2025
  */
 public class Priestess extends Hero {
 	
 	/**
-	 * Constructs a Priestess.
+	 * Constructs a Warrior.
 	 */
-	protected Priestess() {
-		super("Priestess", 75, 25, 45, 5, 0.7, 0.3);
+	public Priestess() {
+		this(new Random());
+	}
+	
+	/**
+	 * Constructs a Priestess. Can pass in a random instance for testing.
+	 */
+	public Priestess(Random theRandomInstance) {
+		super("Priestess", 75, 25, 45, 5, 0.7, 0.3, theRandomInstance);
 	}
 	
 	/**
 	 * {@inheritDoc} This special attack heals the caster.
 	 */
 	@Override
-	protected void specialAttack(DungeonCharacter otherCharacter) {
-		int randomSpecialSkillHealing = random.nextInt(50, 76);
-		int otherNewHealthPoints = getHealthPoints() + randomSpecialSkillHealing;
+	public void specialAttack(DungeonCharacter otherCharacter) {
+		int randomSpecialSkillHealing = myRandom.nextInt(50, 76);
+		int otherNewHealthPoints = getCurHealthPoints() + randomSpecialSkillHealing;
 		
-		setHealthPoints(otherNewHealthPoints);
+		setCurHealthPoints(otherNewHealthPoints);
 	}
 	
 }

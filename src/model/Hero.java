@@ -5,13 +5,14 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
- * This abstract class represents a generic playable entity within the Dungeon, with common behaviors
- * that subclasses must implement.
+ * This abstract class represents a generic playable entity within the Dungeon, with common
+ * behaviors that subclasses must implement.
  * 
  * @author Justin Le
- * @version 18 Feb 2025
+ * @version 19 Feb 2025
  */
 public abstract class Hero extends DungeonCharacter {
 	
@@ -27,15 +28,12 @@ public abstract class Hero extends DungeonCharacter {
 	/** The number of vision potions the Hero has. */
 	private int myNumVisionPotions;
 	
-	/** The number of OO pillars the Hero has collected. */
-	private List<String> myPillarsCollected;
-	
-	/** The current room the Hero is in. */
-	private Room myCurrentRoom;
+	/** The list of OO pillars the Hero has collected. */
+	private List<String> myCollectedPillars;
 	
 	/**
 	 * Constructs a Hero with a name, health points, a damage range, an attack speed, a hit chance,
-	 * and a block chance.
+	 * and a block chance. Can pass in a random instance for testing.
 	 * 
 	 * @param theName the name
 	 * @param theHealthPoints the health points
@@ -44,67 +42,82 @@ public abstract class Hero extends DungeonCharacter {
 	 * @param theAttackSpeed the attack speed
 	 * @param theHitChance the hit chance
 	 * @param theBlockChance the block chance
+	 * @param theRandom the random instance
 	 */
-	protected Hero(String theName, int theHealthPoints, int theDamageMin, int theDamageMax,
-			int theAttackSpeed, double theHitChance, double theBlockChance) {
-		super(theName, theHealthPoints, theDamageMin, theDamageMax, theAttackSpeed, theHitChance);
+	public Hero(String theName, int theHealthPoints, int theDamageMin, int theDamageMax,
+			int theAttackSpeed, double theHitChance, double theBlockChance, Random theRandom) {
+		super(theName, theHealthPoints, theDamageMin, theDamageMax, theAttackSpeed, theHitChance,
+				theRandom);
 		
 		myBlockChance = theBlockChance;
 		myNumHealingPotions = STARTING_NUM_POTIONS;
 		myNumVisionPotions = STARTING_NUM_POTIONS;
-		myPillarsCollected = new ArrayList<String>();
+		myCollectedPillars = new ArrayList<String>();
 	}
 	
 	/**
-	 * Returns the block chance.
+	 * Returns the Hero's block chance.
 	 * 
-	 * @return the block chance
+	 * @return the Hero's block chance
 	 */
-	protected double getBlockChance() {
+	public double getBlockChance() {
 		return myBlockChance;
 	}
 	
 	/**
-	 * Returns the number of healing potions.
+	 * Returns the number of healing potions the Hero has.
 	 * 
-	 * @return the number of healing potions
+	 * @return the number of healing potions the Hero has
 	 */
-	protected int getNumHealingPotions() {
+	public int getNumHealingPotions() {
 		return myNumHealingPotions;
 	}
 	
 	/**
-	 * Use a healing potion to heal.
+	 * Use a healing potion to heal the Hero.
 	 */
-	protected void useHealingPotion() {
-		myNumHealingPotions--;
-		setHealthPoints(getHealthPoints() + random.nextInt(50, 101));
+	public void useHealingPotion() {
+		if (myNumHealingPotions > 0) {
+			myNumHealingPotions--;
+			setCurHealthPoints(getCurHealthPoints() + myRandom.nextInt(50, 101));
+		}
 	}
 	
 	/**
-	 * Returns the number of vision potions.
+	 * Returns the number of vision potions the Hero has.
 	 * 
-	 * @return the number of vision potions
+	 * @return the number of vision potions the Hero has
 	 */
-	protected int getNumVisionPotions() {
+	public int getNumVisionPotions() {
 		return myNumVisionPotions;
 	}
 	
 	/**
-	 * Use a vision potion to gain vision of surrounding Rooms.
+	 * Use a vision potion to gain vision of surrounding Rooms for the Hero to see.
 	 */
-	protected void useVisionPotion() {
-		myNumVisionPotions--;
-		// Maybe do stuff here?
+	public void useVisionPotion() {
+		if (myNumVisionPotions > 0) {
+			myNumVisionPotions--;
+			// Maybe do stuff here?
+		}
 	}
 	
 	/**
-	 * Adds an OO pillar to their pillars collected.
+	 * Returns the list of collected OO pillars the Hero has.
+	 * 
+	 * @return the list of collected OO pillars the Hero has
+	 */
+	public List<String> getCollectedPillars() {
+		return myCollectedPillars;
+	}
+	
+	/**
+	 * Adds an OO pillar to the list of collected OO pillars the Hero has.
 	 * 
 	 * @param thePillar the OO pillar
 	 */
-	protected void collectPillar(String thePillar) {
-		myPillarsCollected.add(thePillar);
+	public void collectPillar(String thePillar) {
+		myCollectedPillars.add(thePillar);
 	}
 	
 	/**
@@ -112,5 +125,5 @@ public abstract class Hero extends DungeonCharacter {
 	 * 
 	 * @param otherCharacter the other DungeonCharacter
 	 */
-	protected abstract void specialAttack(DungeonCharacter otherCharacter);
+	public abstract void specialAttack(DungeonCharacter otherCharacter);
 }

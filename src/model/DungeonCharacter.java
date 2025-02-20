@@ -10,18 +10,21 @@ import java.util.Random;
  * subclasses must implement.
  * 
  * @author Justin Le
- * @version 18 Feb 2025
+ * @version 19 Feb 2025
  */
 public abstract class DungeonCharacter {
 	
-	/** Random object used to generate random numbers. */
-	protected Random random = new Random();
+	/** Random instance used to generate random numbers. */
+	protected Random myRandom;
 	
 	/** The name of the DungeonCharacter. */
 	private String myName;
 	
-	/** The health points of the DungeonCharacter. */
-	private int myHealthPoints;
+	/** The current health points of the DungeonCharacter. */
+	private int myCurHealthPoints;
+	
+	/** The maximum health points of the DungeonCharacter. */
+	private int myMaxHealthPoints;
 	
 	/** The minimum damage of the DungeonCharacter. */
 	private int myDamageMin;
@@ -35,9 +38,12 @@ public abstract class DungeonCharacter {
 	/** The hit chance of the DungeonCharacter. */
 	private double myHitChance;
 	
+	/** The current room the DungeonCharacter is in. */
+	private Room myCurRoom;
+	
 	/**
 	 * Constructs a DungeonCharacter with a name, health points, a damage range, an attack speed,
-	 * and a hit chance.
+	 * and a hit chance. Can pass in a random instance for testing.
 	 * 
 	 * @param theName the name
 	 * @param theHealthPoints the health points
@@ -45,11 +51,14 @@ public abstract class DungeonCharacter {
 	 * @param theDamageMax the maximum damage
 	 * @param theAttackSpeed the attack speed
 	 * @param theHitChance the hit chance
+	 * @param theRandom the random instance
 	 */
-	protected DungeonCharacter(String theName, int theHealthPoints, int theDamageMin,
-			int theDamageMax, int theAttackSpeed, double theHitChance) {
+	public DungeonCharacter(String theName, int theHealthPoints, int theDamageMin,
+			int theDamageMax, int theAttackSpeed, double theHitChance, Random theRandom) {
+		myRandom = theRandom;
 		myName = theName;
-		myHealthPoints = theHealthPoints;
+		myCurHealthPoints = theHealthPoints;
+		myMaxHealthPoints = theHealthPoints;
 		myDamageMin = theDamageMin;
 		myDamageMax = theDamageMax;
 		myAttackSpeed = theAttackSpeed;
@@ -57,75 +66,93 @@ public abstract class DungeonCharacter {
 	}
 	
 	/**
-	 * Returns the character's name.
+	 * Returns the DungeonCharacter's name.
 	 * 
-	 * @return the character's name
+	 * @return the DungeonCharacter's name
 	 */
-	protected String getName() {
+	public String getName() {
 		return myName;
 	}
 	
 	/**
-	 * Returns the character's health points.
+	 * Returns the DungeonCharacter's current health points.
 	 * 
-	 * @return the character's health points
+	 * @return the DungeonCharacter's current health points
 	 */
-	protected int getHealthPoints() {
-		return myHealthPoints;
+	public int getCurHealthPoints() {
+		return myCurHealthPoints;
 	}
 	
 	/**
-	 * Sets the character's health points to a new value.
+	 * Sets the DungeonCharacter's health points to a new value.
 	 * 
 	 * @param newHealthPoints new health value
 	 */
-	protected void setHealthPoints(int newHealthPoints) {
-		myHealthPoints = newHealthPoints;
+	public void setCurHealthPoints(int newHealthPoints) {
+		myCurHealthPoints = Math.min(Math.max(newHealthPoints, 0), getMaxHealthPoints());
 	}
 	
 	/**
-	 * Returns the character's minimum damage.
+	 * Returns the DungeonCharacter's maximum health points.
 	 * 
-	 * @return the character's minimum damage
+	 * @return the DungeonCharacter's maximum health points
 	 */
-	protected int getDamageMin() {
+	public int getMaxHealthPoints() {
+		return myMaxHealthPoints;
+	}
+	
+	/**
+	 * Returns the DungeonCharacter's minimum damage.
+	 * 
+	 * @return the DungeonCharacter's minimum damage
+	 */
+	public int getDamageMin() {
 		return myDamageMin;
 	}
 	
 	/**
-	 * Returns the character's maximum damage.
+	 * Returns the DungeonCharacter's maximum damage.
 	 * 
-	 * @return the character's maximum damage
+	 * @return the DungeonCharacter's maximum damage
 	 */
-	protected int getDamageMax() {
+	public int getDamageMax() {
 		return myDamageMax;
 	}
 	
 	/**
-	 * Returns a random number in the character's damage range.
+	 * Returns a random number in the DungeonCharacter's damage range.
 	 * 
-	 * @return a random number in the character's damage range
+	 * @return a random number in the DungeonCharacter's damage range
 	 */
-	protected int getRandomDamage() {
-		return random.nextInt(getDamageMin(), getDamageMax() + 1);
+	public int getRandomDamage() {
+		return myRandom.nextInt(getDamageMin(), getDamageMax() + 1);
 	}
 	
 	/**
-	 * Returns the character's attack speed.
+	 * Returns the DungeonCharacter's attack speed.
 	 * 
-	 * @return Returns the character's attack speed
+	 * @return the DungeonCharacter's attack speed
 	 */
-	protected int getAttackSpeed() {
+	public int getAttackSpeed() {
 		return myAttackSpeed;
 	}
 	
 	/**
-	 * Returns the character's hit chance.
+	 * Returns the DungeonCharacter's hit chance.
 	 * 
-	 * @return the character's hit chance
+	 * @return the DungeonCharacter's hit chance
 	 */
-	protected double getHitChance() {
+	public double getHitChance() {
 		return myHitChance;
+	}
+	
+	/**
+	 * Returns the room the character is currently in.
+	 * 
+	 * @return the room the character is currently in
+	 */
+	public Room getCurRoom() {
+		return myCurRoom;
 	}
 	
 	/**
@@ -133,23 +160,24 @@ public abstract class DungeonCharacter {
 	 * 
 	 * @param otherCharacter the other DungeonCharacter
 	 */
-	protected void attack(DungeonCharacter otherCharacter) {
-		double thisHitCheck = random.nextDouble(0, getHitChance());
-		double thisHitRequirement = random.nextDouble(0, 1);
+	public void attack(DungeonCharacter otherCharacter) {
+		double hitCheck = myRandom.nextDouble(0, getHitChance());
+		double hitRequirement = myRandom.nextDouble(0, 1);
 		
-		if (thisHitCheck >= thisHitRequirement) {
+		if (hitCheck >= hitRequirement) {
 			if (otherCharacter instanceof Hero) {
-				double thisBlockCheck = random.nextDouble(0, ((Hero) otherCharacter).getBlockChance());
-				double thisBlockRequirement = random.nextDouble(0, 1);
+				double blockCheck = myRandom.nextDouble(0, ((Hero) otherCharacter).getBlockChance());
+				double blockRequirement = myRandom.nextDouble(0, 1);
 				
-				if (thisBlockCheck < thisBlockRequirement) {  // When target fails block check
+				// When target succeeds block check, skip damage operation
+				if (blockCheck >= blockRequirement) {
 					return;
 				}
 			}
 			
-			int otherNewHealthPoints = otherCharacter.getHealthPoints() - getRandomDamage();
+			int otherNewHealthPoints = otherCharacter.getCurHealthPoints() - getRandomDamage();
 			
-			otherCharacter.setHealthPoints(otherNewHealthPoints);
+			otherCharacter.setCurHealthPoints(otherNewHealthPoints);
 		}
 	}
 	
