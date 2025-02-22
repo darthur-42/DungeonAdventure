@@ -47,14 +47,14 @@ class Room {
 	/** An integer marking the Rooms horizontal position in the Map. */
 	int roomX;
 	
-	/** An integer marking the Rooms verticle position in the Map. */
+	/** An integer marking the Rooms vertical position in the Map. */
 	int roomY;
 	
 	/**
 	 * Constructs a Room which is an element of the 2D array of Dungeon. 
 	 * This is an empty Room with no connecting Rooms.
 	 */
-	Room() {
+	Room(final int theX, final int theY) {
 		this.hasEntrance = false;
 		this.hasExit = false;
 		this.hasHealingPotion = false;
@@ -66,29 +66,8 @@ class Room {
 		this.hasSouth = false;
 		this.hasWest = false;
 		this.pillarID = '?';
-		this.roomX = 0;
-		this.roomY = 0;
-	}
-	
-	/**
-	 * Constructs a Room which is an element of the 2D array of Dungeon. 
-	 * This is an empty Room with inputed connecting Rooms.
-	 * 
-	 * @param theNorth if there is a Room north of this Room
-	 * @param theEast if there is a Room east of this Room
-	 * @param theSouth if there is a Room south of this Room
-	 * @param theWest if there is a Room west of this Room
-	 */
-	Room(final int theX, final int theY, final boolean theNorth, final boolean theEast, 
-			final boolean theSouth, final boolean theWest) {
-		this();
 		this.roomX = theX;
 		this.roomY = theY;
-		this.hasNorth = theNorth;
-		this.hasEast = theEast;
-		this.hasSouth = theSouth;
-		this.hasWest = theWest;
-		
 	}
 	
 	/**
@@ -120,40 +99,35 @@ class Room {
 	/**
 	 * Creates and returns a String that represents the Room to help visualize it. 
 	 * Walls and corners = *
-	 * Doors = - or | depending on orientation
+	 * Doors = <^V> depending on orientation (in the order west north south east)
 	 * Multiple Items = M
 	 * Pit = X
 	 * Entrance = i (in)
 	 * Exit = O (Out)
 	 * Healing Potion = H
-	 * Vision Potion = V
+	 * Vision Potion = v
 	 * Empty Room = " " (space)
 	 * Pillars = A, E, I, or P
 	 * example room with a door to the north and west, and multiple items: 
-	 * *-*
-	 * |M*
-	 * ***
-	 * 
+	 * <^M**
 	 * 
 	 * @return a String that displays all of the data stored in the Room in command line UI. 
 	 */
 	@Override
 	public String toString() {
-		String output = "*"; //north west corner
+		String output = ""; 
 		
-		if (this.hasNorth) { //north center
-			output += "-";
+		if (this.hasWest) { //west door
+			output += "<";
 		} else {
 			output += "*";
-		} //end north center
+		} //end west 
 		
-		output += "*\n"; //north east corner
-		
-		if (this.hasWest) { //west center
-			output += "|";
+		if (this.hasNorth) { //north door
+			output += "^";
 		} else {
 			output += "*";
-		} //end west center
+		} //end north 
 		
 		char center = '?'; //center
 		int accumulator = 0;
@@ -167,13 +141,13 @@ class Room {
 			center = 'H';
 			accumulator++;
 		} else if (this.hasVisionPotion) {
-			center = 'V';
+			center = 'v';
 			accumulator++;
 		} else if (this.hasPit) {
 			center = 'X';
 			accumulator++;
 		} else if (this.hasPillarOO) {
-			center = pillarID;
+			center = this.pillarID;
 			accumulator++;
 		} else if (accumulator > 1) {
 			center = 'M';
@@ -182,21 +156,18 @@ class Room {
 		}
 		output += center; //end center
 		
-		if (this.hasEast) { //east center
-			output += "|";
-		} else {
-			output += "*\n";
-		} //end east center
-		
-		output += "*"; //south west corner
-		
-		if (this.hasNorth) { //south center
-			output += "-";
+		if (this.hasSouth) { //south door
+			output += "V";
 		} else {
 			output += "*";
-		} //end south center
+		} //end south 
 		
-		output += "*"; //south east corner
+		if (this.hasEast) { //east door
+			output += ">";
+		} else {
+			output += "*";
+		} //end east 
+		
 		return output;
 	}
 }
