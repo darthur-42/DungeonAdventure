@@ -3,6 +3,8 @@
  */
 package model;
 
+import java.util.Random;
+
 /**
  * Represents a Skeleton monster.
  * 
@@ -15,7 +17,14 @@ public class Skeleton extends Monster {
      * Constructs a Skeleton..
      */
 	protected Skeleton() {
-        super("Skeleton", 100, 30, 50, 3.0, 0.8, 30, 50, 0.3);
+        this(new Random());
+    }
+    
+    /**
+     * Constructs a Skeleton..
+     */
+	protected Skeleton(final Random theRandom) {
+        super("Skeleton", 100, 30, 50, 3, 0.8, 30, 50, 0.3, theRandom);
     }
 
 	/**

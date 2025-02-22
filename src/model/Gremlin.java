@@ -3,11 +3,13 @@
  */
 package model;
 
+import java.util.Random;
+
 /**
  * Represents a Gremlin monster.
  * 
  * @author Anna Brewer
- * @version 11 Feb 2025
+ * @version 22 Feb 2025
  */
 public class Gremlin extends Monster {
     
@@ -15,7 +17,14 @@ public class Gremlin extends Monster {
      * Constructs a Gremlin.
      */
     protected Gremlin() {
-        super("Gremlin", 70, 15, 30, 5.0, 0.8, 20, 40, 0.4);
+        this(new Random());
+    }
+    
+    /**
+     * Constructs a Gremlin. Can pass in a random instance for testing.
+     */
+    protected Gremlin(final Random theRandom) {
+        super("Gremlin", 70, 15, 30, 5, 0.8, 20, 40, 0.4, theRandom);
     }
 
     /**

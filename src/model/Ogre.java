@@ -3,6 +3,8 @@
  */
 package model;
 
+import java.util.Random;
+
 /**
  * Represents an Ogre monster.
  * 
@@ -15,7 +17,14 @@ public class Ogre extends Monster {
      * Constructs an Ogre.
      */
 	protected Ogre() {
-        super("Ogre", 200, 30, 60, 2.0, 0.6, 30, 60, 0.1);
+        this(new Random());
+    }
+    
+    /**
+     * Constructs an Ogre.
+     */
+	protected Ogre(final Random theRandom) {
+        super("Ogre", 200, 30, 60, 2, 0.6, 30, 60, 0.1, theRandom);
     }
 
 	/**

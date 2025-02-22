@@ -9,16 +9,15 @@ import java.util.Random;
  * Represents a monster in the dungeon.
  * 
  * @author Anna Brewer
- * @version 11 Feb 2025
+ * @version 22 Feb 2025
  */
 public abstract class Monster extends DungeonCharacter {
     private int myHealMin;
     private int myHealMax;
     private double myHealChance;
-    private Random myRandom = new Random();
 
     /**
-     * Constructs a Monster.
+     * Constructs a Monster. Can pass in a random instance for testing.
      * 
      * @param theName the monster's name
      * @param theHealthPoints the monster's health points
@@ -29,11 +28,14 @@ public abstract class Monster extends DungeonCharacter {
      * @param theHealMin minimum heal amount
      * @param theHealMax maximum heal amount
      * @param theHealChance chance to heal
+     * @param theRandom random instance
      */
     protected Monster(final String theName, final int theHealthPoints, final int theDamageMin,
-                   final int theDamageMax, final double theAttackSpeed, final double theHitChance,
-                   final int theHealMin, final int theHealMax, final double theHealChance) {
-        super(theName, theHealthPoints, theDamageMin, theDamageMax, theAttackSpeed, theHitChance);
+                   final int theDamageMax, final int theAttackSpeed, final double theHitChance,
+                   final int theHealMin, final int theHealMax, final double theHealChance,
+                   final Random theRandom) {
+        super(theName, theHealthPoints, theDamageMin, theDamageMax, theAttackSpeed, theHitChance,
+                theRandom);
         myHealMin = theHealMin;
         myHealMax = theHealMax;
         myHealChance = theHealChance;
@@ -55,9 +57,9 @@ public abstract class Monster extends DungeonCharacter {
      * Heals the monster if conditions are met.
      */
     protected void heal() {
-        if (getHealthPoints() > 0 && myRandom.nextDouble() < myHealChance) {
+        if (getCurHealthPoints() > 0 && myRandom.nextDouble() < myHealChance) {
             int healAmount = myRandom.nextInt(myHealMin, myHealMax + 1);
-            setHealthPoints(getHealthPoints() + healAmount);
+            setCurHealthPoints(getCurHealthPoints() + healAmount);
             System.out.println(getName() + " healed for " + healAmount + " HP!");
         }
     }
