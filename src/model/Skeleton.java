@@ -9,7 +9,7 @@ import java.util.Random;
  * Represents a Skeleton monster.
  * 
  * @author Anna Brewer
- * @version 11 Feb 2025
+ * @version 22 Feb 2025
  */
 public class Skeleton extends Monster {
     

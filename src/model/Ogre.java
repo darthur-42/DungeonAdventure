@@ -9,7 +9,7 @@ import java.util.Random;
  * Represents an Ogre monster.
  * 
  * @author Anna Brewer
- * @version 11 Feb 2025
+ * @version 22 Feb 2025
  */
 public class Ogre extends Monster {
     
