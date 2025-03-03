@@ -29,7 +29,7 @@ class Room {
 	/** If the Room has a Pillar of OOP in it. */
 	private boolean myHasPillarOO;
 	
-	/** If the Room has a Monster in it. */
+	/** If the Room has a Monster in it. */ //TODO
 	private boolean myHasMonster;
 	
 	/** If the Room has a Door to the North. */
