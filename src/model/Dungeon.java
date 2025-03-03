@@ -27,9 +27,6 @@ public class Dungeon {
 	 */
 	private final int LOOT_CHANCE = 10; // 1 - 10 is a 10% chance
 	
-	/** An Array of Strings for the 4 cardinal directions. */
-	private final String[] DIRECTIONS = {"North", "East", "South", "West"};
-	
 	/** Random object used to generate random numbers. */
 	private Random myRandom = new Random();
 	
@@ -68,29 +65,29 @@ public class Dungeon {
 		Room nextRoom = currentRoom;
 		activeRoomsHash.add(currentRoom);
 		while (activeRoomsHash.size() < DUNGEON_SIZE) {
-			int nextDirection = myRandom.nextInt(0, DIRECTIONS.length); 
-			if (DIRECTIONS[nextDirection].equals("North") && (currentRoom.getRoomY() - 1) >= 0) {
+			int nextDirection = myRandom.nextInt(Directions.values().length); 
+			if (nextDirection == Directions.NORTH.ordinal() && (currentRoom.getRoomY() - 1) >= 0) {
 				nextRoom = myMap[currentRoom.getRoomX()][currentRoom.getRoomY() - 1];
-				currentRoom.setHasNorth();
-				nextRoom.setHasSouth();
+				currentRoom.setHasDoors(Directions.NORTH);
+				nextRoom.setHasDoors(Directions.SOUTH);
 				activeRoomsHash.add(nextRoom);
 				currentRoom = nextRoom; 
-			} else if (DIRECTIONS[nextDirection].equals("East") && (currentRoom.getRoomX() + 1) < MAP_SIZE) { 
+			} else if (nextDirection == Directions.EAST.ordinal() && (currentRoom.getRoomX() + 1) < MAP_SIZE) { 
 				nextRoom = myMap[currentRoom.getRoomX() + 1][currentRoom.getRoomY()];
-				currentRoom.setHasEast();
-				nextRoom.setHasWest();
+				currentRoom.setHasDoors(Directions.EAST);
+				nextRoom.setHasDoors(Directions.WEST);
 				activeRoomsHash.add(nextRoom);
 				currentRoom = nextRoom; 
-			} else if (DIRECTIONS[nextDirection].equals("South") && (currentRoom.getRoomY() + 1) < MAP_SIZE) { 
+			} else if (nextDirection == Directions.SOUTH.ordinal() && (currentRoom.getRoomY() + 1) < MAP_SIZE) { 
 				nextRoom = myMap[currentRoom.getRoomX()][currentRoom.getRoomY() + 1];
-				currentRoom.setHasSouth();
-				nextRoom.setHasNorth();
+				currentRoom.setHasDoors(Directions.SOUTH);
+				nextRoom.setHasDoors(Directions.NORTH);
 				activeRoomsHash.add(nextRoom);
 				currentRoom = nextRoom; 
-			} else if (DIRECTIONS[nextDirection].equals("West") && (currentRoom.getRoomX() - 1) >= 0) { 
+			} else if (nextDirection == Directions.WEST.ordinal() && (currentRoom.getRoomX() - 1) >= 0) { 
 				nextRoom = myMap[currentRoom.getRoomX() - 1][currentRoom.getRoomY()];
-				currentRoom.setHasWest();
-				nextRoom.setHasEast();
+				currentRoom.setHasDoors(Directions.WEST);
+				nextRoom.setHasDoors(Directions.EAST);
 				activeRoomsHash.add(nextRoom);
 				currentRoom = nextRoom; 
 			}
@@ -125,16 +122,14 @@ public class Dungeon {
 	 * @param theAccumulator is an integer used to track which Pillar will be next. 
 	 */
 	private void placePillars() {
-		final char[] pillarIDs = {'A', 'E', 'I', 'P'};
-
-		for (char pillarID : pillarIDs) { 
+		for (PillarsOOP pillar : PillarsOOP.values()) { 
 			Room room = randomActiveRoom();
 			while (room.getHasEntrance() || room.getHasExit() || room.getHasPillarOO()) {
 				room = randomActiveRoom();
 			}
 						
 			room.setHasPillarOO();
-			room.setPillarID(pillarID);
+			room.setPillar(pillar);
 		}
 	}
 	

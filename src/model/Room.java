@@ -32,20 +32,11 @@ class Room {
 	/** If the Room has a Monster in it. */ //TODO
 	private boolean myHasMonster;
 	
-	/** If the Room has a Door to the North. */
-	private boolean myHasNorth;
+	/** If the Room has a Door in that Direction. */
+	private boolean[] myHasDoors;
 	
-	/** If the Room has a Door to the East. */
-	private boolean myHasEast;
-	
-	/** If the Room has a Door to the South. */
-	private boolean myHasSouth;
-	
-	/** If the Room has a Door to the West. */
-	private boolean myHasWest;
-	
-	/** An ID Character to Identify the Pillar of OOP in the Room, '?' if none. */
-	private char myPillarID;
+	/** The Pillar of OOP in the Room */
+	private PillarsOOP myPillar;
 	
 	/** An integer marking the Rooms horizontal position in the Map. */
 	private int myRoomX;
@@ -64,11 +55,9 @@ class Room {
 		this.myHasVisionPotion = false;
 		this.myHasPit = false;
 		this.myHasPillarOO = false;
-		this.myHasNorth = false;
-		this.myHasEast = false;
-		this.myHasSouth = false;
-		this.myHasWest = false;
-		this.myPillarID = '?';
+		this.myHasMonster = false; 
+		this.myHasDoors = new boolean[Directions.values().length];
+		this.myPillar = null;
 		this.myRoomX = theX;
 		this.myRoomY = theY;
 	}
@@ -173,7 +162,7 @@ class Room {
 	}
 	
 	/**
-	 * Sets if the Room has a pit. 
+	 * Sets if the Room has a Pillar. 
 	 */
 	public void setHasPillarOO() {
 		if (!this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO) {
@@ -182,83 +171,39 @@ class Room {
 	}
 	
 	/**
-	 * Returns if the Room has a Door to the North. 
+	 * Returns if the Room has a Door in each Direction. 
 	 * 
-	 * @return if the Room has a Door to the North. 
+	 * @return if the Room has a Door in each Direction. 
 	 */
-	public boolean getHasNorth() {
-		return this.myHasNorth;
+	public boolean[] getHasDoors() {
+		return this.myHasDoors;
 	}
 	
 	/**
-	 * Sets if the Room has a Door to the North. 
-	 */
-	public void setHasNorth() {
-		this.myHasNorth = true;
-	}
-	
-	/**
-	 * Returns if the Room has a Door to the East. 
+	 * Sets if the Room has a Door in each Direction. 
 	 * 
-	 * @return if the Room has a Door to the East. 
+	 * @param the Direction of the Door being added. 
 	 */
-	public boolean getHasEast() {
-		return this.myHasEast;
+	public void setHasDoors(Directions theDirection) {
+		this.myHasDoors[theDirection.ordinal()] = true;
 	}
 	
 	/**
-	 * Sets if the Room has a Door to the East. 
-	 */
-	public void setHasEast() {
-		this.myHasEast = true;
-	}
-	
-	/**
-	 * Returns if the Room has a Door to the South. 
+	 * Returns the Room's Pillar of OOP.  
 	 * 
-	 * @return if the Room has a Door to the South. 
+	 * @return the Room's Pillar of OOP. 
 	 */
-	public boolean getHasSouth() {
-		return this.myHasSouth;
+	public PillarsOOP getPillar() {
+		return this.myPillar;
 	}
 	
 	/**
-	 * Sets if the Room has a Door to the South. 
-	 */
-	public void setHasSouth() {
-		this.myHasSouth = true;
-	}
-	
-	/**
-	 * Returns if the Room has a Door to the West. 
+	 * Sets the pillarsOOP of the pillar in this Room. 
 	 * 
-	 * @return if the Room has a Door to the West. 
+	 * @param pillarsOOP of the PillarOO being places.
 	 */
-	public boolean getHasWest() {
-		return this.myHasWest;
-	}
-	
-	/**
-	 * Sets if the Room has a Door to the West. 
-	 */
-	public void setHasWest() {
-		this.myHasWest = true;
-	}
-	
-	/**
-	 * Return a character representing the Room's Pillar of OOP.  
-	 * 
-	 * @return a character representing the Room's Pillar of OOP. 
-	 */
-	public char getPillarID() {
-		return this.myPillarID;
-	}
-	
-	/**
-	 * Sets if the Room has a pit. 
-	 */
-	public void setPillarID(char thePillarID) {
-		this.myPillarID = thePillarID;
+	public void setPillar(PillarsOOP thePillar) {
+		this.myPillar = thePillar;
 	}
 	
 	/**
@@ -285,24 +230,15 @@ class Room {
 	 * @return a String that displays all of the data stored in the Room. 
 	 */
 	String testString() {
-		String PillarName;
-		if (this.myPillarID == 'A') {
-			PillarName = "Abstraction";
-		} else if (this.myPillarID == 'E') {
-			PillarName = "Encapsulation";
-		} else if (this.myPillarID == 'I') {
-			PillarName = "Inheritance";
-		} else if (this.myPillarID == 'P') {
-			PillarName = "Polymorphism";
-		} else {
-			PillarName = "No Pillar";
-		}
-		
-		return "Room at (" + this.myRoomX + ", " + this.myRoomY + "): [Entrance: " + this.myHasEntrance + "Exit: " + this.myHasExit + 
-				"Healing Potion: " + this.myHasHealingPotion + "Vision Potion: " + 
-				this.myHasVisionPotion + "Pit: " + this.myHasPit + "OOPillar: " + this.myHasPillarOO + 
-				"Pillar Name: " + PillarName + "Doors: {" + "North: " + this.myHasNorth + "East: " +
-				this.myHasEast + "South: " + this.myHasSouth + "West: " + this.myHasWest + "}]";
+		return "Room at (" + this.myRoomX + ", " + this.myRoomY + "): [Entrance: " +
+				this.myHasEntrance + "Exit: " + this.myHasExit + "Healing Potion: " + 
+				this.myHasHealingPotion + "Vision Potion: " + this.myHasVisionPotion + "Pit: " +
+				this.myHasPit + "OOPillar: " + this.myHasPillarOO + "Pillar Name: " + 
+				this.myPillar.toString() + "Doors: {" + "North: " + 
+				this.myHasDoors[Directions.NORTH.ordinal()] + "East: " +
+				this.myHasDoors[Directions.EAST.ordinal()] + "South: " + 
+				this.myHasDoors[Directions.SOUTH.ordinal()] + "West: " +
+				this.myHasDoors[Directions.WEST.ordinal()] + "}]";
 	}
 	
 	/**
@@ -326,13 +262,13 @@ class Room {
 	public String toString() {
 		String output = ""; 
 		
-		if (this.myHasWest) { //west door
+		if (this.myHasDoors[Directions.WEST.ordinal()]) { //west door
 			output += "<";
 		} else {
 			output += "*";
 		} //end west 
 		
-		if (this.myHasNorth) { //north door
+		if (this.myHasDoors[Directions.NORTH.ordinal()]) { //north door
 			output += "^";
 		} else {
 			output += "*";
@@ -356,7 +292,7 @@ class Room {
 			center = 'X';
 			accumulator++;
 		} else if (this.myHasPillarOO) {
-			center = this.myPillarID;
+			center = this.myPillar.toString().charAt(0);
 			accumulator++;
 		} else if (accumulator > 1) {
 			center = 'M';
@@ -365,13 +301,13 @@ class Room {
 		}
 		output += center; //end center
 		
-		if (this.myHasSouth) { //south door
+		if (this.myHasDoors[Directions.SOUTH.ordinal()]) { //south door
 			output += "V";
 		} else {
 			output += "*";
 		} //end south 
 		
-		if (this.myHasEast) { //east door
+		if (this.myHasDoors[Directions.EAST.ordinal()]) { //east door
 			output += ">";
 		} else {
 			output += "*";
