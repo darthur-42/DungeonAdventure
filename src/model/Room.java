@@ -36,7 +36,7 @@ class Room {
 	private boolean[] myHasDoors;
 	
 	/** The Pillar of OOP in the Room */
-	private PillarsOOP myPillar;
+	private PillarOO myPillar;
 	
 	/** An integer marking the Rooms horizontal position in the Map. */
 	private int myRoomX;
@@ -56,7 +56,7 @@ class Room {
 		this.myHasPit = false;
 		this.myHasPillarOO = false;
 		this.myHasMonster = false; 
-		this.myHasDoors = new boolean[Directions.values().length];
+		this.myHasDoors = new boolean[Direction.values().length];
 		this.myPillar = null;
 		this.myRoomX = theX;
 		this.myRoomY = theY;
@@ -184,7 +184,7 @@ class Room {
 	 * 
 	 * @param the Direction of the Door being added. 
 	 */
-	public void setHasDoors(Directions theDirection) {
+	public void setHasDoors(Direction theDirection) {
 		this.myHasDoors[theDirection.ordinal()] = true;
 	}
 	
@@ -193,7 +193,7 @@ class Room {
 	 * 
 	 * @return the Room's Pillar of OOP. 
 	 */
-	public PillarsOOP getPillar() {
+	public PillarOO getPillar() {
 		return this.myPillar;
 	}
 	
@@ -202,7 +202,7 @@ class Room {
 	 * 
 	 * @param pillarsOOP of the PillarOO being places.
 	 */
-	public void setPillar(PillarsOOP thePillar) {
+	public void setPillar(PillarOO thePillar) {
 		this.myPillar = thePillar;
 	}
 	
@@ -235,10 +235,10 @@ class Room {
 				this.myHasHealingPotion + "Vision Potion: " + this.myHasVisionPotion + "Pit: " +
 				this.myHasPit + "OOPillar: " + this.myHasPillarOO + "Pillar Name: " + 
 				this.myPillar.toString() + "Doors: {" + "North: " + 
-				this.myHasDoors[Directions.NORTH.ordinal()] + "East: " +
-				this.myHasDoors[Directions.EAST.ordinal()] + "South: " + 
-				this.myHasDoors[Directions.SOUTH.ordinal()] + "West: " +
-				this.myHasDoors[Directions.WEST.ordinal()] + "}]";
+				this.myHasDoors[Direction.NORTH.ordinal()] + "East: " +
+				this.myHasDoors[Direction.EAST.ordinal()] + "South: " + 
+				this.myHasDoors[Direction.SOUTH.ordinal()] + "West: " +
+				this.myHasDoors[Direction.WEST.ordinal()] + "}]";
 	}
 	
 	/**
@@ -262,13 +262,13 @@ class Room {
 	public String toString() {
 		String output = ""; 
 		
-		if (this.myHasDoors[Directions.WEST.ordinal()]) { //west door
+		if (this.myHasDoors[Direction.WEST.ordinal()]) { //west door
 			output += "<";
 		} else {
 			output += "*";
 		} //end west 
 		
-		if (this.myHasDoors[Directions.NORTH.ordinal()]) { //north door
+		if (this.myHasDoors[Direction.NORTH.ordinal()]) { //north door
 			output += "^";
 		} else {
 			output += "*";
@@ -301,13 +301,13 @@ class Room {
 		}
 		output += center; //end center
 		
-		if (this.myHasDoors[Directions.SOUTH.ordinal()]) { //south door
+		if (this.myHasDoors[Direction.SOUTH.ordinal()]) { //south door
 			output += "V";
 		} else {
 			output += "*";
 		} //end south 
 		
-		if (this.myHasDoors[Directions.EAST.ordinal()]) { //east door
+		if (this.myHasDoors[Direction.EAST.ordinal()]) { //east door
 			output += ">";
 		} else {
 			output += "*";

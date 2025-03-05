@@ -44,9 +44,9 @@ class WarriorTest {
 	@Test
 	void testSpecialAttackHit() {
 		when(myMockRandom.nextDouble(0, 0.4)).thenReturn(1.0);
-        when(myMockRandom.nextDouble(0, 1)).thenReturn(0.0);
-        when(myMockRandom.nextInt(75, 176)).thenReturn(75);
-        
+		when(myMockRandom.nextDouble(0, 1)).thenReturn(0.0);
+		when(myMockRandom.nextInt(75, 176)).thenReturn(75);
+		
 		myTestWarrior.specialAttack(myTestEnemy);
 		
 		assertEquals(myTestEnemy.getCurHealthPoints(), 25);
@@ -60,9 +60,9 @@ class WarriorTest {
 	void testSpecialAttackKill() {
 		myTestEnemy.setCurHealthPoints(50);
 		when(myMockRandom.nextDouble(0, 0.4)).thenReturn(1.0);
-        when(myMockRandom.nextDouble(0, 1)).thenReturn(0.0);
-        when(myMockRandom.nextInt(75, 176)).thenReturn(100);
-        
+		when(myMockRandom.nextDouble(0, 1)).thenReturn(0.0);
+		when(myMockRandom.nextInt(75, 176)).thenReturn(100);
+		
 		myTestWarrior.specialAttack(myTestEnemy);
 		
 		assertEquals(myTestEnemy.getCurHealthPoints(), 0);
@@ -75,8 +75,8 @@ class WarriorTest {
 	@Test
 	void testSpecialAttackMiss() {
 		when(myMockRandom.nextDouble(0, 0.4)).thenReturn(0.0);
-        when(myMockRandom.nextDouble(0, 1)).thenReturn(1.0);
-        
+		when(myMockRandom.nextDouble(0, 1)).thenReturn(1.0);
+		
 		myTestWarrior.specialAttack(myTestEnemy);
 		
 		assertEquals(myTestEnemy.getCurHealthPoints(), 100);

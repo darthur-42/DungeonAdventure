@@ -1,5 +1,5 @@
 package model;
 
-public enum PillarsOOP {
+public enum PillarOO {
 	ABSTRACTION, ENCAPSULATION, INHERITANCE, POLYMORPHISM
 }
