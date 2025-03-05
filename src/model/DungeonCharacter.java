@@ -10,9 +10,12 @@ import java.util.Random;
  * subclasses must implement.
  * 
  * @author Justin Le
- * @version 19 Feb 2025
+ * @version 3 Mar 2025
  */
 public abstract class DungeonCharacter {
+	
+	/** The maximum limit of chance-based values. */
+	protected static final double CHANCE_MAX_LIMIT = 1.0;
 	
 	/** Random instance used to generate random numbers. */
 	protected Random myRandom;
@@ -53,16 +56,15 @@ public abstract class DungeonCharacter {
 	 * @param theHitChance the hit chance
 	 * @param theRandom the random instance
 	 */
-	public DungeonCharacter(String theName, int theHealthPoints, int theDamageMin,
-			int theDamageMax, int theAttackSpeed, double theHitChance, Random theRandom) {
+	public DungeonCharacter(final String theName, final int theHealthPoints, final int theDamageMin,
+			final int theDamageMax, final int theAttackSpeed, final double theHitChance,
+			final Random theRandom) {
 		myRandom = theRandom;
-		myName = theName;
-		myCurHealthPoints = theHealthPoints;
-		myMaxHealthPoints = theHealthPoints;
-		myDamageMin = theDamageMin;
-		myDamageMax = theDamageMax;
-		myAttackSpeed = theAttackSpeed;
-		myHitChance = theHitChance;
+		setName(theName);
+		setHealthPoints(theHealthPoints);
+		setDamageRange(theDamageMin, theDamageMax);
+		setAttackSpeed(theAttackSpeed);
+		setHitChance(theHitChance);
 	}
 	
 	/**
@@ -75,6 +77,25 @@ public abstract class DungeonCharacter {
 	}
 	
 	/**
+	 * Sets the DungeonCharacter's name; only used during construction.
+	 * 
+	 * @param newName new name
+	 */
+	private void setName(final String newName) {
+		int nameMaxLength = 20;
+		
+		if (newName == null || newName.isBlank()) {
+			throw new IllegalArgumentException("Name cannot be null or empty.");
+		}
+		if (newName.length() > nameMaxLength) {
+			throw new IllegalArgumentException("Name cannot exceed " + nameMaxLength
+					+ " characters.");
+		}
+		
+		myName = newName;
+	}
+	
+	/**
 	 * Returns the DungeonCharacter's current health points.
 	 * 
 	 * @return the DungeonCharacter's current health points
@@ -84,21 +105,52 @@ public abstract class DungeonCharacter {
 	}
 	
 	/**
-	 * Sets the DungeonCharacter's health points to a new value.
-	 * 
-	 * @param newHealthPoints new health value
-	 */
-	public void setCurHealthPoints(int newHealthPoints) {
-		myCurHealthPoints = Math.min(Math.max(newHealthPoints, 0), getMaxHealthPoints());
-	}
-	
-	/**
 	 * Returns the DungeonCharacter's maximum health points.
 	 * 
 	 * @return the DungeonCharacter's maximum health points
 	 */
 	public int getMaxHealthPoints() {
 		return myMaxHealthPoints;
+	}
+	
+	/**
+	 * Sets the DungeonCharacter's current and maximum health points; only used during construction.
+	 * 
+	 * @param newHealthPoints new health point value
+	 */
+	private void setHealthPoints(final int newHealthPoints) {
+		int healthMaxLimit = 999;
+		
+		if (newHealthPoints <= 0) {
+			throw new IllegalArgumentException("Health points cannot be zero or negative.");
+		}
+		
+		myMaxHealthPoints = Math.min(newHealthPoints, healthMaxLimit);
+		myCurHealthPoints = myMaxHealthPoints;
+	}
+	
+	/**
+	 * Sets the DungeonCharacter's current health points; should only be used during testing.
+	 * 
+	 * @param newHealthPoints new health point value
+	 */
+	public void setCurHealthPoints(final int newHealthPoints) {
+		if (newHealthPoints <= 0) {
+			throw new IllegalArgumentException("Health points cannot be zero or negative.");
+		}
+		
+		myCurHealthPoints = Math.min(newHealthPoints, myMaxHealthPoints);
+	}
+	
+	/**
+	 * Updates the DungeonCharacter's current health points to a new value based on a change in
+	 * health points.
+	 * 
+	 * @param deltaHealthPoints change in health points
+	 */
+	public void updateCurHealthPoints(final int deltaHealthPoints) {
+		int newHealthPoints = getCurHealthPoints() + deltaHealthPoints;
+		myCurHealthPoints = Math.min(Math.max(newHealthPoints, 0), getMaxHealthPoints());
 	}
 	
 	/**
@@ -120,6 +172,27 @@ public abstract class DungeonCharacter {
 	}
 	
 	/**
+	 * Sets the DungeonCharacter's damage range; only used during construction.
+	 * 
+	 * @param newDamageMin new minimum damage
+	 * @param newDamageMax new maximum damage
+	 */
+	private void setDamageRange(final int newDamageMin, final int newDamageMax) {
+		int damageMaxLimit = 999;
+		
+		if (newDamageMin <= 0) {
+			throw new IllegalArgumentException("Minimum damage cannot be zero or negative.");
+		}
+		if (newDamageMax <= newDamageMin) {
+			throw new IllegalArgumentException("Maximum damage cannot be less than minimum "
+					+ "damage.");
+		}
+		
+		myDamageMin = Math.min(newDamageMin, damageMaxLimit);
+		myDamageMax = Math.min(newDamageMax, damageMaxLimit);
+	}
+	
+	/**
 	 * Returns a random number in the DungeonCharacter's damage range.
 	 * 
 	 * @return a random number in the DungeonCharacter's damage range
@@ -138,12 +211,40 @@ public abstract class DungeonCharacter {
 	}
 	
 	/**
+	 * Sets the DungeonCharacter's attack speed; only used during construction.
+	 * 
+	 * @param newAttackSpeed new attack speed
+	 */
+	private void setAttackSpeed(final int newAttackSpeed) {
+		int attackSpeedMaxLimit = 99;
+		
+		if (newAttackSpeed <= 0) {
+			throw new IllegalArgumentException("Attack speed cannot be zero or negative.");
+		}
+		
+		myAttackSpeed = Math.min(newAttackSpeed, attackSpeedMaxLimit);
+	}
+	
+	/**
 	 * Returns the DungeonCharacter's hit chance.
 	 * 
 	 * @return the DungeonCharacter's hit chance
 	 */
 	public double getHitChance() {
 		return myHitChance;
+	}
+	
+	/**
+	 * Sets the DungeonCharacter's hit chance; only used during construction.
+	 * 
+	 * @param newHitChance new hit chance
+	 */
+	private void setHitChance(final double newHitChance) {
+		if (newHitChance <= 0.0) {
+			throw new IllegalArgumentException("Hit chance cannot be zero or negative.");
+		}
+		
+		myHitChance = Math.min(newHitChance, CHANCE_MAX_LIMIT);
 	}
 	
 	/**
@@ -160,25 +261,21 @@ public abstract class DungeonCharacter {
 	 * 
 	 * @param otherCharacter the other DungeonCharacter
 	 */
-	public void attack(DungeonCharacter otherCharacter) {
-		double hitCheck = myRandom.nextDouble(0, getHitChance());
+	public void attack(final DungeonCharacter otherCharacter) {
 		double hitRequirement = myRandom.nextDouble(0, 1);
 		
-		if (hitCheck >= hitRequirement) {
-			if (otherCharacter instanceof Hero) {
-				double blockCheck = myRandom.nextDouble(0, ((Hero) otherCharacter).getBlockChance());
-				double blockRequirement = myRandom.nextDouble(0, 1);
-				
-				// When target succeeds block check, skip damage operation
-				if (blockCheck >= blockRequirement) {
-					return;
-				}
-			}
-			
-			int otherNewHealthPoints = otherCharacter.getCurHealthPoints() - getRandomDamage();
-			
-			otherCharacter.setCurHealthPoints(otherNewHealthPoints);
+		if (getHitChance() >= hitRequirement) {
+			otherCharacter.receiveDamage(getRandomDamage());
 		}
+	}
+	
+	/**
+	 * Receive an amount of damage and update current health.
+	 * 
+	 * @param theDamageAmount amount of damage received
+	 */
+	public void receiveDamage(final int theDamageAmount) {
+		updateCurHealthPoints(-theDamageAmount);
 	}
 	
 }

@@ -8,13 +8,13 @@ import java.util.Random;
 /**
  * Represents a monster in the dungeon.
  * 
- * @author Anna Brewer
- * @version 22 Feb 2025
+ * @author Anna Brewer, Justin Le
+ * @version 3 Mar 2025
  */
-public abstract class Monster extends DungeonCharacter {
-	private int myHealMin;
-	private int myHealMax;
-	private double myHealChance;
+public abstract class Monster extends DungeonCharacter implements Healable {
+	private int myHealingMin;
+	private int myHealingMax;
+	private double myHealingChance;
 
 	/**
 	 * Constructs a Monster. Can pass in a random instance for testing.
@@ -25,56 +25,68 @@ public abstract class Monster extends DungeonCharacter {
 	 * @param theDamageMax    maximum damage
 	 * @param theAttackSpeed  attack speed
 	 * @param theHitChance    chance to hit
-	 * @param theHealMin      minimum heal amount
-	 * @param theHealMax      maximum heal amount
-	 * @param theHealChance   chance to heal
+	 * @param theHealingMin      minimum heal amount
+	 * @param theHealingMax      maximum heal amount
+	 * @param theHealingChance   chance to heal
 	 * @param theRandom       random instance
 	 */
 	public Monster(final String theName, final int theHealthPoints, final int theDamageMin, final int theDamageMax,
-			final int theAttackSpeed, final double theHitChance, final int theHealMin, final int theHealMax,
-			final double theHealChance, final Random theRandom) {
+			final int theAttackSpeed, final double theHitChance, final int theHealingMin, final int theHealingMax,
+			final double theHealingChance, final Random theRandom) {
 		super(theName, theHealthPoints, theDamageMin, theDamageMax, theAttackSpeed, theHitChance, theRandom);
-		myHealMin = theHealMin;
-		myHealMax = theHealMax;
-		myHealChance = theHealChance;
+		setHealingRange(theHealingMin, theHealingMax);
+		setHealingChance(theHealingChance);
 	}
 
-	/**
-	 * Returns the minimum heal amount.
-	 * 
-	 * @return the minimum heal amount
-	 */
-	public int getHealMin() {
-		return myHealMin;
+	@Override
+	public int getHealingMin() {
+		return myHealingMin;
 	}
 
-	/**
-	 * Returns the maximum heal amount.
-	 * 
-	 * @return the maximum heal amount
-	 */
-	public int getHealMax() {
-		return myHealMax;
+	@Override
+	public int getHealingMax() {
+		return myHealingMax;
 	}
 
-	/**
-	 * Returns the chance to heal.
-	 * 
-	 * @return the chance to heal
-	 */
-	public double getHealChance() {
-		return myHealChance;
-	}
-
-	/**
-	 * Heals the monster if conditions are met.
-	 */
-	public void heal() {
-		if (getCurHealthPoints() > 0 && myRandom.nextDouble() < myHealChance) {
-			int healAmount = myRandom.nextInt(myHealMin, myHealMax + 1);
-			setCurHealthPoints(getCurHealthPoints() + healAmount);
-			System.out.println(getName() + " healed for " + healAmount + " HP!");
+	@Override
+	public void setHealingRange(final int newHealingMin, final int newHealingMax) {
+		int healingMaxLimit = 999;
+		
+		if (newHealingMin <= 0) {
+			throw new IllegalArgumentException("Minimum healing cannot be zero or negative.");
 		}
+		if (newHealingMax <= newHealingMin) {
+			throw new IllegalArgumentException("Maximum healing cannot be less than minimum "
+					+ "healing.");
+		}
+		
+		myHealingMin = Math.min(newHealingMin, healingMaxLimit);
+		myHealingMax = Math.min(newHealingMax, healingMaxLimit);
+	}
+
+	@Override
+	public int getRandomHealing() {
+		return getRandomHealing(myRandom);
+	}
+
+	@Override
+	public double getHealingChance() {
+		return myHealingChance;
+	}
+
+	@Override
+	public void setHealingChance(final double newHealingChance) {
+		if (newHealingChance <= 0.0) {
+			throw new IllegalArgumentException("Heal chance cannot be zero or negative.");
+		}
+		
+		myHealingChance = Math.min(newHealingChance, CHANCE_MAX_LIMIT);
+	}
+
+	@Override
+	public void heal() {
+		heal(myRandom);
+//		System.out.println(getName() + " healed for " + healAmount + " HP!");
 	}
 
 	/**
@@ -82,7 +94,7 @@ public abstract class Monster extends DungeonCharacter {
 	 * 
 	 * @param otherCharacter the character being attacked
 	 */
-	public abstract void castAttackOn(DungeonCharacter otherCharacter);
+	public abstract void castAttackOn(final DungeonCharacter otherCharacter);
 
 	/**
 	 * Returns a string representation of the Monster.
@@ -94,6 +106,6 @@ public abstract class Monster extends DungeonCharacter {
 	public String toString() {
 	    return String.format("%s [Health: %d, Damage: %d-%d, Speed: %d, Hit Chance: %.2f, Heal: %d-%d, Heal Chance: %.2f]",
 	            getName(), getCurHealthPoints(), getDamageMin(), getDamageMax(), getAttackSpeed(),
-	            getHitChance(), getHealMin(), getHealMax(), getHealChance());
+	            getHitChance(), getHealingMin(), getHealingMax(), getHealingChance());
 	}
 }
