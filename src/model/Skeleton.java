@@ -9,12 +9,12 @@ import java.util.Random;
  * Represents a Skeleton monster.
  * 
  * @author Anna Brewer
- * @version 22 Feb 2025
+ * @version 3 Mar 2025
  */
 public class Skeleton extends Monster {
 
 	/**
-	 * Constructs a Gremlin with stats from the database.
+	 * Constructs a Skeleton with stats from the database.
 	 * 
 	 * @param theHealthPoints the monster's health points
 	 * @param theDamageMin    the minimum damage
@@ -33,28 +33,18 @@ public class Skeleton extends Monster {
 	}
 
 	/**
-	 * Constructs a Skeleton.
-	 */
-	public Skeleton() {
-		this(new Random());
-	}
-
-	/**
-	 * Constructs a Skeleton. Can pass in a random instance for testing.
-	 */
-	public Skeleton(final Random theRandom) {
-		super("Skeleton", 100, 30, 50, 3, 0.8, 30, 50, 0.3, theRandom);
-	}
-
-	/**
-	 * Attacks the target character and may heal.
-	 * 
-	 * @param otherCharacter the character being attacked
+	 * Attacks a character. If the attack results in lost HP, the Skeleton has a chance to heal.
+	 * Healing is checked after HP is reduced.
+	 *
+	 * @param otherCharacter The character being attacked.
 	 */
 	@Override
 	public void castAttackOn(final DungeonCharacter otherCharacter) {
-		System.out.println(getName() + " attacks " + otherCharacter.getName() + "!");
-		attack(otherCharacter);
-		heal();
+	    int originalHealth = otherCharacter.getCurHealthPoints();
+	    attack(otherCharacter);
+
+	    if (otherCharacter.getCurHealthPoints() < originalHealth && getCurHealthPoints() > 0) {
+	        heal();
+	    }
 	}
 }

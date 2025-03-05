@@ -1,7 +1,6 @@
 /**
  * TCSS 360 Group Project
  */
-
 package model;
 
 /**
@@ -21,6 +20,10 @@ public enum MonsterType {
 	 * @throws IllegalArgumentException if the name is invalid
 	 */
 	public static MonsterType fromString(final String theName) {
+		if (theName == null) {
+	        throw new IllegalArgumentException("Monster name cannot be null");
+	    }
+		
 		return switch (theName.trim().toUpperCase()) {
 		case "GREMLIN" -> GREMLIN;
 		case "OGRE" -> OGRE;

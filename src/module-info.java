@@ -9,5 +9,6 @@ module DungeonAdventure {
 	requires org.mockito;
 	requires java.sql;
 	requires org.xerial.sqlitejdbc;
+	requires java.desktop;
 
 }
