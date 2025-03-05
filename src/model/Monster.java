@@ -3,18 +3,29 @@
  */
 package model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Random;
 
 /**
  * Represents a monster in the dungeon.
  * 
  * @author Anna Brewer
- * @version 22 Feb 2025
+ * @version 3 Mar 2025
  */
-public abstract class Monster extends DungeonCharacter {
-	private int myHealMin;
-	private int myHealMax;
-	private double myHealChance;
+public abstract class Monster extends DungeonCharacter implements Healable {
+
+	/** The minimum heal amount for the monster. */
+	private final int myHealMin;
+
+	/** The maximum heal amount for the monster. */
+	private final int myHealMax;
+
+	/** The chance for the monster to heal. */
+	private final double myHealChance;
+
+	/** Property change support for event-based updates. */
+	private final PropertyChangeSupport myChanges;
 
 	/**
 	 * Constructs a Monster. Can pass in a random instance for testing.
@@ -37,63 +48,104 @@ public abstract class Monster extends DungeonCharacter {
 		myHealMin = theHealMin;
 		myHealMax = theHealMax;
 		myHealChance = theHealChance;
+		myChanges = new PropertyChangeSupport(this);
 	}
 
 	/**
-	 * Returns the minimum heal amount.
-	 * 
-	 * @return the minimum heal amount
+	 * Adds a listener for property changes.
+	 *
+	 * @param theListener the listener to add
 	 */
-	public int getHealMin() {
-		return myHealMin;
+	public void addPropertyChangeListener(final PropertyChangeListener theListener) {
+		myChanges.addPropertyChangeListener(theListener);
 	}
 
 	/**
-	 * Returns the maximum heal amount.
-	 * 
-	 * @return the maximum heal amount
+	 * Removes a listener.
+	 *
+	 * @param theListener the listener to remove
 	 */
-	public int getHealMax() {
-		return myHealMax;
+	public void removePropertyChangeListener(final PropertyChangeListener theListener) {
+		myChanges.removePropertyChangeListener(theListener);
 	}
 
 	/**
-	 * Returns the chance to heal.
+	 * Returns the chance that the monster will heal.
 	 * 
-	 * @return the chance to heal
+	 * @return the heal chance (percentage as a decimal)
 	 */
+	@Override
 	public double getHealChance() {
 		return myHealChance;
 	}
 
 	/**
-	 * Heals the monster if conditions are met.
+	 * Returns the minimum possible healing amount.
+	 * 
+	 * @return the minimum heal value
 	 */
+	@Override
+	public int getHealingMin() {
+		return myHealMin;
+	}
+
+	/**
+	 * Returns the maximum possible healing amount.
+	 * 
+	 * @return the maximum heal value
+	 */
+	@Override
+	public int getHealingMax() {
+		return myHealMax;
+	}
+
+	/**
+	 * Returns a random healing amount within the allowed range.
+	 * 
+	 * @return a random healing value
+	 */
+	@Override
+	public int getRandomHealing() {
+		return getRandomHealing(this);
+	}
+
+	/**
+	 * Heals the monster if it has a chance to recover health.
+	 */
+	@Override
 	public void heal() {
-		if (getCurHealthPoints() > 0 && myRandom.nextDouble() < myHealChance) {
-			int healAmount = myRandom.nextInt(myHealMin, myHealMax + 1);
-			setCurHealthPoints(getCurHealthPoints() + healAmount);
-			System.out.println(getName() + " healed for " + healAmount + " HP!");
+		if (getCurHealthPoints() > 0) {
+			int oldHealth = getCurHealthPoints();
+			heal(this);
+			myChanges.firePropertyChange("health", oldHealth, getCurHealthPoints());
 		}
 	}
 
 	/**
 	 * Attacks the target character.
 	 * 
-	 * @param otherCharacter the character being attacked
+	 * @param theOtherCharacter the character being attacked
 	 */
-	public abstract void castAttackOn(DungeonCharacter otherCharacter);
+	public void castAttackOn(DungeonCharacter theOtherCharacter) {
+		if (theOtherCharacter.getCurHealthPoints() > 0) {
+			attack(theOtherCharacter);
+
+			if (getCurHealthPoints() > 0) {
+				heal();
+			}
+		}
+	}
 
 	/**
 	 * Returns a string representation of the Monster.
-	 *
+	 * 
 	 * @return a string containing the Monster's name, health, damage range, speed,
-	 *         hit chance, and heal range
+	 *         and hit chance
 	 */
 	@Override
 	public String toString() {
-	    return String.format("%s [Health: %d, Damage: %d-%d, Speed: %d, Hit Chance: %.2f, Heal: %d-%d, Heal Chance: %.2f]",
-	            getName(), getCurHealthPoints(), getDamageMin(), getDamageMax(), getAttackSpeed(),
-	            getHitChance(), getHealMin(), getHealMax(), getHealChance());
+		return String.format("%s [Health: %d, Damage: %d-%d, Speed: %d, Hit Chance: %.2f, Heal Chance: %.2f]",
+				getName(), getCurHealthPoints(), getDamageMin(), getDamageMax(), getAttackSpeed(), getHitChance(),
+				getHealChance());
 	}
 }
