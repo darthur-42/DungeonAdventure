@@ -47,7 +47,7 @@ class OgreTest {
         assertEquals(60, myTestOgre.getDamageMax());
         assertEquals(2, myTestOgre.getAttackSpeed());
         assertEquals(0.6, myTestOgre.getHitChance());
-        assertEquals(0.1, myTestOgre.getHealChance());
+        assertEquals(0.1, myTestOgre.getHealingChance());
     }
 
     /**

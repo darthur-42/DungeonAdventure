@@ -47,7 +47,7 @@ class SkeletonTest {
         assertEquals(50, myTestSkeleton.getDamageMax());
         assertEquals(3, myTestSkeleton.getAttackSpeed());
         assertEquals(0.8, myTestSkeleton.getHitChance());
-        assertEquals(0.3, myTestSkeleton.getHealChance());
+        assertEquals(0.3, myTestSkeleton.getHealingChance());
     }
 
     /**

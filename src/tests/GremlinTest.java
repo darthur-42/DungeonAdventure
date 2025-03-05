@@ -47,7 +47,7 @@ class GremlinTest {
         assertEquals(30, myTestGremlin.getDamageMax(), "Gremlin maximum damage should be 30.");
         assertEquals(5, myTestGremlin.getAttackSpeed(), "Gremlin attack speed should be 5.");
         assertEquals(0.8, myTestGremlin.getHitChance(), "Gremlin hit chance should be 80%.");
-        assertEquals(0.4, myTestGremlin.getHealChance(), "Gremlin heal chance should be 40%.");
+        assertEquals(0.4, myTestGremlin.getHealingChance(), "Gremlin heal chance should be 40%.");
     }
 
     /**
