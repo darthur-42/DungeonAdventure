@@ -13,26 +13,31 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import model.PillarOO;
+import tests.mockclasses.MockDungeonCharacter;
 import tests.mockclasses.MockHero;
 
 /**
  * Test cases for Hero.
  * 
  * @author Justin Le
- * @version 19 Feb 2025
+ * @version 4 Mar 2025
  */
 class HeroTest {
 	
-	private Random myMockRandom;
+	private Random myMockHeroRandom;
+	private Random myMockEnemyRandom;
 	private MockHero myTestHero;
+	private MockDungeonCharacter myTestEnemy;
 	
 	/**
      * Initialize the test Hero and mock random before each test.
      */
 	@BeforeEach
 	void setUp() {
-		myMockRandom = mock(Random.class);
-		myTestHero = new MockHero(myMockRandom);
+		myMockHeroRandom = mock(Random.class);
+		myMockEnemyRandom = mock(Random.class);
+		myTestHero = new MockHero(myMockHeroRandom);
+		myTestEnemy = new MockDungeonCharacter(myMockEnemyRandom);
 	}
 	
 	/**
@@ -58,7 +63,7 @@ class HeroTest {
 	@Test
 	void testUseHealingPotionLowHealth() {
 		myTestHero.setCurHealthPoints(10);
-		when(myMockRandom.nextInt(50, 101)).thenReturn(50);
+		when(myMockHeroRandom.nextInt(50, 101)).thenReturn(50);
 		
 		myTestHero.useHealingPotion();
 		
@@ -72,8 +77,6 @@ class HeroTest {
 	 */
 	@Test
 	void testUseHealingPotionFullHealth() {
-		when(myMockRandom.nextInt(50, 101)).thenReturn(100);
-		
 		myTestHero.useHealingPotion();
 		
 		assertEquals(myTestHero.getNumHealingPotions(), 2);
@@ -114,6 +117,37 @@ class HeroTest {
 		myTestHero.collectPillar(PillarOO.ABSTRACTION);
 		
 		assertEquals(myTestHero.getCollectedPillars().getFirst(), PillarOO.ABSTRACTION);
+	}
+	
+	/**
+	 * Test method for {@link model.DungeonCharacter#attack(model.DungeonCharacter)}.
+	 * When the Hero blocks an incoming attack.
+	 */
+	@Test
+	void testAttackBlocked() {
+		when(myMockHeroRandom.nextDouble(0.0, 1.0)).thenReturn(0.0);
+		when(myMockEnemyRandom.nextDouble(0.0, 1.0)).thenReturn(0.0);
+		
+		myTestEnemy.attack(myTestHero);
+		
+		assertEquals(100, myTestHero.getCurHealthPoints());
+		assertEquals(100, myTestEnemy.getCurHealthPoints());
+	}
+	
+	/**
+	 * Test method for {@link model.DungeonCharacter#attack(model.DungeonCharacter)}.
+	 * When the Hero fails to block an incoming attack.
+	 */
+	@Test
+	void testAttackNotBlocked() {
+		when(myMockHeroRandom.nextDouble(0.0, 1.0)).thenReturn(1.0);
+		when(myMockEnemyRandom.nextDouble(0.0, 1.0)).thenReturn(0.0);
+		when(myMockEnemyRandom.nextInt(10, 21)).thenReturn(15);
+		
+		myTestEnemy.attack(myTestHero);
+		
+		assertEquals(85, myTestHero.getCurHealthPoints());
+		assertEquals(100, myTestEnemy.getCurHealthPoints());
 	}
 	
 }

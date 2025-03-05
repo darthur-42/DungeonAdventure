@@ -11,7 +11,7 @@ import java.util.Random;
  * chance to give an additional turn.
  * 
  * @author Justin Le
- * @version 19 Feb 2025
+ * @version 4 Mar 2025
  */
 public class Thief extends Hero {
 	
@@ -35,13 +35,14 @@ public class Thief extends Hero {
 	 */
 	@Override
 	public void specialAttack(final DungeonCharacter otherCharacter) {
-		double hitCheck = myRandom.nextDouble(0, 1);
+		double hitChance = myRandom.nextDouble(0.0, 1.0);
+		double hitRequirement = 0.2;
+		double extraTurnRequirement = 0.6;
 		
-		if (hitCheck >= 0.2) {
-			int otherNewHealthPoints = otherCharacter.getCurHealthPoints() - getRandomDamage();
-			otherCharacter.updateCurHealthPoints(otherNewHealthPoints);
+		if (hitChance >= hitRequirement) {
+			otherCharacter.receiveDamage(getRandomDamage());
 			
-			if (hitCheck >= 0.6) {
+			if (hitChance >= extraTurnRequirement) {
 				// TODO Get extra turn
 			}
 		}

@@ -12,7 +12,7 @@ import java.util.Random;
  * behaviors that subclasses must implement.
  * 
  * @author Justin Le
- * @version 3 Mar 2025
+ * @version 4 Mar 2025
  */
 public abstract class Hero extends DungeonCharacter {
 	
@@ -120,9 +120,9 @@ public abstract class Hero extends DungeonCharacter {
 	 * Use a healing potion to heal the Hero.
 	 */
 	public void useHealingPotion() {
-		if (myNumHealingPotions > 0 && getCurHealthPoints() < getMaxHealthPoints()) {
+		if (myNumHealingPotions > 0) {
 			myNumHealingPotions--;
-			updateCurHealthPoints(myRandom.nextInt(POTION_HEALING_MIN, POTION_HEALING_MAX + 1));
+			receiveHealing(myRandom.nextInt(POTION_HEALING_MIN, POTION_HEALING_MAX + 1));
 		}
 	}
 	
@@ -189,8 +189,8 @@ public abstract class Hero extends DungeonCharacter {
 	 * 
 	 * @param theDamageAmount amount of damage
 	 */
-	public void receiveDamage(final int theDamageAmount) {
-		double blockRequirement = myRandom.nextDouble(0, 1);
+	protected void receiveDamage(final int theDamageAmount) {
+		double blockRequirement = myRandom.nextDouble(0.0, 1.0);
 		
 		// When target fails block check, perform damage operation
 		if (getBlockChance() < blockRequirement) {

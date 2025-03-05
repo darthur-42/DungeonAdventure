@@ -10,7 +10,7 @@ import java.util.Random;
  * subclasses must implement.
  * 
  * @author Justin Le
- * @version 3 Mar 2025
+ * @version 4 Mar 2025
  */
 public abstract class DungeonCharacter {
 	
@@ -54,12 +54,12 @@ public abstract class DungeonCharacter {
 	 * @param theDamageMax the maximum damage
 	 * @param theAttackSpeed the attack speed
 	 * @param theHitChance the hit chance
-	 * @param theRandom the random instance
+	 * @param theRandomInstance the random instance
 	 */
 	public DungeonCharacter(final String theName, final int theHealthPoints, final int theDamageMin,
 			final int theDamageMax, final int theAttackSpeed, final double theHitChance,
-			final Random theRandom) {
-		myRandom = theRandom;
+			final Random theRandomInstance) {
+		myRandom = theRandomInstance;
 		setName(theName);
 		setHealthPoints(theHealthPoints);
 		setDamageRange(theDamageMin, theDamageMax);
@@ -148,7 +148,7 @@ public abstract class DungeonCharacter {
 	 * 
 	 * @param deltaHealthPoints change in health points
 	 */
-	public void updateCurHealthPoints(final int deltaHealthPoints) {
+	private void updateCurHealthPoints(final int deltaHealthPoints) {
 		int newHealthPoints = getCurHealthPoints() + deltaHealthPoints;
 		myCurHealthPoints = Math.min(Math.max(newHealthPoints, 0), getMaxHealthPoints());
 	}
@@ -257,25 +257,34 @@ public abstract class DungeonCharacter {
 	}
 	
 	/**
+	 * Receive an amount of damage and update current health.
+	 * 
+	 * @param theDamageAmount amount of damage received
+	 */
+	protected void receiveDamage(final int theDamageAmount) {
+		updateCurHealthPoints(-theDamageAmount);
+	}
+	
+	/**
+	 * Receive an amount of healing and update current health.
+	 * 
+	 * @param theHealingAmount amount of healing received
+	 */
+	protected void receiveHealing(final int theHealingAmount) {
+		updateCurHealthPoints(theHealingAmount);
+	}
+	
+	/**
 	 * Perform an attack on another DungeonCharacter.
 	 * 
 	 * @param otherCharacter the other DungeonCharacter
 	 */
 	public void attack(final DungeonCharacter otherCharacter) {
-		double hitRequirement = myRandom.nextDouble(0, 1);
+		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
 		
 		if (getHitChance() >= hitRequirement) {
 			otherCharacter.receiveDamage(getRandomDamage());
 		}
-	}
-	
-	/**
-	 * Receive an amount of damage and update current health.
-	 * 
-	 * @param theDamageAmount amount of damage received
-	 */
-	public void receiveDamage(final int theDamageAmount) {
-		updateCurHealthPoints(-theDamageAmount);
 	}
 	
 }

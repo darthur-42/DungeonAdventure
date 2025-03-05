@@ -10,7 +10,7 @@ import java.util.Random;
  * low block chance. Their special attack has a low chance to deal even higher damage.
  * 
  * @author Justin Le
- * @version 19 Feb 2025
+ * @version 4 Mar 2025
  */
 public class Warrior extends Hero {
 	
@@ -33,13 +33,13 @@ public class Warrior extends Hero {
 	 */
 	@Override
 	public void specialAttack(final DungeonCharacter otherCharacter) {
-		double hitCheck = myRandom.nextDouble(0, 0.4);
-		double hitRequirement = myRandom.nextDouble(0, 1);
+		double hitChance = 0.4;
+		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
 		
-		if (hitCheck >= hitRequirement) {
+		if (hitChance >= hitRequirement) {
 			int randomSpecialSkillDamage = myRandom.nextInt(75, 176);
 			
-			otherCharacter.updateCurHealthPoints(-randomSpecialSkillDamage);
+			otherCharacter.receiveDamage(randomSpecialSkillDamage);
 		}
 	}
 	

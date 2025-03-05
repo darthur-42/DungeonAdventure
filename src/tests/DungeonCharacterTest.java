@@ -18,12 +18,13 @@ import tests.mockclasses.MockDungeonCharacter;
  * Test cases for DungeonCharacter.
  * 
  * @author Justin Le
- * @version 19 Feb 2025
+ * @version 4 Mar 2025
  */
 class DungeonCharacterTest {
 	
 	private Random myMockRandom;
 	private MockDungeonCharacter myTestDungeonCharacter;
+	private MockDungeonCharacter myTestEnemy;
 	
 	/**
      * Initialize the test DungeonCharacter and mock random before each test.
@@ -32,6 +33,7 @@ class DungeonCharacterTest {
 	void setUp() {
 		myMockRandom = mock(Random.class);
 		myTestDungeonCharacter = new MockDungeonCharacter(myMockRandom);
+		myTestEnemy = new MockDungeonCharacter(myMockRandom);
 	}
 	
 	/**
@@ -39,7 +41,7 @@ class DungeonCharacterTest {
 	 */
 	@Test
 	void testGetName() {
-		assertEquals("Mock Dungeon Character", myTestDungeonCharacter.getName());
+		assertEquals("MockDngnChar", myTestDungeonCharacter.getName());
 	}
 	
 	/**
@@ -120,16 +122,31 @@ class DungeonCharacterTest {
 	
 	/**
 	 * Test method for {@link model.DungeonCharacter#attack(model.DungeonCharacter)}.
+	 * When the DungeonCharacter lands an attack.
 	 */
 	@Test
-	void testAttack() {
-		MockDungeonCharacter testEnemy = new MockDungeonCharacter(myMockRandom);
+	void testAttackHit() {
+		when(myMockRandom.nextDouble(0.0, 1.0)).thenReturn(0.0);
 		when(myMockRandom.nextInt(10, 21)).thenReturn(15);
 		
-		myTestDungeonCharacter.attack(testEnemy);
+		myTestDungeonCharacter.attack(myTestEnemy);
 		
 		assertEquals(100, myTestDungeonCharacter.getCurHealthPoints());
-		assertEquals(85, testEnemy.getCurHealthPoints());
+		assertEquals(85, myTestEnemy.getCurHealthPoints());
+	}
+	
+	/**
+	 * Test method for {@link model.DungeonCharacter#attack(model.DungeonCharacter)}.
+	 * When the DungeonCharacter fails to land an attack.
+	 */
+	@Test
+	void testAttackMiss() {
+		when(myMockRandom.nextDouble(0.0, 1.0)).thenReturn(1.0);
+		
+		myTestDungeonCharacter.attack(myTestEnemy);
+		
+		assertEquals(100, myTestDungeonCharacter.getCurHealthPoints());
+		assertEquals(100, myTestEnemy.getCurHealthPoints());
 	}
 	
 }

@@ -19,7 +19,7 @@ import tests.mockclasses.MockDungeonCharacter;
  * Test cases for Thief.
  * 
  * @author Justin Le
- * @version 19 Feb 2025
+ * @version 4 Mar 2025
  */
 class ThiefTest {
 	
@@ -43,7 +43,7 @@ class ThiefTest {
 	 */
 	@Test
 	void testSpecialAttackGetExtraTurn() {
-		when(myMockRandom.nextDouble(0, 1)).thenReturn(1.0);
+		when(myMockRandom.nextDouble(0.0, 1.0)).thenReturn(1.0);
 		when(myMockRandom.nextInt(20, 41)).thenReturn(20);
 		
 		myTestThief.specialAttack(myTestEnemy);
@@ -57,7 +57,7 @@ class ThiefTest {
 	 */
 	@Test
 	void testSpecialAttackDoNormalAttack() {
-		when(myMockRandom.nextDouble(0, 1)).thenReturn(0.5);
+		when(myMockRandom.nextDouble(0.0, 1.0)).thenReturn(0.5);
 		when(myMockRandom.nextInt(20, 41)).thenReturn(20);
 		
 		myTestThief.specialAttack(myTestEnemy);
@@ -72,7 +72,7 @@ class ThiefTest {
 	 */
 	@Test
 	void testSpecialAttackDoNothing() {
-		when(myMockRandom.nextDouble(0, 1)).thenReturn(0.0);
+		when(myMockRandom.nextDouble(0.0, 1.0)).thenReturn(0.0);
 		
 		myTestThief.specialAttack(myTestEnemy);
 		

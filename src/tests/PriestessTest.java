@@ -18,7 +18,7 @@ import model.Priestess;
  * Test cases for Priestess.
  * 
  * @author Justin Le
- * @version 19 Feb 2025
+ * @version 4 Mar 2025
  */
 class PriestessTest {
 	
@@ -54,8 +54,6 @@ class PriestessTest {
 	 */
 	@Test
 	void testSpecialAttackFullHealth() {
-		when(myMockRandom.nextInt(50, 76)).thenReturn(50);
-		
 		myTestPriestess.specialAttack(myTestPriestess);
 		
 		assertEquals(myTestPriestess.getCurHealthPoints(), 75);

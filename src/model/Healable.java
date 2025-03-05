@@ -9,7 +9,7 @@ import java.util.Random;
  * This interface represents an entity within the Dungeon that can heal itself.
  * 
  * @author Justin Le
- * @version 3 Mar 2025
+ * @version 4 Mar 2025
  */
 interface Healable {
 	
@@ -78,10 +78,10 @@ interface Healable {
 	 */
 	default void heal(final Random theRandomInstance) {
 		if (this instanceof DungeonCharacter theCharacter) {
-			double healRequirement = theRandomInstance.nextDouble(0, 1);
+			double healRequirement = theRandomInstance.nextDouble(0.0, 1.0);
 			
 			if (getHealingChance() >= healRequirement) {
-				theCharacter.updateCurHealthPoints(getRandomHealing());
+				theCharacter.receiveHealing(getRandomHealing());
 			}
 		} else {
 			throw new IllegalStateException("Only DungeonCharacters can implement Healable.");
