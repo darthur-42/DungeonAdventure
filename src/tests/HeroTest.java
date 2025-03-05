@@ -12,6 +12,7 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import model.PillarOO;
 import tests.mockclasses.MockHero;
 
 /**
@@ -110,9 +111,9 @@ class HeroTest {
 	 */
 	@Test
 	void testCollectPillar() {
-		myTestHero.collectPillar("A");
+		myTestHero.collectPillar(PillarOO.ABSTRACTION);
 		
-		assertEquals(myTestHero.getCollectedPillars().getFirst(), "A");
+		assertEquals(myTestHero.getCollectedPillars().getFirst(), PillarOO.ABSTRACTION);
 	}
 	
 }

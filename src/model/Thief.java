@@ -25,7 +25,7 @@ public class Thief extends Hero {
 	/**
 	 * Constructs a Thief. Can pass in a random instance for testing.
 	 */
-	public Thief(Random theRandomInstance) {
+	public Thief(final Random theRandomInstance) {
 		super("Thief", 75, 20, 40, 6, 0.8, 0.4, theRandomInstance);
 	}
 	
@@ -34,12 +34,12 @@ public class Thief extends Hero {
 	 * to give an additional turn, and a low chance to do nothing.
 	 */
 	@Override
-	public void specialAttack(DungeonCharacter otherCharacter) {
+	public void specialAttack(final DungeonCharacter otherCharacter) {
 		double hitCheck = myRandom.nextDouble(0, 1);
 		
 		if (hitCheck >= 0.2) {
 			int otherNewHealthPoints = otherCharacter.getCurHealthPoints() - getRandomDamage();
-			otherCharacter.setCurHealthPoints(otherNewHealthPoints);
+			otherCharacter.updateCurHealthPoints(otherNewHealthPoints);
 			
 			if (hitCheck >= 0.6) {
 				// TODO Get extra turn

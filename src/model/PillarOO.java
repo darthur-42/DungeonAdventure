@@ -1,0 +1,5 @@
+package model;
+
+public enum PillarOO {
+	ABSTRACTION, ENCAPSULATION, INHERITANCE, POLYMORPHISM
+}

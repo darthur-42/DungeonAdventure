@@ -5,7 +5,6 @@ package model;
 
 import java.util.Random;
 import java.util.HashSet;
-import java.util.ArrayList;
 
 /**
  * This class represents the Dungeon in which the adventure occurs.
@@ -29,23 +28,23 @@ public class Dungeon {
 	private final int LOOT_CHANCE = 10; // 1 - 10 is a 10% chance
 	
 	/** Random object used to generate random numbers. */
-	private Random random = new Random();
+	private Random myRandom = new Random();
 	
 	/** An array of Rooms which are reachable Rooms, used for Random generation. */
-	private Room[] activeRooms;
+	private Room[] myActiveRooms;
 	
 	/** A 2D array of Rooms which is the Map for the Dungeon. */
-	Room[][] map;
+	Room[][] myMap;
 	
 	/**
 	 * Constructs a Dungeon which is essentially a 2D array of Rooms.
 	 * Sets all of the Rooms coordinate tracking fields (roomX and roomY).
 	 */
 	Dungeon() {
-		map = new Room[MAP_SIZE][MAP_SIZE];
+		myMap = new Room[MAP_SIZE][MAP_SIZE];
 		for (int y = 0; y < MAP_SIZE; y++) {
 			for (int x = 0; x < MAP_SIZE; x++) {
-				map[x][y] = new Room(x, y);
+				myMap[x][y] = new Room(x, y);
 			}
 		}
 		
@@ -58,8 +57,7 @@ public class Dungeon {
 	
 	/**
 	 * Makes all of the doors that connect the Rooms to each other in a maze like pattern.
-	 * Adds all of the rooms that are reachable to the Set activeRoomsHash, which is converted
-	 * into the Room array activeRooms. 
+	 * Adds all of the rooms that are reachable to the Array myActiveRooms.
 	 */
 	private void generateMaze() {
 		HashSet<Room> activeRoomsHash = new HashSet<Room>(DUNGEON_SIZE);
@@ -67,35 +65,35 @@ public class Dungeon {
 		Room nextRoom = currentRoom;
 		activeRoomsHash.add(currentRoom);
 		while (activeRoomsHash.size() < DUNGEON_SIZE) {
-			int nextDirection = random.nextInt(0, 4); //4 cardinal directions
-			if (nextDirection == 0 && (currentRoom.roomY - 1) >= 0) { //north
-				nextRoom = map[currentRoom.roomX][currentRoom.roomY - 1];
-				currentRoom.hasNorth = true;
-				nextRoom.hasSouth = true;
+			int nextDirection = myRandom.nextInt(Direction.values().length); 
+			if (nextDirection == Direction.NORTH.ordinal() && (currentRoom.getRoomY() - 1) >= 0) {
+				nextRoom = myMap[currentRoom.getRoomX()][currentRoom.getRoomY() - 1];
+				currentRoom.setHasDoors(Direction.NORTH);
+				nextRoom.setHasDoors(Direction.SOUTH);
 				activeRoomsHash.add(nextRoom);
 				currentRoom = nextRoom; 
-			} else if (nextDirection == 1 && (currentRoom.roomX + 1) < MAP_SIZE) { //east
-				nextRoom = map[currentRoom.roomX + 1][currentRoom.roomY];
-				currentRoom.hasEast = true;
-				nextRoom.hasWest = true;
+			} else if (nextDirection == Direction.EAST.ordinal() && (currentRoom.getRoomX() + 1) < MAP_SIZE) { 
+				nextRoom = myMap[currentRoom.getRoomX() + 1][currentRoom.getRoomY()];
+				currentRoom.setHasDoors(Direction.EAST);
+				nextRoom.setHasDoors(Direction.WEST);
 				activeRoomsHash.add(nextRoom);
 				currentRoom = nextRoom; 
-			} else if (nextDirection == 2 && (currentRoom.roomY + 1) < MAP_SIZE) { //south
-				nextRoom = map[currentRoom.roomX][currentRoom.roomY + 1];
-				currentRoom.hasSouth = true;
-				nextRoom.hasNorth = true;
+			} else if (nextDirection == Direction.SOUTH.ordinal() && (currentRoom.getRoomY() + 1) < MAP_SIZE) { 
+				nextRoom = myMap[currentRoom.getRoomX()][currentRoom.getRoomY() + 1];
+				currentRoom.setHasDoors(Direction.SOUTH);
+				nextRoom.setHasDoors(Direction.NORTH);
 				activeRoomsHash.add(nextRoom);
 				currentRoom = nextRoom; 
-			} else if (nextDirection == 3 && (currentRoom.roomX - 1) >= 0) { //west
-				nextRoom = map[currentRoom.roomX - 1][currentRoom.roomY];
-				currentRoom.hasWest = true;
-				nextRoom.hasEast = true;
+			} else if (nextDirection == Direction.WEST.ordinal() && (currentRoom.getRoomX() - 1) >= 0) { 
+				nextRoom = myMap[currentRoom.getRoomX() - 1][currentRoom.getRoomY()];
+				currentRoom.setHasDoors(Direction.WEST);
+				nextRoom.setHasDoors(Direction.EAST);
 				activeRoomsHash.add(nextRoom);
 				currentRoom = nextRoom; 
 			}
 		}
 		
-		activeRooms = activeRoomsHash.toArray(new Room[DUNGEON_SIZE]); 
+		myActiveRooms = activeRoomsHash.toArray(new Room[DUNGEON_SIZE]); 
 	}
 	
 	/**
@@ -103,7 +101,7 @@ public class Dungeon {
 	 */
 	private void placeEntrance() {
 		Room room = randomActiveRoom();
-		room.hasEntrance = true;
+		room.setHasEntrance(); 
 	}
 	
 	/**
@@ -111,11 +109,11 @@ public class Dungeon {
 	 */
 	private void placeExit() {
 		Room room = randomActiveRoom();
-		while (room.hasEntrance) {
+		while (room.getHasEntrance()) {
 			room = randomActiveRoom();
 		}
 		
-		room.hasExit = true;
+		room.setHasExit();
 	}
 	
 	/**
@@ -124,35 +122,33 @@ public class Dungeon {
 	 * @param theAccumulator is an integer used to track which Pillar will be next. 
 	 */
 	private void placePillars() {
-		final char[] pillarIDs = {'A', 'E', 'I', 'P'};
-
-		for (char pillarID : pillarIDs) { 
+		for (PillarOO pillar : PillarOO.values()) { 
 			Room room = randomActiveRoom();
-			while (room.hasEntrance || room.hasExit || room.hasPillarOO) {
+			while (room.getHasEntrance() || room.getHasExit() || room.getHasPillarOO()) {
 				room = randomActiveRoom();
 			}
 						
-			room.hasPillarOO = true;
-			room.pillarID = pillarID;
+			room.setHasPillarOO();
+			room.setPillar(pillar);
 		}
 	}
 	
 	
 	/**
-	 * Goes through activeRooms and Rooms with nothing in them can randomly place objects.
+	 * Goes through myActiveRooms and Rooms with nothing in them can randomly place objects.
 	 * There is a 10% chance that each of the 3 objects are placed. 
 	 */
 	private void placeOthers() {
-		for (Room currentRoom : activeRooms) {
-			if (!currentRoom.hasEntrance && !currentRoom.hasExit && !currentRoom.hasPillarOO) { 
-				if (random.nextInt(1, LOOT_CHANCE) == 1) {
-					currentRoom.hasHealingPotion = true;
+		for (Room currentRoom : myActiveRooms) {
+			if (!currentRoom.getHasEntrance() && !currentRoom.getHasExit() && !currentRoom.getHasPillarOO()) { 
+				if (myRandom.nextInt(1, LOOT_CHANCE) == 1) {
+					currentRoom.setHasHealingPotion();
 				}
-				if (random.nextInt(1, LOOT_CHANCE) == 1) {
-					currentRoom.hasVisionPotion = true;
+				if (myRandom.nextInt(1, LOOT_CHANCE) == 1) {
+					currentRoom.setHasVisionPotion();
 				}
-				if (random.nextInt(1, LOOT_CHANCE) == 1) {
-					currentRoom.hasPit = true;
+				if (myRandom.nextInt(1, LOOT_CHANCE) == 1) {
+					currentRoom.setHasPit();
 				}
 			}
 		}
@@ -164,7 +160,7 @@ public class Dungeon {
 	 * @return a random Room from map.
 	 */
 	private Room randomRoom() { 
-		return map[random.nextInt(0, MAP_SIZE - 1)][random.nextInt(0, MAP_SIZE - 1)];
+		return myMap[myRandom.nextInt(0, MAP_SIZE - 1)][myRandom.nextInt(0, MAP_SIZE - 1)];
 	}
 	
 	/**
@@ -173,7 +169,7 @@ public class Dungeon {
 	 * @return a random Room from activeRooms.
 	 */
 	private Room randomActiveRoom() { 
-		return activeRooms[random.nextInt(0, activeRooms.length - 1)];
+		return myActiveRooms[myRandom.nextInt(0, myActiveRooms.length - 1)];
 	}
 	
 	/**
@@ -183,10 +179,14 @@ public class Dungeon {
 	 */
 	@Override
 	public String toString() {
-		String output = "Map:\n";
+		String output = "Map:\n" +
+		"Walls = *, Doors = <^V> depending on orientation (in the order west north south east),\n" +
+		"Multiple Items = M, Pit = X, Entrance = i (in), Exit = O (Out),\n" +
+		"Healing Potion = H, Vision Potion = v, Empty Room = \" \" (space), Pillars = A, E, I, or P";
+		
 		for (int y = 0; y < MAP_SIZE; y++) {
 			for (int x = 0; x < MAP_SIZE; x++) {
-				output += map[x][y].toString() + "\t";
+				output += myMap[x][y].toString() + "\t";
 			}
 			output += "\n"; //new line after each row
 		}
