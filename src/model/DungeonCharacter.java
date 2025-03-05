@@ -18,7 +18,7 @@ public abstract class DungeonCharacter {
 	protected static final double CHANCE_MAX_LIMIT = 1.0;
 	
 	/** Random instance used to generate random numbers. */
-	protected Random myRandom;
+	protected final Random myRandom;
 	
 	/** The name of the DungeonCharacter. */
 	private String myName;
