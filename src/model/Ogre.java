@@ -9,7 +9,7 @@ import java.util.Random;
  * Represents an Ogre monster.
  * 
  * @author Anna Brewer
- * @version 22 Feb 2025
+ * @version 3 Mar 2025
  */
 public class Ogre extends Monster {
 
@@ -33,28 +33,18 @@ public class Ogre extends Monster {
 	}
 
 	/**
-	 * Constructs an Ogre.
-	 */
-	public Ogre() {
-		this(new Random());
-	}
-
-	/**
-	 * Constructs an Ogre. Can pass in a random instance for testing.
-	 */
-	public Ogre(final Random theRandom) {
-		super("Ogre", 200, 30, 60, 2, 0.6, 30, 60, 0.1, theRandom);
-	}
-
-	/**
-	 * Attacks the target character and may heal.
-	 * 
-	 * @param otherCharacter the character being attacked
+	 * Attacks a character. If the attack results in lost HP, the Ogre has a chance to heal.
+	 * Healing is checked after HP is reduced.
+	 *
+	 * @param otherCharacter The character being attacked.
 	 */
 	@Override
 	public void castAttackOn(final DungeonCharacter otherCharacter) {
-		System.out.println(getName() + " attacks " + otherCharacter.getName() + "!");
-		attack(otherCharacter);
-		heal();
+	    int originalHealth = otherCharacter.getCurHealthPoints();
+	    attack(otherCharacter);
+
+	    if (otherCharacter.getCurHealthPoints() < originalHealth && getCurHealthPoints() > 0) {
+	        heal();
+	    }
 	}
 }

@@ -17,7 +17,7 @@ import org.sqlite.SQLiteDataSource;
  * Stores and retrieves Monster data in a SQLite database.
  *
  * @author Anna Brewer
- * @version 23 Feb 2025
+ * @version 3 Mar 2025
  */
 public class MonsterDatabase {
     private static final String DB_FILE = "jdbc:sqlite:monsters.db";
@@ -30,7 +30,7 @@ public class MonsterDatabase {
      * Establishes a connection to the SQLite database.
      */
     public MonsterDatabase() {
-        SQLiteDataSource ds = null;
+    	SQLiteDataSource ds = null;
 
         try {
             ds = new SQLiteDataSource();
@@ -54,15 +54,21 @@ public class MonsterDatabase {
      */
     public List<Monster> getAllMonsters() {
         List<Monster> monsters = new ArrayList<>();
+        
+        String query = "SELECT * FROM monsters";
 
-        try (ResultSet rs = myStmt.executeQuery("SELECT * FROM monsters")) {
+        try (Connection conn = myConn;
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            
             while (rs.next()) {
                 monsters.add(generateMonster(rs));
             }
+            
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.exit(0);  
+            System.err.println("Error retrieving monsters from database: " + e.getMessage());
         }
+        
         return monsters;
     }
 
@@ -73,8 +79,8 @@ public class MonsterDatabase {
      * @return the Monster
      */
     private Monster generateMonster(ResultSet theRs) throws SQLException {
-        MonsterType type = MonsterType.fromString(theRs.getString("name"));
-
+    	MonsterType type = MonsterType.fromString(theRs.getString("name"));
+    	
         int healthPoints = theRs.getInt("health_points");
         int damageMin = theRs.getInt("damage_min");
         int damageMax = theRs.getInt("damage_max");
@@ -83,8 +89,23 @@ public class MonsterDatabase {
         int healMin = theRs.getInt("heal_min");
         int healMax = theRs.getInt("heal_max");
         double healChance = theRs.getDouble("heal_chance");
-
         return MonsterFactory.createMonster(type, healthPoints, damageMin, damageMax, attackSpeed,
-                                            hitChance, healMin, healMax, healChance, myRandom);
+                hitChance, healMin, healMax, healChance, myRandom);
+}
+
+    /**
+     * Closes the database connection when done.
+     */
+    public void close() {
+        try {
+            if (myStmt != null) {
+                myStmt.close();
+            }
+            if (myConn != null) {
+                myConn.close();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error closing database connection: " + e.getMessage());
+        }
     }
 }
