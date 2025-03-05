@@ -9,7 +9,7 @@ import java.util.Random;
  * Represents a Gremlin monster.
  * 
  * @author Anna Brewer
- * @version 22 Feb 2025
+ * @version 3 Mar 2025
  */
 public class Gremlin extends Monster {
 
@@ -33,28 +33,18 @@ public class Gremlin extends Monster {
 	}
 
 	/**
-	 * Constructs a Gremlin.
-	 */
-	public Gremlin() {
-		this(new Random());
-	}
-
-	/**
-	 * Constructs a Gremlin. Can pass in a random instance for testing.
-	 */
-	public Gremlin(final Random theRandom) {
-		super("Gremlin", 70, 15, 30, 5, 0.8, 20, 40, 0.4, theRandom);
-	}
-
-	/**
-	 * Attacks the target character and may heal.
-	 * 
-	 * @param otherCharacter the character being attacked
+	 * Attacks a character. If the attack results in lost HP, the Gremlin has a chance to heal.
+	 * Healing is checked after HP is reduced.
+	 *
+	 * @param otherCharacter The character being attacked.
 	 */
 	@Override
 	public void castAttackOn(final DungeonCharacter otherCharacter) {
-		System.out.println(getName() + " attacks " + otherCharacter.getName() + "!");
-		attack(otherCharacter);
-		heal();
+	    int originalHealth = otherCharacter.getCurHealthPoints();
+	    attack(otherCharacter);
+
+	    if (otherCharacter.getCurHealthPoints() < originalHealth && getCurHealthPoints() > 0) {
+	        heal();
+	    }
 	}
 }
