@@ -10,7 +10,7 @@ package model;
  * @version 11 Mar 2025
  */
 public enum MonsterType {
-	GREMLIN, OGRE, SKELETON;
+	GREMLIN, OGRE, SKELETON, DRAGON;
 
 	/**
 	 * Returns the MonsterType that matches the given name.
@@ -28,6 +28,7 @@ public enum MonsterType {
 			case "GREMLIN" -> GREMLIN;
 			case "OGRE" -> OGRE;
 			case "SKELETON" -> SKELETON;
+			case "DRAGON" -> DRAGON;
 			default -> throw new IllegalArgumentException("Invalid Monster name.");
 		};
 	}
