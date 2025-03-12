@@ -13,7 +13,7 @@ import java.util.Random;
  * @author Anna Brewer, Justin Le
  * @version 3 Mar 2025
  */
-public abstract class Monster extends DungeonCharacter implements Healable {
+public class Monster extends DungeonCharacter implements Healable {
 
 	/** The minimum heal amount for the monster. */
 	private int myHealingMin;
@@ -71,7 +71,7 @@ public abstract class Monster extends DungeonCharacter implements Healable {
 	/**
 	 * Returns the chance that the monster will heal.
 	 * 
-	 * @return the heal chance (percentage as a decimal)
+	 * @return the healing chance (percentage as a decimal)
 	 */
 	@Override
 	public double getHealingChance() {
@@ -146,17 +146,16 @@ public abstract class Monster extends DungeonCharacter implements Healable {
 	}
 
 	/**
-	 * Attacks the target character.
+	 * Attacks the target character. If the attack lands, the Monster has a chance to heal.
 	 * 
 	 * @param theOtherCharacter the character being attacked
 	 */
-	public void castAttackOn(DungeonCharacter theOtherCharacter) {
-		if (theOtherCharacter.getCurHealthPoints() > 0) {
-			attack(theOtherCharacter);
-
-			if (getCurHealthPoints() > 0) {
-				heal();
-			}
+	public void castAttackOn(final DungeonCharacter otherCharacter) {
+		int originalHealth = otherCharacter.getCurHealthPoints();
+		attack(otherCharacter);
+		
+		if (otherCharacter.getCurHealthPoints() < originalHealth && getCurHealthPoints() > 0) {
+			heal();
 		}
 	}
 
