@@ -35,6 +35,7 @@ public class DungeonCharacterFactory {
 			case WARRIOR -> new Warrior();
 			case PRIESTESS -> new Priestess();
 			case THIEF -> new Thief();
+			default -> throw new IllegalArgumentException("Invalid Hero type.");
 		};
 	}
 	
