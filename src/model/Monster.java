@@ -11,7 +11,7 @@ import java.util.Random;
  * Represents a monster in the dungeon.
  * 
  * @author Anna Brewer, Justin Le
- * @version 3 Mar 2025
+ * @version 11 Mar 2025
  */
 public class Monster extends DungeonCharacter implements Healable {
 
@@ -30,16 +30,16 @@ public class Monster extends DungeonCharacter implements Healable {
 	/**
 	 * Constructs a Monster. Can pass in a random instance for testing.
 	 * 
-	 * @param theName         the monster's name
-	 * @param theHealthPoints the monster's health points
-	 * @param theDamageMin    minimum damage
-	 * @param theDamageMax    maximum damage
-	 * @param theAttackSpeed  attack speed
-	 * @param theHitChance    chance to hit
-	 * @param theHealingMin      minimum heal amount
-	 * @param theHealingMax      maximum heal amount
-	 * @param theHealingChance   chance to heal
-	 * @param theRandom       random instance
+	 * @param theName          the monster's name
+	 * @param theHealthPoints  the monster's health points
+	 * @param theDamageMin     minimum damage
+	 * @param theDamageMax     maximum damage
+	 * @param theAttackSpeed   attack speed
+	 * @param theHitChance     chance to hit
+	 * @param theHealingMin    minimum heal amount
+	 * @param theHealingMax    maximum heal amount
+	 * @param theHealingChance chance to heal
+	 * @param theRandom        random instance
 	 */
 	public Monster(final String theName, final int theHealthPoints, final int theDamageMin, final int theDamageMax,
 			final int theAttackSpeed, final double theHitChance, final int theHealingMin, final int theHealingMax,
@@ -83,7 +83,7 @@ public class Monster extends DungeonCharacter implements Healable {
 		if (newHealingChance <= 0.0) {
 			throw new IllegalArgumentException("Heal chance cannot be zero or negative.");
 		}
-		
+
 		myHealingChance = Math.min(newHealingChance, CHANCE_MAX_LIMIT);
 	}
 
@@ -110,15 +110,14 @@ public class Monster extends DungeonCharacter implements Healable {
 	@Override
 	public void setHealingRange(final int newHealingMin, final int newHealingMax) {
 		int healingMaxLimit = 999;
-		
+
 		if (newHealingMin <= 0) {
 			throw new IllegalArgumentException("Minimum healing cannot be zero or negative.");
 		}
 		if (newHealingMax <= newHealingMin) {
-			throw new IllegalArgumentException("Maximum healing cannot be less than minimum "
-					+ "healing.");
+			throw new IllegalArgumentException("Maximum healing cannot be less than minimum " + "healing.");
 		}
-		
+
 		myHealingMin = Math.min(newHealingMin, healingMaxLimit);
 		myHealingMax = Math.min(newHealingMax, healingMaxLimit);
 	}
@@ -146,14 +145,15 @@ public class Monster extends DungeonCharacter implements Healable {
 	}
 
 	/**
-	 * Attacks the target character. If the attack lands, the Monster has a chance to heal.
+	 * Attacks the target character. If the attack lands, the Monster has a chance
+	 * to heal.
 	 * 
 	 * @param theOtherCharacter the character being attacked
 	 */
 	public void castAttackOn(final DungeonCharacter otherCharacter) {
 		int originalHealth = otherCharacter.getCurHealthPoints();
 		attack(otherCharacter);
-		
+
 		if (otherCharacter.getCurHealthPoints() < originalHealth && getCurHealthPoints() > 0) {
 			heal();
 		}
@@ -170,5 +170,14 @@ public class Monster extends DungeonCharacter implements Healable {
 		return String.format("%s [Health: %d, Damage: %d-%d, Speed: %d, Hit Chance: %.2f, Heal Chance: %.2f]",
 				getName(), getCurHealthPoints(), getDamageMin(), getDamageMax(), getAttackSpeed(), getHitChance(),
 				getHealingChance());
+	}
+
+	/**
+	 * Receive damage and update current health.
+	 * 
+	 * @param theDamageAmount amount of damage received
+	 */
+	public void takeDamage(final int theDamageAmount) {
+		receiveDamage(theDamageAmount);
 	}
 }
