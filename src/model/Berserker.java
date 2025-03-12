@@ -1,45 +1,45 @@
 /**
- * TCSS 360 Group Project
+ * 
  */
 package model;
 
 import java.util.Random;
 
 /**
- * The Priestess is a Hero that has low health, low damage, medium attack speed, medium hit chance,
- * and medium block chance. Their special attack heals themselves.
+ * The Berserker is a Hero that has high health, very hjgh damage, medium attack speed, high hit
+ * chance,and zero block chance. Their special attack does a weaker attack and additionally heals
+ * themselves slightly if it lands.
  * 
  * @author Justin Le
- * @version 3 Mar 2025
+ * @version 11 Mar 2025
  */
-public class Priestess extends Hero implements Healable {
+public class Berserker extends Hero implements Healable {
 	
-	/** The minimum healing of the Priestess. */
+	/** The minimum healing of the Berserker. */
 	private int myHealingMin;
 	
-	/** The maximum healing of the Priestess. */
+	/** The maximum healing of the Berserker. */
 	private int myHealingMax;
 	
-	/** The healing chance of the Priestess. */
+	/** The healing chance of the Berserker. */
 	private double myHealingChance;
 	
 	/**
-	 * Constructs a Priestess.
+	 * Constructs a Berserker.
 	 */
-	public Priestess() {
+	public Berserker() {
 		this(new Random());
 	}
 	
 	/**
-	 * Constructs a Priestess. Can pass in a random instance for testing.
+	 * Constructs a Berserker. Can pass in a random instance for testing.
 	 */
-	public Priestess(final Random theRandomInstance) {
-		super("Priestess", 75, 25, 45, 5, 0.7, 0.3, theRandomInstance);
+	public Berserker(final Random theRandomInstance) {
+		super("Berserker", 125, 50, 70, 5, 0.8, 0.0, theRandomInstance);
 		
-		setHealingRange(50, 75);
+		setHealingRange(25, 40);
 		setHealingChance(1.0);
 	}
-
 	@Override
 	public int getHealingMin() {
 		return myHealingMin;
@@ -75,7 +75,7 @@ public class Priestess extends Hero implements Healable {
 	public double getHealingChance() {
 		return myHealingChance;
 	}
-	
+
 	@Override
 	public void setHealingChance(final double newHealingChance) {
 		if (newHealingChance <= 0.0) {
@@ -84,18 +84,27 @@ public class Priestess extends Hero implements Healable {
 		
 		myHealingChance = Math.min(newHealingChance, CHANCE_MAX_LIMIT);
 	}
-	
+
 	@Override
 	public void heal() {
 		heal(myRandom);
 	}
-	
+
 	/**
-	 * {@inheritDoc} This special attack heals the caster.
+	 * {@inheritDoc} This special attack does a weaker attack and, if it lands, additionally
+	 * slightly heals the caster.
 	 */
 	@Override
 	public void specialAttack(final DungeonCharacter otherCharacter) {
-		heal();
+		double hitChance = getHitChance();
+		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
+		
+		if (hitChance >= hitRequirement) {
+			int randomSpecialAttackDamage = Math.max(getRandomDamage() - 20, 0);
+			
+			otherCharacter.receiveDamage(randomSpecialAttackDamage);
+			heal();
+		}
 	}
-	
+
 }

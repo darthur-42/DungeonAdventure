@@ -37,9 +37,9 @@ public class Warrior extends Hero {
 		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
 		
 		if (hitChance >= hitRequirement) {
-			int randomSpecialSkillDamage = myRandom.nextInt(75, 176);
+			int randomSpecialAttackDamage = myRandom.nextInt(75, 176);
 			
-			otherCharacter.receiveDamage(randomSpecialSkillDamage);
+			otherCharacter.receiveDamage(randomSpecialAttackDamage);
 		}
 	}
 	
