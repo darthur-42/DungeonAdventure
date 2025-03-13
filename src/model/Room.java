@@ -9,7 +9,7 @@ package model;
  * @author Arthur Fornia
  * @version 18 Feb 2025
  */
-class Room {
+public class Room {
 	
 	/** If the Room has the Entrance. */
 	private boolean myHasEntrance;
@@ -165,8 +165,8 @@ class Room {
 	 * Sets if the Room has a Pillar. 
 	 */
 	public void setHasPillarOO() {
-		if (!this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO) {
-			this.myHasPit = true;
+		if (!this.myHasEntrance && !this.myHasExit) {
+			this.myHasPillarOO = true;
 		}
 	}
 	
@@ -274,31 +274,42 @@ class Room {
 			output += "*";
 		} //end north 
 		
-		char center = '?'; //center
+		char center = ' '; //center
 		int accumulator = 0;
 		if (this.myHasEntrance) {
 			center = 'i';
 			accumulator++;
-		} else if (this.myHasExit) {
+		} 
+		
+		if (this.myHasExit) {
 			center = 'O';
 			accumulator++;
-		} else if (this.myHasHealingPotion) {
+		} 
+		
+		if (this.myHasHealingPotion) {
 			center = 'H';
 			accumulator++;
-		} else if (this.myHasVisionPotion) {
+		} 
+		
+		if (this.myHasVisionPotion) {
 			center = 'v';
 			accumulator++;
-		} else if (this.myHasPit) {
+		} 
+		
+		if (this.myHasPit) {
 			center = 'X';
 			accumulator++;
-		} else if (this.myHasPillarOO) {
+		} 
+		
+		if (this.myHasPillarOO) {
 			center = this.myPillar.toString().charAt(0);
 			accumulator++;
-		} else if (accumulator > 1) {
+		} 
+		
+		if (accumulator > 1) {
 			center = 'M';
-		} else {
-			center = ' ';
-		}
+		} 
+		
 		output += center; //end center
 		
 		if (this.myHasDoors[Direction.SOUTH.ordinal()]) { //south door

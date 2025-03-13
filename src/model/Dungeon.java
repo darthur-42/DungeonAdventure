@@ -23,24 +23,27 @@ public class Dungeon {
 	
 	/** 
 	 * An integer used in creation of the Dungeon. It sets the chance potions and pits spawn. 
-	 * Odds are calculated by the chance that a random integer is 1 from 1 to LOOT_CHANCE. 
+	 * Odds are calculated by the chance that a random integer is 0 from 0 to LOOT_CHANCE. 
 	 */
-	private final int LOOT_CHANCE = 10; // 1 - 10 is a 10% chance
+	private final int LOOT_CHANCE = 10; 
 	
 	/** Random object used to generate random numbers. */
-	private Random myRandom = new Random();
+	private Random myRandom;
 	
 	/** An array of Rooms which are reachable Rooms, used for Random generation. */
-	private Room[] myActiveRooms;
+	public Room[] myActiveRooms;
 	
 	/** A 2D array of Rooms which is the Map for the Dungeon. */
-	Room[][] myMap;
+	public Room[][] myMap;
 	
 	/**
 	 * Constructs a Dungeon which is essentially a 2D array of Rooms.
 	 * Sets all of the Rooms coordinate tracking fields (roomX and roomY).
+	 * 
+	 * @param theRandomInstance the random instance
 	 */
-	Dungeon() {
+	public Dungeon(Random theRandomInstance) {
+		this.myRandom = theRandomInstance;
 		myMap = new Room[MAP_SIZE][MAP_SIZE];
 		for (int y = 0; y < MAP_SIZE; y++) {
 			for (int x = 0; x < MAP_SIZE; x++) {
@@ -52,6 +55,20 @@ public class Dungeon {
 		placeEntrance();
 		placeExit();
 		placePillars();
+		placeOthers();
+	}
+	
+	/**
+	 * Constructs a Dungeon with a preset map. Only used in testing.
+	 * 
+	 * @param theRandomInstance the random instance
+	 * @param theMap the map being used to make the dungeon. 
+	 * @param theActiveRooms the array generated from generateMaze().
+	 */
+	public Dungeon(Random theRandomInstance, Room[][] theMap, Room[] theActiveRooms) {
+		this.myRandom = theRandomInstance;
+		this.myMap = theMap;
+		this.myActiveRooms = theActiveRooms;
 		placeOthers();
 	}
 	
@@ -139,17 +156,27 @@ public class Dungeon {
 	 * There is a 10% chance that each of the 3 objects are placed. 
 	 */
 	private void placeOthers() {
+		int lootRoll = 0;
 		for (Room currentRoom : myActiveRooms) {
 			if (!currentRoom.getHasEntrance() && !currentRoom.getHasExit() && !currentRoom.getHasPillarOO()) { 
-				if (myRandom.nextInt(1, LOOT_CHANCE) == 1) {
+				lootRoll = myRandom.nextInt(LOOT_CHANCE);
+				System.out.print(lootRoll);
+				if (lootRoll == 0) {
 					currentRoom.setHasHealingPotion();
 				}
-				if (myRandom.nextInt(1, LOOT_CHANCE) == 1) {
+				
+				lootRoll = myRandom.nextInt(LOOT_CHANCE);
+				System.out.print(lootRoll);
+				if (lootRoll == 0) {
 					currentRoom.setHasVisionPotion();
 				}
-				if (myRandom.nextInt(1, LOOT_CHANCE) == 1) {
+				
+				lootRoll = myRandom.nextInt(LOOT_CHANCE);
+				System.out.print(lootRoll);
+				if (lootRoll == 0) {
 					currentRoom.setHasPit();
 				}
+				System.out.println();
 			}
 		}
 	}
@@ -182,7 +209,7 @@ public class Dungeon {
 		String output = "Map:\n" +
 		"Walls = *, Doors = <^V> depending on orientation (in the order west north south east),\n" +
 		"Multiple Items = M, Pit = X, Entrance = i (in), Exit = O (Out),\n" +
-		"Healing Potion = H, Vision Potion = v, Empty Room = \" \" (space), Pillars = A, E, I, or P";
+		"Healing Potion = H, Vision Potion = v, Empty Room = \" \" (space), Pillars = A, E, I, or P\n";
 		
 		for (int y = 0; y < MAP_SIZE; y++) {
 			for (int x = 0; x < MAP_SIZE; x++) {
