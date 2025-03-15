@@ -27,6 +27,12 @@ public class Dungeon {
 	 */
 	private final int LOOT_CHANCE = 10; 
 	
+	/** 
+	 * An integer used in creation of the Dungeon. It sets the chance Monsters spawn. 
+	 * Odds are calculated by the chance that a random integer is 0 from 0 to MONSTER_CHANCE. 
+	 */
+	private final int MONSTER_CHANCE = 10; 
+	
 	/** Random object used to generate random numbers. */
 	private Random myRandom;
 	
@@ -156,27 +162,24 @@ public class Dungeon {
 	 * There is a 10% chance that each of the 3 objects are placed. 
 	 */
 	private void placeOthers() {
-		int lootRoll = 0;
 		for (Room currentRoom : myActiveRooms) {
 			if (!currentRoom.getHasEntrance() && !currentRoom.getHasExit() && !currentRoom.getHasPillarOO()) { 
-				lootRoll = myRandom.nextInt(LOOT_CHANCE);
-				System.out.print(lootRoll);
-				if (lootRoll == 0) {
+				if (myRandom.nextInt(LOOT_CHANCE) == 0) {
 					currentRoom.setHasHealingPotion();
 				}
 				
-				lootRoll = myRandom.nextInt(LOOT_CHANCE);
-				System.out.print(lootRoll);
-				if (lootRoll == 0) {
+				if (myRandom.nextInt(LOOT_CHANCE) == 0) {
 					currentRoom.setHasVisionPotion();
 				}
 				
-				lootRoll = myRandom.nextInt(LOOT_CHANCE);
-				System.out.print(lootRoll);
-				if (lootRoll == 0) {
+				if (myRandom.nextInt(LOOT_CHANCE) == 0) {
 					currentRoom.setHasPit();
 				}
-				System.out.println();
+				
+				if (myRandom.nextInt(MONSTER_CHANCE) == 0) {
+					currentRoom.setHasMonster(true);
+					currentRoom.setMonster(new Monster()); //TODO
+				}
 			}
 		}
 	}
@@ -208,7 +211,7 @@ public class Dungeon {
 	public String toString() {
 		String output = "Map:\n" +
 		"Walls = *, Doors = <^V> depending on orientation (in the order west north south east),\n" +
-		"Multiple Items = M, Pit = X, Entrance = i (in), Exit = O (Out),\n" +
+		"Multiple Items = m, Pit = X, Entrance = i (in), Exit = O (Out), Monster = M\n" +
 		"Healing Potion = H, Vision Potion = v, Empty Room = \" \" (space), Pillars = A, E, I, or P\n";
 		
 		for (int y = 0; y < MAP_SIZE; y++) {

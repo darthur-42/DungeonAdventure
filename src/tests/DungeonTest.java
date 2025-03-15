@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Random;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -107,12 +106,24 @@ class DungeonTest {
 	 * If the dungeon creates Pits.
 	 */
 	@Test
+	void testPlaceMonster() {
+		when(myMockRandom.nextInt(10)).thenReturn(1, 1, 0, 1);
+		MockDungeon testDungeon = new MockDungeon(myMockRandom, myTestDungeon.myMap, 
+				myTestDungeon.myActiveRooms);
+		assertTrue(testDungeon.toString().substring(MAP_KEY_LENGTH).contains("M"));
+	}
+	
+	/**
+	 * Test method for {@link model.Dungeon#placeOthers()}.
+	 * If the dungeon creates Pits.
+	 */
+	@Test
 	void testPlaceMultiple() {
-		when(myMockRandom.nextInt(10)).thenReturn(0, 0, 0, 1);
+		when(myMockRandom.nextInt(10)).thenReturn(0, 0, 0, 0, 1);
 		MockDungeon testDungeon = new MockDungeon(myMockRandom, myTestDungeon.myMap, 
 				myTestDungeon.myActiveRooms);
 		System.out.println(testDungeon.toString().substring(MAP_KEY_LENGTH));
-		assertTrue(testDungeon.toString().substring(MAP_KEY_LENGTH).contains("M"));
+		assertTrue(testDungeon.toString().substring(MAP_KEY_LENGTH).contains("m"));
 	}
 	
 	/**

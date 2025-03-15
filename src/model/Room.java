@@ -29,7 +29,7 @@ public class Room {
 	/** If the Room has a Pillar of OOP in it. */
 	private boolean myHasPillarOO;
 	
-	/** If the Room has a Monster in it. */ //TODO
+	/** If the Room has a Monster in it. */
 	private boolean myHasMonster;
 	
 	/** If the Room has a Door in that Direction. */
@@ -43,6 +43,9 @@ public class Room {
 	
 	/** An integer marking the Rooms vertical position in the Map. */
 	private int myRoomY;
+	
+	/** The Monster that is in the Room. */
+	private Monster myMonster;
 	
 	/**
 	 * Constructs a Room which is an element of the 2D array of Dungeon. 
@@ -60,6 +63,7 @@ public class Room {
 		this.myPillar = null;
 		this.myRoomX = theX;
 		this.myRoomY = theY;
+		this.myMonster = null;
 	}
 	
 	/**
@@ -225,27 +229,43 @@ public class Room {
 	}
 	
 	/**
-	 * Creates and returns a String that represents the Room to help with testing. 
+	 * Returns if the Room has a Monster.  
 	 * 
-	 * @return a String that displays all of the data stored in the Room. 
+	 * @return if the Room has a Monster. 
 	 */
-	String testString() {
-		return "Room at (" + this.myRoomX + ", " + this.myRoomY + "): [Entrance: " +
-				this.myHasEntrance + "Exit: " + this.myHasExit + "Healing Potion: " + 
-				this.myHasHealingPotion + "Vision Potion: " + this.myHasVisionPotion + "Pit: " +
-				this.myHasPit + "OOPillar: " + this.myHasPillarOO + "Pillar Name: " + 
-				this.myPillar.toString() + "Doors: {" + "North: " + 
-				this.myHasDoors[Direction.NORTH.ordinal()] + "East: " +
-				this.myHasDoors[Direction.EAST.ordinal()] + "South: " + 
-				this.myHasDoors[Direction.SOUTH.ordinal()] + "West: " +
-				this.myHasDoors[Direction.WEST.ordinal()] + "}]";
+	public boolean getHasMonster() {
+		return this.myHasMonster;
+	}
+	
+	/** Sets if the Room has a Monster. */
+	public void setHasMonster(boolean theHasMonster) {
+		this.myHasMonster = theHasMonster;
+	}
+	
+	/**
+	 * Returns the Room's Monster.  
+	 * 
+	 * @return the Room's Monster. 
+	 */
+	public Monster getMonster() {
+		return this.myMonster;
+	}
+	
+	/**
+	 * Sets the Monster of this Room. 
+	 * 
+	 * @param theMonster the Monster being placed.
+	 */
+	public void setMonster(Monster theMonster) {
+		this.myMonster = theMonster;
 	}
 	
 	/**
 	 * Creates and returns a String that represents the Room to help visualize it. 
 	 * Walls and corners = *
 	 * Doors = <^V> depending on orientation (in the order west north south east)
-	 * Multiple Items = M
+	 * Multiple Items = m
+	 * Monster = M
 	 * Pit = X
 	 * Entrance = i (in)
 	 * Exit = O (Out)
@@ -306,8 +326,13 @@ public class Room {
 			accumulator++;
 		} 
 		
-		if (accumulator > 1) {
+		if (this.myHasMonster) {
 			center = 'M';
+			accumulator++;
+		} 
+		
+		if (accumulator > 1) {
+			center = 'm';
 		} 
 		
 		output += center; //end center
@@ -323,6 +348,85 @@ public class Room {
 		} else {
 			output += "*";
 		} //end east 
+		
+		return output;
+	}
+	
+	/**
+	 * Returns the Room in a more detailed view.  
+	 * 
+	 * @return String representing the Room in a more detailed view. 
+	 */
+	public String stringUI() {
+		String toString = this.toString();
+		String output = "*"; //(0, 3)
+		if (toString.contains("^")) { //(1, 3) (2, 3)
+			output += "^^";
+		} else {
+			output += "**";
+		}
+		
+		output += "*\n"; //(3, 3)
+		
+		if (toString.contains("<")) { //(0, 2)
+			output += "<";
+		} else {
+			output += "*";
+		}
+		
+		if (toString.contains("X")) { //(1, 2)
+			output += "X";
+		} else {
+			output += "*";
+		}
+		
+		if (toString.contains("M")) { //(2, 2)
+			output += "M";
+		} else {
+			output += "*";
+		}
+		
+		if (toString.contains(">")) { //(3, 2)
+			output += ">";
+		} else {
+			output += "*";
+		}
+		
+		output += "\n";
+		
+		if (toString.contains("<")) { //(0, 1)
+			output += "<";
+		} else {
+			output += "*";
+		}
+		
+		if (toString.contains("H")) { //(1, 1)
+			output += "H";
+		} else {
+			output += "*";
+		}
+		
+		if (toString.contains("v")) { //(2, 1)
+			output += "v";
+		} else {
+			output += "*";
+		}
+		
+		if (toString.contains(">")) { //(3, 1)
+			output += ">";
+		} else {
+			output += "*";
+		}
+		
+		output += "\n*"; //(0, 0)
+		
+		if (toString.contains("V")) { //(1, 0) (2, 0)
+			output += "VV";
+		} else {
+			output += "**";
+		}
+		
+		output += "*"; //(3, 0)
 		
 		return output;
 	}
