@@ -42,6 +42,13 @@ public class Dungeon {
 	/** A 2D array of Rooms which is the Map for the Dungeon. */
 	public Room[][] myMap;
 	
+	/** 
+	 * The factory responsible for creating DungeonCharacter instances, 
+	 * including Heroes and Monsters. This is used to generate random 
+	 * monsters from the database when populating the dungeon. 
+	 */
+	private DungeonCharacterFactory myFactory;
+	
 	/**
 	 * Constructs a Dungeon which is essentially a 2D array of Rooms.
 	 * Sets all of the Rooms coordinate tracking fields (roomX and roomY).
@@ -50,6 +57,7 @@ public class Dungeon {
 	 */
 	public Dungeon(Random theRandomInstance) {
 		this.myRandom = theRandomInstance;
+		this.myFactory = new DungeonCharacterFactory();
 		myMap = new Room[MAP_SIZE][MAP_SIZE];
 		for (int y = 0; y < MAP_SIZE; y++) {
 			for (int x = 0; x < MAP_SIZE; x++) {
@@ -178,7 +186,9 @@ public class Dungeon {
 				
 				if (myRandom.nextInt(MONSTER_CHANCE) == 0) {
 					currentRoom.setHasMonster(true);
-					currentRoom.setMonster(new Monster()); //TODO
+					MonsterType randomMonsterType = MonsterType.values()[myRandom.nextInt(MonsterType.values().length)];
+					Monster newMonster = (Monster) myFactory.createDungeonCharacter(randomMonsterType);
+					currentRoom.setMonster(newMonster);
 				}
 			}
 		}

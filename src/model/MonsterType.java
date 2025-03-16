@@ -10,7 +10,7 @@ package model;
  * @version 11 Mar 2025
  */
 public enum MonsterType {
-	GREMLIN, OGRE, SKELETON, DRAGON;
+	OGRE, GREMLIN, SKELETON, DRAGON;
 
 	/**
 	 * Returns the MonsterType that matches the given name.
@@ -25,8 +25,8 @@ public enum MonsterType {
 		}
 		
 		return switch (theName.trim().toUpperCase()) {
-			case "GREMLIN" -> GREMLIN;
 			case "OGRE" -> OGRE;
+			case "GREMLIN" -> GREMLIN;
 			case "SKELETON" -> SKELETON;
 			case "DRAGON" -> DRAGON;
 			default -> throw new IllegalArgumentException("Invalid Monster name.");
