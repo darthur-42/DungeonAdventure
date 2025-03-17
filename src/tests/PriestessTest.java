@@ -45,7 +45,7 @@ class PriestessTest {
 		
 		myTestPriestess.specialAttack(myTestPriestess);
 		
-		assertEquals(myTestPriestess.getCurHealthPoints(), 65);
+		assertEquals(65, myTestPriestess.getCurHealthPoints());
 	}
 	
 	/**
@@ -56,7 +56,7 @@ class PriestessTest {
 	void testSpecialAttackFullHealth() {
 		myTestPriestess.specialAttack(myTestPriestess);
 		
-		assertEquals(myTestPriestess.getCurHealthPoints(), 75);
+		assertEquals(75, myTestPriestess.getCurHealthPoints());
 	}
 	
 }

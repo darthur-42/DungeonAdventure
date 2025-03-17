@@ -40,6 +40,7 @@ public class Berserker extends Hero implements Healable {
 		setHealingRange(25, 40);
 		setHealingChance(1.0);
 	}
+	
 	@Override
 	public int getHealingMin() {
 		return myHealingMin;
@@ -106,5 +107,5 @@ public class Berserker extends Hero implements Healable {
 			heal();
 		}
 	}
-
+	
 }

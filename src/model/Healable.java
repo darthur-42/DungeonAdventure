@@ -78,9 +78,10 @@ interface Healable {
 	 */
 	default void heal(final Random theRandomInstance) {
 		if (this instanceof DungeonCharacter theCharacter) {
+			double healChance = getHealingChance();
 			double healRequirement = theRandomInstance.nextDouble(0.0, 1.0);
 			
-			if (getHealingChance() >= healRequirement) {
+			if (healChance >= healRequirement) {
 				theCharacter.receiveHealing(getRandomHealing());
 			}
 		} else {

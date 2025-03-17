@@ -28,8 +28,8 @@ class WarriorTest {
 	private MockDungeonCharacter myTestEnemy;
 	
 	/**
-     * Initialize the test Warrior and mock random before each test.
-     */
+	 * * Initialize the test Warrior and mock random before each test.
+	 * */
 	@BeforeEach
 	void setUp() {
 		myMockRandom = mock(Random.class);
@@ -49,7 +49,7 @@ class WarriorTest {
 		
 		myTestWarrior.specialAttack(myTestEnemy);
 		
-		assertEquals(myTestEnemy.getCurHealthPoints(), 25);
+		assertEquals(25, myTestEnemy.getCurHealthPoints());
 	}
 	
 	/**
@@ -65,7 +65,7 @@ class WarriorTest {
 		
 		myTestWarrior.specialAttack(myTestEnemy);
 		
-		assertEquals(myTestEnemy.getCurHealthPoints(), 0);
+		assertEquals(0, myTestEnemy.getCurHealthPoints());
 	}
 	
 	/**
@@ -79,7 +79,7 @@ class WarriorTest {
 		
 		myTestWarrior.specialAttack(myTestEnemy);
 		
-		assertEquals(myTestEnemy.getCurHealthPoints(), 100);
+		assertEquals(100, myTestEnemy.getCurHealthPoints());
 	}
 	
 }
