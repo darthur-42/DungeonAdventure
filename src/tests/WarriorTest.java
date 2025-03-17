@@ -19,7 +19,7 @@ import tests.mockclasses.MockDungeonCharacter;
  * Test cases for Warrior.
  * 
  * @author Justin Le
- * @version 19 Feb 2025
+ * @version 16 Mar 2025
  */
 class WarriorTest {
 	

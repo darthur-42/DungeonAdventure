@@ -114,6 +114,24 @@ public abstract class DungeonCharacter {
 	}
 	
 	/**
+	 * Returns whether the DungeonCharacter is alive or not.
+	 * 
+	 * @return whether the DungeonCharacter is alive or not
+	 */
+	public boolean isAlive() {
+		return myCurHealthPoints > 0;
+	}
+	
+	/**
+	 * Returns whether the DungeonCharacter is at full health or not.
+	 * 
+	 * @return whether the DungeonCharacter is at full health or not
+	 */
+	public boolean isFullHealth() {
+		return myCurHealthPoints == myMaxHealthPoints;
+	}
+	
+	/**
 	 * Sets the DungeonCharacter's current and maximum health points; only used during construction.
 	 * 
 	 * @param newHealthPoints new health point value
@@ -135,8 +153,8 @@ public abstract class DungeonCharacter {
 	 * @param newHealthPoints new health point value
 	 */
 	public void setCurHealthPoints(final int newHealthPoints) {
-		if (newHealthPoints <= 0) {
-			throw new IllegalArgumentException("Health points cannot be zero or negative.");
+		if (newHealthPoints < 0) {
+			throw new IllegalArgumentException("Health points cannot be negative.");
 		}
 		
 		myCurHealthPoints = Math.min(newHealthPoints, myMaxHealthPoints);
@@ -286,6 +304,25 @@ public abstract class DungeonCharacter {
 		if (hitChance >= hitRequirement) {
 			otherCharacter.receiveDamage(getRandomDamage());
 		}
+	}
+	
+	/**
+	 * Returns a string representation of the DungeonCharacter.
+	 * 
+	 * @return a string containing the DungeonCharacter's name, health, damage range, speed,
+	 *         and hit chance
+	 */
+	@Override
+	public String toString() {
+		String result = "";
+		
+		result += getName() + "\n";
+		result += "HP:  " + getCurHealthPoints() + "/" + getMaxHealthPoints() + "\n";
+		result += "DMG: " + getDamageMin() + "-" + getDamageMax() + "\n";
+		result += "SPD: " + getAttackSpeed() + "\n";
+		result += "ACC: " + String.format("%.2f%%", getHitChance() * 100);
+		
+		return result;
 	}
 	
 }

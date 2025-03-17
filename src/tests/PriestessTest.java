@@ -13,17 +13,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import model.Priestess;
+import tests.mockclasses.MockDungeonCharacter;
 
 /**
  * Test cases for Priestess.
  * 
  * @author Justin Le
- * @version 4 Mar 2025
+ * @version 16 Mar 2025
  */
 class PriestessTest {
 	
 	private Random myMockRandom;
 	private Priestess myTestPriestess;
+	private MockDungeonCharacter myTestEnemy;
 	
 	/**
      * Initialize the test Priestess and mock random before each test.
@@ -32,6 +34,7 @@ class PriestessTest {
 	void setUp() {
 		myMockRandom = mock(Random.class);
 		myTestPriestess = new Priestess(myMockRandom);
+		myTestEnemy = new MockDungeonCharacter(myMockRandom);
 	}
 	
 	/**
@@ -43,9 +46,10 @@ class PriestessTest {
 		myTestPriestess.setCurHealthPoints(10);
 		when(myMockRandom.nextInt(50, 76)).thenReturn(55);
 		
-		myTestPriestess.specialAttack(myTestPriestess);
+		myTestPriestess.specialAttack(myTestEnemy);
 		
 		assertEquals(65, myTestPriestess.getCurHealthPoints());
+		assertEquals(100, myTestEnemy.getCurHealthPoints());
 	}
 	
 	/**
@@ -54,9 +58,10 @@ class PriestessTest {
 	 */
 	@Test
 	void testSpecialAttackFullHealth() {
-		myTestPriestess.specialAttack(myTestPriestess);
+		myTestPriestess.specialAttack(myTestEnemy);
 		
 		assertEquals(75, myTestPriestess.getCurHealthPoints());
+		assertEquals(100, myTestEnemy.getCurHealthPoints());
 	}
 	
 }

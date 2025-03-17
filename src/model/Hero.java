@@ -174,6 +174,13 @@ public abstract class Hero extends DungeonCharacter {
 		return myCollectedPillars;
 	}
 	
+	public boolean getHasAllPillars() {
+		return myCollectedPillars.contains(PillarOO.ABSTRACTION)
+				&& myCollectedPillars.contains(PillarOO.ENCAPSULATION)
+				&& myCollectedPillars.contains(PillarOO.INHERITANCE)
+				&& myCollectedPillars.contains(PillarOO.POLYMORPHISM);
+	}
+	
 	/**
 	 * Adds an OO pillar to the list of collected OO pillars the Hero has.
 	 * 

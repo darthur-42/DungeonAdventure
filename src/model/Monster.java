@@ -165,12 +165,12 @@ public class Monster extends DungeonCharacter implements Healable {
 	 * @return a string containing the Monster's name, health, damage range, speed,
 	 *         and hit chance
 	 */
-	@Override
-	public String toString() {
-		return String.format("%s [Health: %d, Damage: %d-%d, Speed: %d, Hit Chance: %.2f, Heal Chance: %.2f]",
-				getName(), getCurHealthPoints(), getDamageMin(), getDamageMax(), getAttackSpeed(), getHitChance(),
-				getHealingChance());
-	}
+//	@Override
+//	public String toString() {
+//		return String.format("%s [Health: %d, Damage: %d-%d, Speed: %d, Hit Chance: %.2f, Heal Chance: %.2f]",
+//				getName(), getCurHealthPoints(), getDamageMin(), getDamageMax(), getAttackSpeed(), getHitChance(),
+//				getHealingChance());
+//	}
 
 	/**
 	 * Receive damage and update current health.

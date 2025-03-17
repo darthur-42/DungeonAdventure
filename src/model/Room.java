@@ -103,6 +103,13 @@ public class Room {
 	}
 	
 	/**
+	 * Forces the Room to have the Exit; DEBUG ONLY!!!
+	 */
+	public void forceHasExit() {
+		this.myHasExit = true;
+	}
+	
+	/**
 	 * Returns if the Room has a healing potion. 
 	 * 
 	 * @return if the Room has a healing potion. 
