@@ -42,7 +42,7 @@ public abstract class DungeonCharacter {
 	private double myHitChance;
 	
 	/** The current room the DungeonCharacter is in. */
-	private Room myCurRoom;
+//	private Room myCurRoom;
 	
 	/**
 	 * Constructs a DungeonCharacter with a name, health points, a damage range, an attack speed,
@@ -77,11 +77,11 @@ public abstract class DungeonCharacter {
 	}
 	
 	/**
-	 * Sets the DungeonCharacter's name; only used during construction.
+	 * Sets the DungeonCharacter's name.
 	 * 
 	 * @param newName new name
 	 */
-	private void setName(final String newName) {
+	public void setName(final String newName) {
 		int nameMaxLength = 20;
 		
 		if (newName == null || newName.isBlank()) {
@@ -252,9 +252,9 @@ public abstract class DungeonCharacter {
 	 * 
 	 * @return the room the character is currently in
 	 */
-	public Room getCurRoom() {
-		return myCurRoom;
-	}
+//	public Room getCurRoom() {
+//		return myCurRoom;
+//	}
 	
 	/**
 	 * Receive an amount of damage and update current health.
@@ -280,9 +280,10 @@ public abstract class DungeonCharacter {
 	 * @param otherCharacter the other DungeonCharacter
 	 */
 	public void attack(final DungeonCharacter otherCharacter) {
+		double hitChance = getHitChance();
 		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
 		
-		if (getHitChance() >= hitRequirement) {
+		if (hitChance >= hitRequirement) {
 			otherCharacter.receiveDamage(getRandomDamage());
 		}
 	}

@@ -52,12 +52,21 @@ public class Dungeon {
 	/**
 	 * Constructs a Dungeon which is essentially a 2D array of Rooms.
 	 * Sets all of the Rooms coordinate tracking fields (roomX and roomY).
+	 */
+	public Dungeon(DungeonCharacterFactory theFactory) {
+		this(theFactory, new Random());
+	}
+	
+	/**
+	 * Constructs a Dungeon which is essentially a 2D array of Rooms.
+	 * Sets all of the Rooms coordinate tracking fields (roomX and roomY).
+	 * Can pass in random instance for testing.
 	 * 
 	 * @param theRandomInstance the random instance
 	 */
-	public Dungeon(Random theRandomInstance) {
+	public Dungeon(DungeonCharacterFactory theFactory, Random theRandomInstance) {
 		this.myRandom = theRandomInstance;
-		this.myFactory = new DungeonCharacterFactory();
+		this.myFactory = theFactory;
 		myMap = new Room[MAP_SIZE][MAP_SIZE];
 		for (int y = 0; y < MAP_SIZE; y++) {
 			for (int x = 0; x < MAP_SIZE; x++) {

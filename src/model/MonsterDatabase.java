@@ -41,8 +41,6 @@ public class MonsterDatabase {
             e.printStackTrace();
             System.exit(0);  
         }
-        
-        System.out.println("Opened database successfully");
     }
 
     /**
