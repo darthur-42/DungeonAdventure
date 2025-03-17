@@ -1,13 +1,13 @@
 /**
- * TCSS 360 Group Project
+i * TCSS 360 Group Project
  */
 package model;
 
 /**
  * This class represents the Rooms of the Dungeon in which the adventure occurs.
  * 
- * @author Arthur Fornia
- * @version 18 Feb 2025
+ * @author Arthur Fornia, Justin Le
+ * @version 16 Mar 2025
  */
 public class Room {
 	
@@ -377,13 +377,13 @@ public class Room {
 		if (toString.contains("X")) { //(1, 2)
 			output += "X";
 		} else {
-			output += "*";
+			output += " ";
 		}
 		
 		if (toString.contains("M")) { //(2, 2)
 			output += "M";
 		} else {
-			output += "*";
+			output += " ";
 		}
 		
 		if (toString.contains(">")) { //(3, 2)
@@ -403,13 +403,13 @@ public class Room {
 		if (toString.contains("H")) { //(1, 1)
 			output += "H";
 		} else {
-			output += "*";
+			output += " ";
 		}
 		
 		if (toString.contains("v")) { //(2, 1)
-			output += "v";
+			output += "V";
 		} else {
-			output += "*";
+			output += " ";
 		}
 		
 		if (toString.contains(">")) { //(3, 1)
@@ -421,7 +421,7 @@ public class Room {
 		output += "\n*"; //(0, 0)
 		
 		if (toString.contains("V")) { //(1, 0) (2, 0)
-			output += "VV";
+			output += "vv";
 		} else {
 			output += "**";
 		}

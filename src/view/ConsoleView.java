@@ -5,6 +5,9 @@ package view;
 
 import java.util.Scanner;
 
+import model.Direction;
+import model.Room;
+
 /**
  * 
  */
@@ -48,15 +51,46 @@ public class ConsoleView {
 		System.out.print("Enter your hero's name (20 characters max): ");
 	}
 	
+	public void showHeroCurRoom(final Room theRoom) {
+		clearConsole();
+		showMessage(theRoom.stringUI());
+		if (theRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
+			showControl("W", "Up");
+		}
+		if (theRoom.getHasDoors()[Direction.WEST.ordinal()]) {
+			showControl("A", "Left");
+		}
+		if (theRoom.getHasDoors()[Direction.SOUTH.ordinal()]) {
+			showControl("S", "Down");
+		}
+		if (theRoom.getHasDoors()[Direction.EAST.ordinal()]) {
+			showControl("D", "Right");
+		}
+		showNewLine();
+		System.out.print("Enter your choice: ");
+	}
+	
 	public String getUserInput() {
 		return scanner.nextLine();
 	}
 	
-	public void showMessage(String message) {
-		System.out.println(message);
+	public void showMessage(final String theMessage) {
+		System.out.println(theMessage);
+	}
+	
+	public void showControl(final String theButton, final String theMessage) {
+		System.out.printf("[%s] %s  ", theButton, theMessage);
+	}
+	
+	public void showNewLine() {
+		System.out.println();
 	}
 	
 	public void clearConsole() {
+		for (int i = 0; i < 50; i++) {
+			System.out.println();
+		}
+		
 		try {
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.contains("win")) {

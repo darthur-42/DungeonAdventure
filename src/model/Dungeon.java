@@ -4,14 +4,15 @@
 package model;
 
 import java.util.Random;
+import java.util.Arrays;
 import java.util.HashSet;
 
 /**
  * This class represents the Dungeon in which the adventure occurs.
  * It will be implemented as a 2D array of Rooms.
  * 
- * @author Arthur Fornia
- * @version 18 Feb 2025
+ * @author Arthur Fornia, Justin Le
+ * @version 16 Mar 2025
  */
 public class Dungeon {
 	
@@ -136,12 +137,32 @@ public class Dungeon {
 		myActiveRooms = activeRoomsHash.toArray(new Room[DUNGEON_SIZE]); 
 	}
 	
+	public Room getRoomAt(final int theX, final int theY) {
+		if (Arrays.asList(myActiveRooms).contains(myMap[theX][theY])) {
+			return myMap[theX][theY];
+		} else {
+			return null;
+		}
+	}
+	
 	/**
 	 * Places an entrance in one of the Rooms of the Dungeon. 
 	 */
 	private void placeEntrance() {
 		Room room = randomActiveRoom();
 		room.setHasEntrance(); 
+	}
+	
+	public Room getEntrance() {
+		Room result = null;
+		for (Room curRoom : myActiveRooms) {
+			if (curRoom.getHasEntrance()) {
+				result = curRoom;
+				break;
+			}
+		}
+		
+		return result;
 	}
 	
 	/**

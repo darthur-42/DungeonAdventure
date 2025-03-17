@@ -3,10 +3,12 @@
  */
 package controller;
 
+import model.Direction;
 import model.Dungeon;
 import model.DungeonCharacter;
 import model.DungeonCharacterFactory;
 import model.HeroType;
+import model.Room;
 import view.ConsoleView;
 
 /**
@@ -17,17 +19,17 @@ public class DungeonAdventure {
 	private DungeonCharacterFactory myCharFactory;
 	private DungeonCharacter myHero;
 	private Dungeon myDungeon;
+	private int myHeroCurX;
+	private int myHeroCurY;
+	private Room myHeroCurRoom;
 	private ConsoleView myView;
-//	private DungeonModel model; // Replace with your actual model class
 	
-//	public GameController(GameView view, DungeonModel model) {
 	public DungeonAdventure(ConsoleView theView) {
 		myCharFactory = new DungeonCharacterFactory();
 		myView = theView;
-//		model = model;
 	}
 	
-	public void launchGame() {
+	public void startDungeonAdventure() {
 		while (true) {
 			myView.showMainMenu();
 			String mainMenuChoice = myView.getUserInput();
@@ -53,11 +55,7 @@ public class DungeonAdventure {
 		enterHeroName();
 		createNewDungeon();
 		
-		while (true) {
-//			myView.showMessage(myDungeon.toString());
-			myView.showMessage("Reached end of program.");
-			myView.getUserInput();
-		}
+		playGame();
 	}
 	
 	private void selectHero() {
@@ -122,6 +120,52 @@ public class DungeonAdventure {
 	
 	private void createNewDungeon() {
 		myDungeon = new Dungeon(myCharFactory);
+		updateHeroPosition(myDungeon.getEntrance().getRoomX(), myDungeon.getEntrance().getRoomY());
+	}
+	
+	private void playGame() {
+		while (true) {
+			myView.showHeroCurRoom(myHeroCurRoom);
+			String userInput = "";
+			
+			while (userInput == "") {
+				userInput = myView.getUserInput().toUpperCase();
+				
+				switch (userInput) {
+					case "W":
+						if (myHeroCurRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
+							updateHeroPosition(myHeroCurX, myHeroCurY - 1);
+						}
+						break;
+					case "A":
+						if (myHeroCurRoom.getHasDoors()[Direction.WEST.ordinal()]) {
+							updateHeroPosition(myHeroCurX - 1, myHeroCurY);
+						}
+						break;
+					case "S":
+						if (myHeroCurRoom.getHasDoors()[Direction.SOUTH.ordinal()]) {
+							updateHeroPosition(myHeroCurX, myHeroCurY + 1);
+						}
+						break;
+					case "D":
+						if (myHeroCurRoom.getHasDoors()[Direction.EAST.ordinal()]) {
+							updateHeroPosition(myHeroCurX + 1, myHeroCurY);
+						}
+						break;
+					default:
+						myView.showMessage("Invalid choice. Please try again.");
+						userInput = "";
+ 				}
+			}
+//			myView.showMessage("Reached end of program.");
+//			myView.getUserInput();
+		}
+	}
+	
+	private void updateHeroPosition(final int theX, final int theY) {
+		myHeroCurX = theX;
+		myHeroCurY = theY;
+		myHeroCurRoom = myDungeon.getRoomAt(myHeroCurX, myHeroCurY);
 	}
 	
 }
