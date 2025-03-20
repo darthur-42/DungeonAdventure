@@ -10,7 +10,7 @@ package model;
  * @version 11 Mar 2025
  */
 public enum HeroType {
-	WARRIOR, PRIESTESS, THIEF;
+	WARRIOR, PRIESTESS, THIEF, BERSERKER;
 
 	/**
 	 * Returns the HeroType that matches the given name.
@@ -28,6 +28,7 @@ public enum HeroType {
 			case "WARRIOR" -> WARRIOR;
 			case "PRIESTESS" -> PRIESTESS;
 			case "THIEF" -> THIEF;
+			case "BERSERKER" -> BERSERKER;
 			default -> throw new IllegalArgumentException("Invalid Hero name.");
 		};
 	}
