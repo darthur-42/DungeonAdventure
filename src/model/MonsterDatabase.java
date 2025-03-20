@@ -16,91 +16,95 @@ import org.sqlite.SQLiteDataSource;
  * Stores and retrieves Monster data in a SQLite database.
  *
  * @author Anna Brewer
- * @version 11 Mar 2025
+ * @version 19 Mar 2025
  */
 public class MonsterDatabase {
-    private static final String DB_FILE = "jdbc:sqlite:monsters.db";
 
-    private Connection myConn;
-    private Statement myStmt;
+	/** Database file path for the SQLite database. */
+	private static final String DB_FILE = "jdbc:sqlite:monsters.db";
 
-    /**
-     * Establishes a connection to the SQLite database.
-     */
-    public MonsterDatabase() {
-    	SQLiteDataSource ds = null;
+	/** Connection to the database. */
+	private Connection myConn;
+	
+	/** Statement object for executing SQL queries. */
+	private Statement myStmt;
 
-        try {
-            ds = new SQLiteDataSource();
-            ds.setUrl(DB_FILE);
+	/**
+	 * Establishes a connection to the SQLite database.
+	 */
+	public MonsterDatabase() {
+		initializeDatabase();
+	}
 
-            myConn = ds.getConnection();
-            myStmt = myConn.createStatement();
+	/**
+	 * Initializes the database connection.
+	 */
+	private void initializeDatabase() {
+		SQLiteDataSource ds = null;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.exit(0);  
-        }
-    }
+		try {
+			ds = new SQLiteDataSource();
+			ds.setUrl(DB_FILE);
 
-    /**
-     * Retrieves all Monsters' raw data from the database.
-     *
-     * @return a list of Object arrays containing monster data
-     */
-    public List<Object[]> getAllMonstersData() {
-        List<Object[]> monsterDataList = new ArrayList<>();
-        
-        String query = "SELECT * FROM monsters";
+			myConn = ds.getConnection();
+			myStmt = myConn.createStatement();
 
-        try (Connection conn = myConn;
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            
-            while (rs.next()) {
-                monsterDataList.add(retrieveMonsterData(rs));
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("Error retrieving monsters from database: " + e.getMessage());
-        }
-        
-        return monsterDataList;
-    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
 
-    /**
-     * Retrieves Monster data from a ResultSet.
-     *
-     * @param theRs the ResultSet containing monster data
-     * @return an Object array with the monster's stored data
-     */
-    private Object[] retrieveMonsterData(ResultSet theRs) throws SQLException {
-        return new Object[]{
-            theRs.getString("name"),
-            theRs.getInt("health_points"),
-            theRs.getInt("damage_min"),
-            theRs.getInt("damage_max"),
-            theRs.getInt("attack_speed"),
-            theRs.getDouble("hit_chance"),
-            theRs.getInt("heal_min"),
-            theRs.getInt("heal_max"),
-            theRs.getDouble("heal_chance")
-        };
-    }
+	/**
+	 * Retrieves all stored monster data from the database.
+	 *
+	 * @return a list of Object arrays containing monster data
+	 */
+	public List<Object[]> getAllMonstersData() {
+		List<Object[]> monsterDataList = new ArrayList<>();
 
-    /**
-     * Closes the database connection when done.
-     */
-    public void close() {
-        try {
-            if (myStmt != null) {
-                myStmt.close();
-            }
-            if (myConn != null) {
-                myConn.close();
-            }
-        } catch (SQLException e) {
-            System.err.println("Error closing database connection: " + e.getMessage());
-        }
-    }
+		String query = "SELECT * FROM monsters";
+
+		try (Connection conn = myConn;
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(query)) {
+
+			while (rs.next()) {
+				monsterDataList.add(retrieveMonsterData(rs));
+			}
+
+		} catch (SQLException e) {
+			System.err.println("Error retrieving monsters from database: " + e.getMessage());
+		}
+
+		return monsterDataList;
+	}
+
+	/**
+	 * Retrieves monster data from a ResultSet.
+	 *
+	 * @param theRs the ResultSet containing monster data
+	 * @return an Object array with the monster's stored data
+	 */
+	private Object[] retrieveMonsterData(ResultSet theRs) throws SQLException {
+		return new Object[] { theRs.getString("name"), theRs.getInt("health_points"), theRs.getInt("damage_min"),
+				theRs.getInt("damage_max"), theRs.getInt("attack_speed"), theRs.getDouble("hit_chance"),
+				theRs.getInt("heal_min"), theRs.getInt("heal_max"), theRs.getDouble("heal_chance") };
+	}
+
+	/**
+	 * Closes the database connection when done.
+	 */
+	public void close() {
+		try {
+			if (myStmt != null) {
+				myStmt.close();
+			}
+			if (myConn != null) {
+				myConn.close();
+			}
+		} catch (SQLException e) {
+			System.err.println("Error closing database connection: " + e.getMessage());
+		}
+	}
 }
