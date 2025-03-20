@@ -100,10 +100,19 @@ public class DungeonAdventure {
 	 */
 	private void startNewGame() {
 		selectHero();
+		if (myHero == null) {
+			myView.showMessage("Error: Hero was not initialized correctly. Restarting game.");
+			myView.getUserInput();
+			return;
+		}
 		selectDifficulty();
 		enterHeroName();
 		createNewDungeon();
-
+	    if (myDungeon == null) {
+	        myView.showMessage("Error: Dungeon was not initialized correctly. Restarting game.");
+	        myView.getUserInput();
+	        return;
+	    }
 		playGame();
 	}
 
@@ -135,6 +144,12 @@ public class DungeonAdventure {
 				myView.getUserInput();
 				heroChoice = "";
 			}
+		}
+
+		if (myHero == null) {
+			myView.showMessage("Error: Hero creation failed. Restarting game.");
+			myView.getUserInput();
+			return;
 		}
 
 		myView.showMessage("You have chosen: " + myHero.getName() + ". [ENTER] to continue.");
@@ -200,6 +215,12 @@ public class DungeonAdventure {
 	 */
 	private void createNewDungeon() {
 		myDungeon = new Dungeon(myCharFactory);
+		if (myDungeon == null) {
+			myView.showMessage("Error: Dungeon creation failed. Restarting game.");
+			myView.getUserInput();
+			return;
+		}
+
 		updateHeroPosition(myDungeon.getEntrance().getRoomX(), myDungeon.getEntrance().getRoomY());
 	}
 
@@ -379,6 +400,12 @@ public class DungeonAdventure {
 	 * Saves the current game state to a file using serialization.
 	 */
 	private void saveGame(String filename) {
+		if (myDungeon == null || myHero == null) {
+			myView.showMessage("Error: Cannot save, missing game data. Start a new game first. [ENTER] to continue.");
+			myView.getUserInput();
+			return;
+		}
+
 		try (FileOutputStream fileOut = new FileOutputStream(filename);
 				ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
 
