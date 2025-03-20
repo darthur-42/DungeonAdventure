@@ -3,6 +3,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Random;
@@ -11,9 +12,12 @@ import java.util.Random;
  * Represents a monster in the dungeon.
  * 
  * @author Anna Brewer, Justin Le
- * @version 11 Mar 2025
+ * @version 19 Mar 2025
  */
-public class Monster extends DungeonCharacter implements Healable {
+public class Monster extends DungeonCharacter implements Healable, Serializable {
+
+	/** Unique identifier for serialization. */
+	private static final long serialVersionUID = 1L;
 
 	/** The minimum heal amount for the monster. */
 	private int myHealingMin;
@@ -78,13 +82,19 @@ public class Monster extends DungeonCharacter implements Healable {
 		return myHealingChance;
 	}
 
+	/**
+	 * Sets the chance for the monster to heal.
+	 * 
+	 * @param theHealingChance the healing chance as a decimal
+	 * @throws IllegalArgumentException if the value is zero or negative
+	 */
 	@Override
-	public void setHealingChance(final double newHealingChance) {
-		if (newHealingChance <= 0.0) {
+	public void setHealingChance(final double theHealingChance) {
+		if (theHealingChance <= 0.0) {
 			throw new IllegalArgumentException("Heal chance cannot be zero or negative.");
 		}
 
-		myHealingChance = Math.min(newHealingChance, CHANCE_MAX_LIMIT);
+		myHealingChance = Math.min(theHealingChance, CHANCE_MAX_LIMIT);
 	}
 
 	/**
@@ -107,19 +117,26 @@ public class Monster extends DungeonCharacter implements Healable {
 		return myHealingMax;
 	}
 
+	/**
+	 * Sets the healing range for the monster.
+	 * 
+	 * @param theHealingMin the minimum healing value
+	 * @param theHealingMax the maximum healing value
+	 * @throws IllegalArgumentException if values are invalid
+	 */
 	@Override
-	public void setHealingRange(final int newHealingMin, final int newHealingMax) {
+	public void setHealingRange(final int theHealingMin, final int theHealingMax) {
 		int healingMaxLimit = 999;
 
-		if (newHealingMin <= 0) {
+		if (theHealingMin <= 0) {
 			throw new IllegalArgumentException("Minimum healing cannot be zero or negative.");
 		}
-		if (newHealingMax <= newHealingMin) {
+		if (theHealingMax <= theHealingMin) {
 			throw new IllegalArgumentException("Maximum healing cannot be less than minimum " + "healing.");
 		}
 
-		myHealingMin = Math.min(newHealingMin, healingMaxLimit);
-		myHealingMax = Math.min(newHealingMax, healingMaxLimit);
+		myHealingMin = Math.min(theHealingMin, healingMaxLimit);
+		myHealingMax = Math.min(theHealingMax, healingMaxLimit);
 	}
 
 	/**
@@ -158,19 +175,6 @@ public class Monster extends DungeonCharacter implements Healable {
 			heal();
 		}
 	}
-
-	/**
-	 * Returns a string representation of the Monster.
-	 * 
-	 * @return a string containing the Monster's name, health, damage range, speed,
-	 *         and hit chance
-	 */
-//	@Override
-//	public String toString() {
-//		return String.format("%s [Health: %d, Damage: %d-%d, Speed: %d, Hit Chance: %.2f, Heal Chance: %.2f]",
-//				getName(), getCurHealthPoints(), getDamageMin(), getDamageMax(), getAttackSpeed(), getHitChance(),
-//				getHealingChance());
-//	}
 
 	/**
 	 * Receive damage and update current health.

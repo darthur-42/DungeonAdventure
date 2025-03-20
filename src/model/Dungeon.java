@@ -3,6 +3,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,7 +15,10 @@ import java.util.HashSet;
  * @author Arthur Fornia, Justin Le
  * @version 16 Mar 2025
  */
-public class Dungeon {
+public class Dungeon implements Serializable {
+	
+	/** Unique identifier for serialization. */
+    private static final long serialVersionUID = 1L;
 	
 	/** An integer used in creation of the Map. It sets the max bounds of each array. */
 	private final int MAP_SIZE = 10;

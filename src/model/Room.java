@@ -3,13 +3,18 @@ i * TCSS 360 Group Project
  */
 package model;
 
+import java.io.Serializable;
+
 /**
  * This class represents the Rooms of the Dungeon in which the adventure occurs.
  * 
  * @author Arthur Fornia, Justin Le
  * @version 16 Mar 2025
  */
-public class Room {
+public class Room implements Serializable {
+	
+	/** Unique identifier for serialization. */
+	private static final long serialVersionUID = 1L;
 	
 	/** If the Room has the Entrance. */
 	private boolean myHasEntrance;

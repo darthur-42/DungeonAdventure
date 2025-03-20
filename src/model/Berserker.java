@@ -3,6 +3,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -13,7 +14,10 @@ import java.util.Random;
  * @author Justin Le
  * @version 11 Mar 2025
  */
-public class Berserker extends Hero implements Healable {
+public class Berserker extends Hero implements Healable, Serializable {
+	
+	/** Unique identifier for serialization. */
+	private static final long serialVersionUID = 1L;
 	
 	/** The minimum healing of the Berserker. */
 	private int myHealingMin;

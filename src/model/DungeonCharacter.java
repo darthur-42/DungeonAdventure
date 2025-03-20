@@ -3,6 +3,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -12,7 +13,10 @@ import java.util.Random;
  * @author Justin Le
  * @version 4 Mar 2025
  */
-public abstract class DungeonCharacter {
+public abstract class DungeonCharacter implements Serializable {
+	
+	/** Unique identifier for serialization. */
+	private static final long serialVersionUID = 1L;
 	
 	/** The maximum limit of chance-based values. */
 	protected static final double CHANCE_MAX_LIMIT = 1.0;

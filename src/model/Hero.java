@@ -3,6 +3,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,7 +15,10 @@ import java.util.Random;
  * @author Justin Le
  * @version 4 Mar 2025
  */
-public abstract class Hero extends DungeonCharacter {
+public abstract class Hero extends DungeonCharacter implements Serializable {
+	
+	/** Unique identifier for serialization. */
+	private static final long serialVersionUID = 1L;
 	
 	/** The starting number of potions for the Hero. */
 	private static final int STARTING_NUM_POTIONS = 3;

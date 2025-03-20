@@ -3,6 +3,7 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -13,8 +14,11 @@ import java.util.Random;
  * @author Justin Le
  * @version 4 Mar 2025
  */
-public class Thief extends Hero {
+public class Thief extends Hero implements Serializable {
 	
+	/** Unique identifier for serialization. */
+    private static final long serialVersionUID = 1L;
+    
 	/**
 	 * Constructs a Thief.
 	 */
