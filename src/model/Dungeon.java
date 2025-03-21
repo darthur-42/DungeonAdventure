@@ -17,9 +17,6 @@ import java.util.HashSet;
  */
 public class Dungeon implements Serializable {
 	
-	/** Unique identifier for serialization. */
-    private static final long serialVersionUID = 1L;
-	
 	/** An integer used in creation of the Map. It sets the max bounds of each array. */
 	private final int MAP_SIZE = 10;
 	
@@ -38,14 +35,11 @@ public class Dungeon implements Serializable {
 	 */
 	private final int MONSTER_CHANCE = 10; 
 	
+	/** Unique identifier for serialization. */
+    private static final long serialVersionUID = 1L; //TODO
+	
 	/** Random object used to generate random numbers. */
 	private Random myRandom;
-	
-	/** An array of Rooms which are reachable Rooms, used for Random generation. */
-	public Room[] myActiveRooms;
-	
-	/** A 2D array of Rooms which is the Map for the Dungeon. */
-	public Room[][] myMap;
 	
 	/** 
 	 * The factory responsible for creating DungeonCharacter instances, 
@@ -54,9 +48,18 @@ public class Dungeon implements Serializable {
 	 */
 	private DungeonCharacterFactory myFactory;
 	
+	/** An array of Rooms which are reachable Rooms, used for Random generation. */
+	public Room[] myActiveRooms;
+	
+	/** A 2D array of Rooms which is the Map for the Dungeon. */
+	public Room[][] myMap;
+	
+
+	
 	/**
 	 * Constructs a Dungeon which is essentially a 2D array of Rooms.
 	 * Sets all of the Rooms coordinate tracking fields (roomX and roomY).
+	 * This is used when there is no random to input. 
 	 */
 	public Dungeon(DungeonCharacterFactory theFactory) {
 		this(theFactory, new Random());
@@ -93,11 +96,44 @@ public class Dungeon implements Serializable {
 	 * @param theMap the map being used to make the dungeon. 
 	 * @param theActiveRooms the array generated from generateMaze().
 	 */
-	public Dungeon(Random theRandomInstance, Room[][] theMap, Room[] theActiveRooms) {
+	public Dungeon(DungeonCharacterFactory theFactory, Random theRandomInstance, Room[][] theMap, Room[] theActiveRooms) {
+		this.myFactory = theFactory;
 		this.myRandom = theRandomInstance;
 		this.myMap = theMap;
 		this.myActiveRooms = theActiveRooms;
 		placeOthers();
+	}
+	
+	/**
+	 * Returns a Room from the inputed coordinates. 
+	 * 
+	 * @param theX x coordinate of the desired Room.
+	 * @param theY Y coordinate of the desired Room.
+	 * @return Room at said coordinates. 
+	 */
+	public Room getRoomAt(final int theX, final int theY) {
+		if (Arrays.asList(myActiveRooms).contains(myMap[theX][theY])) {
+			return myMap[theX][theY];
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Returns the Room with the entrance. 
+	 *
+	 * @return Room with the entrance.
+	 */
+	public Room getEntrance() {
+		Room result = null;
+		for (Room curRoom : myActiveRooms) {
+			if (curRoom.getHasEntrance()) {
+				result = curRoom;
+				break;
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -141,32 +177,12 @@ public class Dungeon implements Serializable {
 		myActiveRooms = activeRoomsHash.toArray(new Room[DUNGEON_SIZE]); 
 	}
 	
-	public Room getRoomAt(final int theX, final int theY) {
-		if (Arrays.asList(myActiveRooms).contains(myMap[theX][theY])) {
-			return myMap[theX][theY];
-		} else {
-			return null;
-		}
-	}
-	
 	/**
 	 * Places an entrance in one of the Rooms of the Dungeon. 
 	 */
 	private void placeEntrance() {
 		Room room = randomActiveRoom();
 		room.setHasEntrance(); 
-	}
-	
-	public Room getEntrance() {
-		Room result = null;
-		for (Room curRoom : myActiveRooms) {
-			if (curRoom.getHasEntrance()) {
-				result = curRoom;
-				break;
-			}
-		}
-		
-		return result;
 	}
 	
 	/**

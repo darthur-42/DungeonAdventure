@@ -249,7 +249,11 @@ public class Room implements Serializable {
 		return this.myHasMonster;
 	}
 	
-	/** Sets if the Room has a Monster. */
+	/** 
+	 * Sets if the Room has a Monster or not. 
+	 * 
+	 * @param theHasMonster boolean if the Room has a Monster
+	 */
 	public void setHasMonster(boolean theHasMonster) {
 		this.myHasMonster = theHasMonster;
 	}

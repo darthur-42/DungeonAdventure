@@ -23,7 +23,7 @@ import tests.mockclasses.MockDungeon;
 class DungeonTest {
 	private Random myMockRandom;
 	private MockDungeon myTestDungeon;
-	private static final int MAP_KEY_LENGTH = 244; 
+	private static final int MAP_KEY_LENGTH = 257; 
 	
 	/**
      * Initialize the test Dungeon and mock random before each following test.
@@ -103,7 +103,7 @@ class DungeonTest {
 	
 	/**
 	 * Test method for {@link model.Dungeon#placeOthers()}.
-	 * If the dungeon creates Pits.
+	 * If the dungeon creates Monsters.
 	 */
 	@Test
 	void testPlaceMonster() {
@@ -122,7 +122,6 @@ class DungeonTest {
 		when(myMockRandom.nextInt(10)).thenReturn(0, 0, 0, 0, 1);
 		MockDungeon testDungeon = new MockDungeon(myMockRandom, myTestDungeon.myMap, 
 				myTestDungeon.myActiveRooms);
-		System.out.println(testDungeon.toString().substring(MAP_KEY_LENGTH));
 		assertTrue(testDungeon.toString().substring(MAP_KEY_LENGTH).contains("m"));
 	}
 	

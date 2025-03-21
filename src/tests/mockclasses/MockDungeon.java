@@ -17,6 +17,8 @@ import model.Room;
  */
 public class MockDungeon extends Dungeon {
 	
+	//TODO Serialize me 
+
 	/**
 	 * Constructs a MockDungeon.
 	 * 
@@ -32,7 +34,7 @@ public class MockDungeon extends Dungeon {
 	 * @param theRandomInstance the random instance
 	 */
 	public MockDungeon(Random theRandomInstance, Room[][] theMap, Room[] theActiveRooms) {
-		super(theRandomInstance, theMap, theActiveRooms);
+		super(new DungeonCharacterFactory(), theRandomInstance, theMap, theActiveRooms);
 	}
 	
 }
