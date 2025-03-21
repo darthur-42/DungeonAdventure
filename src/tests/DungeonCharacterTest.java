@@ -113,14 +113,6 @@ class DungeonCharacterTest {
 	}
 	
 	/**
-	 * Test method for {@link model.DungeonCharacter#getCurRoom()}.
-	 */
-	@Test
-	void testGetCurRoom() {
-		fail("Not yet implemented");
-	}
-	
-	/**
 	 * Test method for {@link model.DungeonCharacter#attack(model.DungeonCharacter)}.
 	 * When the DungeonCharacter lands an attack.
 	 */
