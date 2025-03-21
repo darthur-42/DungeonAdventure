@@ -200,6 +200,7 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 * 
 	 * @param theDamageAmount amount of damage
 	 */
+	@Override
 	protected void receiveDamage(final int theDamageAmount) {
 		double blockRequirement = myRandom.nextDouble(0.0, 1.0);
 		
@@ -207,6 +208,15 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 		if (getBlockChance() < blockRequirement) {
 			super.receiveDamage(theDamageAmount);
 		}
+	}
+	
+	/**
+	 * Receive an amount of damage and update current health. Cannot be blocked.
+	 * 
+	 * @param theDamageAmount amount of damage received
+	 */
+	public final void receiveTrueDamage(final int theDamageAmount) {
+		super.receiveDamage(theDamageAmount);
 	}
 	
 	/**

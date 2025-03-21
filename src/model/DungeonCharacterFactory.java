@@ -58,12 +58,21 @@ public class DungeonCharacterFactory implements Serializable {
 	 * @return the Monster
 	 * @throws IllegalArgumentException if the MonsterType is invalid
 	 */
-	public DungeonCharacter createDungeonCharacter(final MonsterType theMonsterType) {
+	public DungeonCharacter createDungeonCharacter(final MonsterType theMonsterType,
+			final Difficulty theDifficulty) {
 		Object[] curMonsterData = myMonsterData.get(theMonsterType.ordinal());
-		return new Monster((String) curMonsterData[0], (int) curMonsterData[1],
-				(int) curMonsterData[2], (int) curMonsterData[3], (int) curMonsterData[4],
-				(double) curMonsterData[5], (int) curMonsterData[6], (int) curMonsterData[7],
-				(double) curMonsterData[8], new Random());
+		return new Monster(
+				(String) curMonsterData[0],
+				(int) curMonsterData[1] * (theDifficulty.ordinal() + 3) / 4,
+				(int) curMonsterData[2] * (theDifficulty.ordinal() + 3) / 4,
+				(int) curMonsterData[3] * (theDifficulty.ordinal() + 3) / 4,
+				(int) curMonsterData[4] * (theDifficulty.ordinal() + 3) / 4,
+				(double) curMonsterData[5] * (theDifficulty.ordinal() + 4) / 5,
+				(int) curMonsterData[6] * (theDifficulty.ordinal() + 3) / 4,
+				(int) curMonsterData[7] * (theDifficulty.ordinal() + 3) / 4,
+				(double) curMonsterData[8] * (theDifficulty.ordinal() + 4) / 5,
+				new Random()
+				);
 	}
 	
 }

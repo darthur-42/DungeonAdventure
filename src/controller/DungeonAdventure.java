@@ -6,6 +6,7 @@ package controller;
 import java.io.*;
 import java.util.Random;
 
+import model.Difficulty;
 import model.Direction;
 import model.Dungeon;
 import model.DungeonCharacter;
@@ -22,26 +23,31 @@ import view.ConsoleView;
  * Controller for the DungeonAdventure game.
  * 
  * @author Justin Le, Anna Brewer
- * @version 19 Mar 2025
+ * @version 20 Mar 2025
  */
 public class DungeonAdventure {
 
-	/** Factory for creating dungeon characters. */
+	private Random myRandom;
+
+	/** Factory for creating DungeonCharacters. */
 	private DungeonCharacterFactory myCharFactory;
 
-	/** The player's hero. */
+	/** The player's Hero. */
 	private DungeonCharacter myHero;
 
-	/** The dungeon where the game takes place. */
+	/** The loaded game's Difficulty. */
+	private Difficulty myDifficulty;
+
+	/** The game's Dungeon. */
 	private Dungeon myDungeon;
 
-	/** The hero's current x-coordinate in the dungeon. */
+	/** The Hero's current x-coordinate in the dungeon. */
 	private int myHeroCurX;
 
-	/** The hero's current Y-coordinate in the dungeon. */
+	/** The Hero's current Y-coordinate in the dungeon. */
 	private int myHeroCurY;
 
-	/** The room where the hero is currently located. */
+	/** The Room where the Hero is currently located. */
 	private Room myHeroCurRoom;
 
 	/** The console-based view for user interaction. */
@@ -53,13 +59,13 @@ public class DungeonAdventure {
 	 * @param theView the console view for user interaction
 	 */
 	public DungeonAdventure(ConsoleView theView) {
+		myRandom = new Random();
 		myCharFactory = new DungeonCharacterFactory();
 		myView = theView;
 	}
 
 	/**
-	 * Starts the Dungeon Adventure game. Displays the main menu and handles user
-	 * input.
+	 * Starts the Dungeon Adventure game. Displays the main menu and handles user input.
 	 */
 	public void startDungeonAdventure() {
 		while (true) {
@@ -90,6 +96,7 @@ public class DungeonAdventure {
 
 	private void quickStart() {
 		myHero = myCharFactory.createDungeonCharacter(HeroType.WARRIOR);
+		myDifficulty = Difficulty.MEDIUM;
 		createNewDungeon();
 
 		playGame();
@@ -117,7 +124,7 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Prompts the player to select a hero type.
+	 * Prompts the player to select a Hero.
 	 */
 	private void selectHero() {
 		String heroChoice = "";
@@ -125,21 +132,17 @@ public class DungeonAdventure {
 		while (heroChoice == "") {
 			myView.showHeroSelection();
 			heroChoice = myView.getUserInput();
-
-			switch (heroChoice) {
-			case "1":
-				myHero = myCharFactory.createDungeonCharacter(HeroType.WARRIOR);
-				break;
-			case "2":
-				myHero = myCharFactory.createDungeonCharacter(HeroType.PRIESTESS);
-				break;
-			case "3":
-				myHero = myCharFactory.createDungeonCharacter(HeroType.THIEF);
-				break;
-			case "4":
-				myHero = myCharFactory.createDungeonCharacter(HeroType.BERSERKER);
-				break;
-			default:
+			
+			try {
+				int heroChoiceInt = Integer.parseInt(heroChoice) - 1;
+				if (heroChoiceInt >= 0 && heroChoiceInt < HeroType.values().length) {
+					myHero = myCharFactory.createDungeonCharacter(HeroType.values()[Integer.parseInt(heroChoice) - 1]);
+				} else {
+					myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+					myView.getUserInput();
+					heroChoice = "";
+				}
+			} catch (NumberFormatException e) {
 				myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
 				myView.getUserInput();
 				heroChoice = "";
@@ -165,22 +168,24 @@ public class DungeonAdventure {
 		while (difficultyChoice == "") {
 			myView.showDifficultySelection();
 			difficultyChoice = myView.getUserInput();
-
-			switch (difficultyChoice) {
-			case "1":
-				break;
-			case "2":
-				break;
-			case "3":
-				break;
-			default:
+			
+			try {
+				int difficultyChoiceInt = Integer.parseInt(difficultyChoice) - 1;
+				if (difficultyChoiceInt >= 0 && difficultyChoiceInt < Difficulty.values().length) {
+					myDifficulty = Difficulty.values()[Integer.parseInt(difficultyChoice) - 1];
+				} else {
+					myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+					myView.getUserInput();
+					difficultyChoice = "";
+				}
+			} catch (NumberFormatException e) {
 				myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
 				myView.getUserInput();
 				difficultyChoice = "";
 			}
 		}
 
-		myView.showMessage("You have chosen: " + "Medium" + ". [ENTER] to continue.");
+		myView.showMessage("You have chosen: " + myDifficulty.toString() + ". [ENTER] to continue.");
 		myView.getUserInput();
 	}
 
@@ -199,8 +204,8 @@ public class DungeonAdventure {
 				myView.getUserInput();
 				nameInput = "";
 			} else if (nameInput.isBlank()) {
-				myView.showMessage("Name cannot be blank. Please try again. [ENTER] to continue.");
-				myView.getUserInput();
+				nameInput = "0";
+				continue;
 			} else {
 				myHero.setName(nameInput);
 			}
@@ -214,7 +219,7 @@ public class DungeonAdventure {
 	 * Creates a new dungeon for the game.
 	 */
 	private void createNewDungeon() {
-		myDungeon = new Dungeon(myCharFactory);
+		myDungeon = new Dungeon(myCharFactory, myDifficulty);
 		if (myDungeon == null) {
 			myView.showMessage("Error: Dungeon creation failed. Restarting game.");
 			myView.getUserInput();
@@ -228,7 +233,7 @@ public class DungeonAdventure {
 	 * Runs the main game loop.
 	 */
 	private void playGame() {
-		while (myHero.isAlive() && !myHeroCurRoom.getHasExit() && !((Hero) myHero).getHasAllPillars()) {
+		while (myHero.isAlive() && !(myHeroCurRoom.getHasExit() && ((Hero) myHero).getHasAllPillars())) {
 			if (myHeroCurRoom.getHasMonster()) {
 				myView.showHeroCurRoom(myHero, myHeroCurRoom);
 				startBattle(myHero, myHeroCurRoom.getMonster());
@@ -236,7 +241,14 @@ public class DungeonAdventure {
 				boolean validInput = false;
 
 				while (!validInput) {
+					if (myHeroCurRoom.getHasPit()) {
+						dealPitDamage();
+					}
+					
 					myView.showHeroCurRoom(myHero, myHeroCurRoom);
+					if (myHeroCurRoom.getHasPit()) {
+						myView.showMessage("Fell into a pit! Lost some health.");
+					}
 
 					System.out.print("\nEnter your choice: ");
 					String userInput = myView.getUserInput();
@@ -284,11 +296,40 @@ public class DungeonAdventure {
 							myView.getUserInput();
 						}
 						break;
+					case "P":
+						if (myHeroCurRoom.getHasPillarOO()) {
+							((Hero) myHero).collectPillar(myHeroCurRoom.getPillar());
+							myHeroCurRoom.setHasPillarOO(false);
+							validInput = true;
+						} else {
+							myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+							myView.getUserInput();
+						}
+						break;
+					case "H":
+						if (myHeroCurRoom.getHasHealingPotion()) {
+							((Hero) myHero).collectHealingPotion();
+							myHeroCurRoom.setHasHealingPotion(false);
+							validInput = true;
+						} else {
+							myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+							myView.getUserInput();
+						}
+						break;
+					case "V":
+						if (myHeroCurRoom.getHasVisionPotion()) {
+							((Hero) myHero).collectVisionPotion();
+							myHeroCurRoom.setHasVisionPotion(false);
+							validInput = true;
+						} else {
+							myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+							myView.getUserInput();
+						}
+						break;
 					case "`":
 						myHeroCurRoom.setHasMonster(true);
-						MonsterType randomMonsterType = MonsterType.values()[new Random()
-								.nextInt(MonsterType.values().length)];
-						Monster newMonster = (Monster) myCharFactory.createDungeonCharacter(randomMonsterType);
+						MonsterType randomMonsterType = MonsterType.values()[myRandom.nextInt(MonsterType.values().length)];
+						Monster newMonster = (Monster) myCharFactory.createDungeonCharacter(randomMonsterType, myDifficulty);
 						myHeroCurRoom.setMonster(newMonster);
 						validInput = true;
 						break;
@@ -450,4 +491,10 @@ public class DungeonAdventure {
 			myView.showMessage("Error loading the game: " + e.getMessage());
 		}
 	}
+	
+	private void dealPitDamage() {
+		int maxPitDamage = 10;
+		((Hero) myHero).receiveTrueDamage(myRandom.nextInt(1, maxPitDamage + 1));
+	}
+
 }

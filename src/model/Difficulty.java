@@ -4,17 +4,17 @@
 package model;
 
 /**
- * Represents the types of Heroes that can be created.
+ * Represents difficulty levels for the game.
  * 
  * @author Justin Le
- * @version 11 Mar 2025
+ * @version 19 Mar 2025
  */
-public enum HeroType {
-	WARRIOR("Warrior"), PRIESTESS("Priestess"), THIEF("Thief"), BERSERKER("Berserker");
+public enum Difficulty {
+	EASY("Easy"), MEDIUM("Medium"), HARD("Hard");
 	
 	private final String myDisplayName;
 	
-	private HeroType(String theName) {
+	private Difficulty(String theName) {
 		myDisplayName = theName;
 	}
 	

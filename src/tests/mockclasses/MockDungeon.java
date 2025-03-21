@@ -5,6 +5,7 @@ package tests.mockclasses;
 
 import java.util.Random;
 
+import model.Difficulty;
 import model.Dungeon;
 import model.DungeonCharacterFactory;
 import model.Room;
@@ -23,7 +24,7 @@ public class MockDungeon extends Dungeon {
 	 * @param theRandomInstance the random instance
 	 */
 	public MockDungeon(Random theRandomInstance) {
-		super(new DungeonCharacterFactory(), theRandomInstance);
+		super(new DungeonCharacterFactory(), Difficulty.MEDIUM, theRandomInstance);
 	}
 	
 	/**

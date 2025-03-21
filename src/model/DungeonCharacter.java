@@ -45,9 +45,6 @@ public abstract class DungeonCharacter implements Serializable {
 	/** The hit chance of the DungeonCharacter. */
 	private double myHitChance;
 	
-	/** The current room the DungeonCharacter is in. */
-//	private Room myCurRoom;
-	
 	/**
 	 * Constructs a DungeonCharacter with a name, health points, a damage range, an attack speed,
 	 * and a hit chance. Can pass in a random instance for testing.
@@ -268,15 +265,6 @@ public abstract class DungeonCharacter implements Serializable {
 		
 		myHitChance = Math.min(newHitChance, CHANCE_MAX_LIMIT);
 	}
-	
-	/**
-	 * Returns the room the character is currently in.
-	 * 
-	 * @return the room the character is currently in
-	 */
-//	public Room getCurRoom() {
-//		return myCurRoom;
-//	}
 	
 	/**
 	 * Receive an amount of damage and update current health.

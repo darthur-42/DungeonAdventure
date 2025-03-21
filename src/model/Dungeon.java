@@ -47,6 +47,9 @@ public class Dungeon implements Serializable {
 	/** A 2D array of Rooms which is the Map for the Dungeon. */
 	public Room[][] myMap;
 	
+	/** The difficulty for Monster stats. */
+	private Difficulty myDifficulty;
+	
 	/** 
 	 * The factory responsible for creating DungeonCharacter instances, 
 	 * including Heroes and Monsters. This is used to generate random 
@@ -58,8 +61,8 @@ public class Dungeon implements Serializable {
 	 * Constructs a Dungeon which is essentially a 2D array of Rooms.
 	 * Sets all of the Rooms coordinate tracking fields (roomX and roomY).
 	 */
-	public Dungeon(DungeonCharacterFactory theFactory) {
-		this(theFactory, new Random());
+	public Dungeon(final DungeonCharacterFactory theFactory, final Difficulty theDifficulty) {
+		this(theFactory, theDifficulty, new Random());
 	}
 	
 	/**
@@ -69,8 +72,9 @@ public class Dungeon implements Serializable {
 	 * 
 	 * @param theRandomInstance the random instance
 	 */
-	public Dungeon(DungeonCharacterFactory theFactory, Random theRandomInstance) {
+	public Dungeon(final DungeonCharacterFactory theFactory, final Difficulty theDifficulty, final Random theRandomInstance) {
 		this.myRandom = theRandomInstance;
+		this.myDifficulty = theDifficulty;
 		this.myFactory = theFactory;
 		myMap = new Room[MAP_SIZE][MAP_SIZE];
 		for (int y = 0; y < MAP_SIZE; y++) {
@@ -193,8 +197,8 @@ public class Dungeon implements Serializable {
 				room = randomActiveRoom();
 			}
 						
-			room.setHasPillarOO();
-			room.setPillar(pillar);
+			room.setHasPillarOO(true);
+			room.setPillarOO(pillar);
 		}
 	}
 	
@@ -207,11 +211,11 @@ public class Dungeon implements Serializable {
 		for (Room currentRoom : myActiveRooms) {
 			if (!currentRoom.getHasEntrance() && !currentRoom.getHasExit() && !currentRoom.getHasPillarOO()) { 
 				if (myRandom.nextInt(LOOT_CHANCE) == 0) {
-					currentRoom.setHasHealingPotion();
+					currentRoom.setHasHealingPotion(true);
 				}
 				
 				if (myRandom.nextInt(LOOT_CHANCE) == 0) {
-					currentRoom.setHasVisionPotion();
+					currentRoom.setHasVisionPotion(true);
 				}
 				
 				if (myRandom.nextInt(LOOT_CHANCE) == 0) {
@@ -221,7 +225,7 @@ public class Dungeon implements Serializable {
 				if (myRandom.nextInt(MONSTER_CHANCE) == 0) {
 					currentRoom.setHasMonster(true);
 					MonsterType randomMonsterType = MonsterType.values()[myRandom.nextInt(MonsterType.values().length)];
-					Monster newMonster = (Monster) myFactory.createDungeonCharacter(randomMonsterType);
+					Monster newMonster = (Monster) myFactory.createDungeonCharacter(randomMonsterType, myDifficulty);
 					currentRoom.setMonster(newMonster);
 				}
 			}

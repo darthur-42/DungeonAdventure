@@ -5,16 +5,18 @@ package view;
 
 import java.util.Scanner;
 
+import model.Difficulty;
 import model.Direction;
 import model.DungeonCharacter;
 import model.Hero;
+import model.HeroType;
 import model.Room;
 
 /**
  * Handles console-based user interactions for the game.
  *
  * @author Justin Le, Anna Brewer
- * @version 19 Mar 2025
+ * @version 20 Mar 2025
  */
 public class ConsoleView {
 
@@ -30,9 +32,10 @@ public class ConsoleView {
 	public void showMainMenu() {
 		clearConsole();
 		System.out.println("=== Dungeon Adventure ===");
-		System.out.println("1. Start New Game");
+		System.out.println("1. Start a New Game");
 		System.out.println("2. Load Game");
 		System.out.println("3. Save Game");
+		System.out.println("4. Cheats (Not Yet Implemented)");
 		System.out.println("`. Quick Start (DEBUG)");
 		System.out.println("0. Exit");
 		System.out.print("\nEnter your choice: ");
@@ -42,27 +45,26 @@ public class ConsoleView {
 	public void showHeroSelection() {
 		clearConsole();
 		System.out.println("Choose your hero:");
-		System.out.println("1. Warrior");
-		System.out.println("2. Priestess");
-		System.out.println("3. Thief");
-		System.out.println("4. Berserker");
+		for (int i = 0; i < HeroType.values().length; i++) {
+			System.out.printf("%d. %s\n", i + 1, HeroType.values()[i]);
+		}
 		System.out.print("\nEnter your choice: ");
 	}
 
 	/** Displays difficulty selection options. */
 	public void showDifficultySelection() {
 		clearConsole();
-		System.out.println("Choose your difficulty: (Not Yet Implemented)");
-		System.out.println("1. Easy");
-		System.out.println("2. Medium");
-		System.out.println("3. Hard");
+		System.out.println("Choose your difficulty:");
+		for (int i = 0; i < Difficulty.values().length; i++) {
+			System.out.printf("%d. %s\n", i + 1, Difficulty.values()[i]);
+		}
 		System.out.print("\nEnter your choice: ");
 	}
 
 	/** Prompts the user to enter a hero name. */
 	public void showHeroNameInput() {
 		clearConsole();
-		System.out.print("\nEnter your hero's name (20 characters max): ");
+		System.out.print("\nEnter your hero's name (20 characters max, leave empty for default): ");
 	}
 
 	/**
@@ -74,12 +76,11 @@ public class ConsoleView {
 	public void showHeroCurRoom(final DungeonCharacter theHero, final Room theRoom) {
 		clearConsole();
 		showMessage(theHero.toString());
-		showMessage(theRoom.getHasExit() ? "(DEBUG) Is On Exit" : "(DEBUG) Is On Not Exit");
 		showMessage(((Hero) theHero).getHasAllPillars() ? "(DEBUG) Has All Pillars" : "(DEBUG) Not Have All Pillars");
 		showNewLine();
 		showMessage(theRoom.stringUI());
 
-		if (theHero.isAlive() && !theRoom.getHasExit() && !((Hero) theHero).getHasAllPillars()) {
+		if (theHero.isAlive() && !(theRoom.getHasExit() && ((Hero) theHero).getHasAllPillars())) {
 			if (theRoom.getHasMonster()) {
 				showMessage("\nEnemy encounter! [ENTER] to continue.");
 				getUserInput();
@@ -95,6 +96,15 @@ public class ConsoleView {
 				}
 				if (theRoom.getHasDoors()[Direction.EAST.ordinal()]) {
 					showControl("D", "Right");
+				}
+				if (theRoom.getHasPillarOO()) {
+					showControl("P", "Pick Up Pillar");
+				}
+				if (theRoom.getHasHealingPotion()) {
+					showControl("H", "Pick Up Healing Potion");
+				}
+				if (theRoom.getHasVisionPotion()) {
+					showControl("V", "Pick Up Vision Potion");
 				}
 				showControl("`", "Spawn Monster (DEBUG)");
 				showControl("~", "Win Game (DEBUG)");
@@ -137,12 +147,20 @@ public class ConsoleView {
 		}
 	}
 
-	/** Reads user input and converts it to uppercase. */
+	/**
+	 * Reads user input and converts it to uppercase.
+	 * 
+	 * @return user input, all uppercase
+	 */
 	public String getUserInput() {
 		return myScanner.nextLine().toUpperCase();
 	}
 
-	/** Reads user input while keeping the original case. */
+	/**
+	 * Reads user input while keeping the original case.
+	 * 
+	 * @return user input, case sensitive
+	 */
 	public String getUserInputCaseSensitive() {
 		return myScanner.nextLine();
 	}
