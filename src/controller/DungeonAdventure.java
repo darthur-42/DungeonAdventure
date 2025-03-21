@@ -115,11 +115,12 @@ public class DungeonAdventure {
 		selectDifficulty();
 		enterHeroName();
 		createNewDungeon();
-	    if (myDungeon == null) {
-	        myView.showMessage("Error: Dungeon was not initialized correctly. Restarting game.");
-	        myView.getUserInput();
-	        return;
-	    }
+		if (myDungeon == null) {
+			myView.showMessage("Error: Dungeon was not initialized correctly. Restarting game.");
+			myView.getUserInput();
+			return;
+		}
+		
 		playGame();
 	}
 

@@ -18,6 +18,8 @@ import model.Room;
  */
 public class MockDungeon extends Dungeon {
 	
+	//TODO Serialize me 
+
 	/**
 	 * Constructs a MockDungeon.
 	 * 
