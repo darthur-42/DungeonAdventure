@@ -75,14 +75,14 @@ public class ConsoleView {
 	 */
 	public void showHeroCurRoom(final DungeonCharacter theHero, final Room theRoom) {
 		clearConsole();
-		showMessage(theHero.toString());
-		showMessage(((Hero) theHero).getHasAllPillars() ? "(DEBUG) Has All Pillars" : "(DEBUG) Not Have All Pillars");
+		showNewLineMessage(theHero.toString());
+		showNewLineMessage(((Hero) theHero).getHasAllPillars() ? "(DEBUG) Has All Pillars" : "(DEBUG) Not Have All Pillars");
 		showNewLine();
-		showMessage(theRoom.stringUI());
+		showNewLineMessage(theRoom.stringUI());
 
 		if (theHero.isAlive() && !(theRoom.getHasExit() && ((Hero) theHero).getHasAllPillars())) {
 			if (theRoom.getHasMonster()) {
-				showMessage("\nEnemy encounter! [ENTER] to continue.");
+				showNewLineMessage("\nEnemy encounter! [ENTER] to continue.");
 				getUserInput();
 			} else {
 				if (theRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
@@ -106,6 +106,7 @@ public class ConsoleView {
 				if (theRoom.getHasVisionPotion()) {
 					showControl("V", "Pick Up Vision Potion");
 				}
+				showNewLine();
 				showControl("`", "Spawn Monster (DEBUG)");
 				showControl("~", "Win Game (DEBUG)");
 				showControl("M", "Return to Main Menu");
@@ -113,11 +114,11 @@ public class ConsoleView {
 
 			}
 		} else if (theRoom.getHasExit() && ((Hero) theHero).getHasAllPillars()) {
-			showMessage("\nYou win! You found the exit and got all pillars!");
-			showMessage("Going back to main menu. [ENTER] to continue.");
+			showNewLineMessage("\nYou win! You found the exit and got all pillars!");
+			showNewLineMessage("Going back to main menu. [ENTER] to continue.");
 		} else {
-			showMessage("\nGame over...");
-			showMessage("Going back to main menu. [ENTER] to continue.");
+			showNewLineMessage("\nGame over...");
+			showNewLineMessage("Going back to main menu. [ENTER] to continue.");
 		}
 	}
 
@@ -130,11 +131,11 @@ public class ConsoleView {
 	 */
 	public void showBattle(final DungeonCharacter theHero, final DungeonCharacter theMonster, final int theCurTurn) {
 		clearConsole();
-		showMessage(String.format("Turn #%s", theCurTurn + 1));
-		showMessage("---");
-		showMessage(theHero.toString());
-		showMessage("---");
-		showMessage(theMonster.toString());
+		showNewLineMessage(String.format("Turn #%s", theCurTurn + 1));
+		showNewLineMessage("---");
+		showNewLineMessage(theHero.toString());
+		showNewLineMessage("---");
+		showNewLineMessage(theMonster.toString());
 		showNewLine();
 		showControl("1", "Attack");
 		showControl("2", "Special Attack");
@@ -166,12 +167,21 @@ public class ConsoleView {
 	}
 
 	/**
+	 * Displays a message to the console and terminates the line.
+	 *
+	 * @param theMessage the message to display
+	 */
+	public void showNewLineMessage(final String theMessage) {
+		System.out.println(theMessage);
+	}
+	
+	/**
 	 * Displays a message to the console.
 	 *
 	 * @param theMessage the message to display
 	 */
 	public void showMessage(final String theMessage) {
-		System.out.println(theMessage);
+		System.out.print(theMessage);
 	}
 
 	/**

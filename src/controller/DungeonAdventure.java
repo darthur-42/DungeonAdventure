@@ -65,7 +65,7 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Starts the Dungeon Adventure game. Displays the main menu and handles user input.
+	 * Starts the DungeonAdventure game. Displays the main menu and handles user input.
 	 */
 	public void startDungeonAdventure() {
 		while (true) {
@@ -85,10 +85,10 @@ public class DungeonAdventure {
 				quickStart();
 				break;
 			case "0":
-				myView.showMessage("Exiting game.");
+				myView.showNewLineMessage("Exiting game.");
 				return;
 			default:
-				myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+				myView.showNewLineMessage("Invalid choice. Please try again. [ENTER] to continue.");
 				myView.getUserInput();
 			}
 		}
@@ -103,12 +103,12 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Begins a new game by selecting a hero, difficulty, and name.
+	 * Starts a new game by prompting the player to select a hero, a difficulty level, and a name.
 	 */
 	private void startNewGame() {
 		selectHero();
 		if (myHero == null) {
-			myView.showMessage("Error: Hero was not initialized correctly. Restarting game.");
+			myView.showNewLineMessage("Error: Hero was not initialized correctly. Restarting game.");
 			myView.getUserInput();
 			return;
 		}
@@ -116,7 +116,7 @@ public class DungeonAdventure {
 		enterHeroName();
 		createNewDungeon();
 		if (myDungeon == null) {
-			myView.showMessage("Error: Dungeon was not initialized correctly. Restarting game.");
+			myView.showNewLineMessage("Error: Dungeon was not initialized correctly. Restarting game.");
 			myView.getUserInput();
 			return;
 		}
@@ -139,24 +139,24 @@ public class DungeonAdventure {
 				if (heroChoiceInt >= 0 && heroChoiceInt < HeroType.values().length) {
 					myHero = myCharFactory.createDungeonCharacter(HeroType.values()[Integer.parseInt(heroChoice) - 1]);
 				} else {
-					myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+					myView.showNewLineMessage("Invalid choice. Please try again. [ENTER] to continue.");
 					myView.getUserInput();
 					heroChoice = "";
 				}
 			} catch (NumberFormatException e) {
-				myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+				myView.showNewLineMessage("Invalid choice. Please try again. [ENTER] to continue.");
 				myView.getUserInput();
 				heroChoice = "";
 			}
 		}
 
 		if (myHero == null) {
-			myView.showMessage("Error: Hero creation failed. Restarting game.");
+			myView.showNewLineMessage("Error: Hero creation failed. Restarting game.");
 			myView.getUserInput();
 			return;
 		}
 
-		myView.showMessage("You have chosen: " + myHero.getName() + ". [ENTER] to continue.");
+		myView.showNewLineMessage("You have chosen: " + myHero.getName() + ". [ENTER] to continue.");
 		myView.getUserInput();
 	}
 
@@ -175,18 +175,18 @@ public class DungeonAdventure {
 				if (difficultyChoiceInt >= 0 && difficultyChoiceInt < Difficulty.values().length) {
 					myDifficulty = Difficulty.values()[Integer.parseInt(difficultyChoice) - 1];
 				} else {
-					myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+					myView.showNewLineMessage("Invalid choice. Please try again. [ENTER] to continue.");
 					myView.getUserInput();
 					difficultyChoice = "";
 				}
 			} catch (NumberFormatException e) {
-				myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+				myView.showNewLineMessage("Invalid choice. Please try again. [ENTER] to continue.");
 				myView.getUserInput();
 				difficultyChoice = "";
 			}
 		}
 
-		myView.showMessage("You have chosen: " + myDifficulty.toString() + ". [ENTER] to continue.");
+		myView.showNewLineMessage("You have chosen: " + myDifficulty.toString() + ". [ENTER] to continue.");
 		myView.getUserInput();
 	}
 
@@ -201,7 +201,7 @@ public class DungeonAdventure {
 			nameInput = myView.getUserInputCaseSensitive();
 
 			if (nameInput.length() > 20) {
-				myView.showMessage("Name is too long. Please try again. [ENTER] to continue.");
+				myView.showNewLineMessage("Name is too long. Please try again. [ENTER] to continue.");
 				myView.getUserInput();
 				nameInput = "";
 			} else if (nameInput.isBlank()) {
@@ -212,7 +212,7 @@ public class DungeonAdventure {
 			}
 		}
 
-		myView.showMessage("Your hero's name is: " + myHero.getName() + ". [ENTER] to continue.");
+		myView.showNewLineMessage("Your hero's name is: " + myHero.getName() + ". [ENTER] to continue.");
 		myView.getUserInput();
 	}
 
@@ -222,7 +222,7 @@ public class DungeonAdventure {
 	private void createNewDungeon() {
 		myDungeon = new Dungeon(myCharFactory, myDifficulty);
 		if (myDungeon == null) {
-			myView.showMessage("Error: Dungeon creation failed. Restarting game.");
+			myView.showNewLineMessage("Error: Dungeon creation failed. Restarting game.");
 			myView.getUserInput();
 			return;
 		}
@@ -234,97 +234,86 @@ public class DungeonAdventure {
 	 * Runs the main game loop.
 	 */
 	private void playGame() {
+		String statusMessage = "";
 		while (myHero.isAlive() && !(myHeroCurRoom.getHasExit() && ((Hero) myHero).getHasAllPillars())) {
 			if (myHeroCurRoom.getHasMonster()) {
 				myView.showHeroCurRoom(myHero, myHeroCurRoom);
 				startBattle(myHero, myHeroCurRoom.getMonster());
 			} else {
-				boolean validInput = false;
-
-				while (!validInput) {
-					if (myHeroCurRoom.getHasPit()) {
-						dealPitDamage();
-					}
-					
-					myView.showHeroCurRoom(myHero, myHeroCurRoom);
-					if (myHeroCurRoom.getHasPit()) {
-						myView.showMessage("Fell into a pit! Lost some health.");
-					}
-
-					System.out.print("\nEnter your choice: ");
-					String userInput = myView.getUserInput();
-
-					if (userInput.equals("M")) {
-						myView.showMessage("Returning to main menu... [ENTER] to continue.");
-						myView.getUserInput();
-						return;
-					}
-
-					switch (userInput) {
+				if (myHeroCurRoom.getHasPit()) {
+					dealPitDamage();
+					statusMessage = "Fell into a pit! Lost some health.";
+				}
+				
+				myView.showHeroCurRoom(myHero, myHeroCurRoom);
+				myView.showNewLine();
+				if (!statusMessage.isBlank()) {
+					myView.showNewLineMessage(statusMessage);
+				}
+				statusMessage = "";
+				myView.showMessage("Enter your choice: ");
+				String userInput = myView.getUserInput();
+				
+				if (userInput.equals("M")) {
+					myView.showNewLineMessage("Returning to main menu... [ENTER] to continue.");
+					myView.getUserInput();
+					return;
+				}
+				
+				switch (userInput) {
 					case "W":
 						if (myHeroCurRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
 							updateHeroPosition(myHeroCurX, myHeroCurY - 1);
-							validInput = true;
 						} else {
-							myView.showMessage("Cannot move North! [ENTER] to continue.");
-							myView.getUserInput();
+							statusMessage = "Cannot move North!";
 						}
 						break;
 					case "A":
 						if (myHeroCurRoom.getHasDoors()[Direction.WEST.ordinal()]) {
 							updateHeroPosition(myHeroCurX - 1, myHeroCurY);
-							validInput = true;
 						} else {
-							myView.showMessage("Cannot move West! [ENTER] to continue.");
-							myView.getUserInput();
+							statusMessage = "Cannot move West!";
 						}
 						break;
 					case "S":
 						if (myHeroCurRoom.getHasDoors()[Direction.SOUTH.ordinal()]) {
 							updateHeroPosition(myHeroCurX, myHeroCurY + 1);
-							validInput = true;
 						} else {
-							myView.showMessage("Cannot move South! [ENTER] to continue.");
-							myView.getUserInput();
+							statusMessage = "Cannot move South!";
 						}
 						break;
 					case "D":
 						if (myHeroCurRoom.getHasDoors()[Direction.EAST.ordinal()]) {
 							updateHeroPosition(myHeroCurX + 1, myHeroCurY);
-							validInput = true;
 						} else {
-							myView.showMessage("Cannot move East! [ENTER] to continue.");
-							myView.getUserInput();
+							statusMessage = "Cannot move East!";
 						}
 						break;
 					case "P":
 						if (myHeroCurRoom.getHasPillarOO()) {
 							((Hero) myHero).collectPillar(myHeroCurRoom.getPillar());
 							myHeroCurRoom.setHasPillarOO(false);
-							validInput = true;
+							statusMessage = "Collected a Pillar of OO.";
 						} else {
-							myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
-							myView.getUserInput();
+							statusMessage = "Invalid choice.";
 						}
 						break;
 					case "H":
 						if (myHeroCurRoom.getHasHealingPotion()) {
 							((Hero) myHero).collectHealingPotion();
 							myHeroCurRoom.setHasHealingPotion(false);
-							validInput = true;
+							statusMessage = "Collected a Healing Potion.";
 						} else {
-							myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
-							myView.getUserInput();
+							statusMessage = "Invalid choice.";
 						}
 						break;
 					case "V":
 						if (myHeroCurRoom.getHasVisionPotion()) {
 							((Hero) myHero).collectVisionPotion();
 							myHeroCurRoom.setHasVisionPotion(false);
-							validInput = true;
+							statusMessage = "Collected a Vision Potion.";
 						} else {
-							myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
-							myView.getUserInput();
+							statusMessage = "Invalid choice.";
 						}
 						break;
 					case "`":
@@ -332,23 +321,19 @@ public class DungeonAdventure {
 						MonsterType randomMonsterType = MonsterType.values()[myRandom.nextInt(MonsterType.values().length)];
 						Monster newMonster = (Monster) myCharFactory.createDungeonCharacter(randomMonsterType, myDifficulty);
 						myHeroCurRoom.setMonster(newMonster);
-						validInput = true;
 						break;
 					case "~":
 						for (PillarOO curPillar : PillarOO.values()) {
 							((Hero) myHero).collectPillar(curPillar);
 						}
 						myHeroCurRoom.forceHasExit();
-						validInput = true;
 						break;
 					default:
-						myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
-						myView.getUserInput();
-					}
+						statusMessage = "Invalid choice.";
 				}
 			}
 		}
-
+		
 		if (myHeroCurRoom.getHasExit() && ((Hero) myHero).getHasAllPillars()) {
 			myView.showHeroCurRoom(myHero, myHeroCurRoom);
 			myView.getUserInput();
@@ -377,21 +362,21 @@ public class DungeonAdventure {
 				switch (battleInput) {
 				case "1":
 					theHero.attack(theMonster);
-					myView.showMessage(String.format("Attacked %s! [ENTER] to continue.", theMonster.getName()));
+					myView.showNewLineMessage(String.format("Attacked %s! [ENTER] to continue.", theMonster.getName()));
 					myView.getUserInput();
 					break;
 				case "2":
 					((Hero) theHero).specialAttack(theMonster);
-					myView.showMessage("Used special attack! [ENTER] to continue.");
+					myView.showNewLineMessage("Used special attack! [ENTER] to continue.");
 					myView.getUserInput();
 					break;
 				case "3":
 					((Hero) theHero).useHealingPotion();
-					myView.showMessage("Used a healing potion!");
+					myView.showNewLineMessage("Used a healing potion!");
 					if (theHero.isFullHealth()) {
-						myView.showMessage("Full health!");
+						myView.showNewLineMessage("Full health!");
 					}
-					myView.showMessage("[ENTER] to continue.");
+					myView.showNewLineMessage("[ENTER] to continue.");
 					myView.getUserInput();
 					break;
 				case "`":
@@ -401,12 +386,12 @@ public class DungeonAdventure {
 					theHero.setCurHealthPoints(0);
 					break;
 				default:
-					myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
+					myView.showNewLineMessage("Invalid choice. Please try again. [ENTER] to continue.");
 					myView.getUserInput();
 				}
 			} else {
 				theMonster.attack(theHero);
-				myView.showMessage(String.format("%s attacked you! [ENTER] to continue.", theMonster.getName()));
+				myView.showNewLineMessage(String.format("%s attacked you! [ENTER] to continue.", theMonster.getName()));
 				myView.getUserInput();
 			}
 
@@ -418,10 +403,10 @@ public class DungeonAdventure {
 		if (!theMonster.isAlive()) {
 			myHeroCurRoom.setHasMonster(false);
 			myHeroCurRoom.setMonster(null);
-			myView.showMessage("You won the battle! [ENTER] to continue.");
+			myView.showNewLineMessage("You won the battle! [ENTER] to continue.");
 			myView.getUserInput();
 		} else if (!theHero.isAlive()) {
-			myView.showMessage("You lost the battle... [ENTER] to continue.");
+			myView.showNewLineMessage("You lost the battle... [ENTER] to continue.");
 			myView.getUserInput();
 		}
 	}
@@ -443,7 +428,7 @@ public class DungeonAdventure {
 	 */
 	private void saveGame(String filename) {
 		if (myDungeon == null || myHero == null) {
-			myView.showMessage("Error: Cannot save, missing game data. Start a new game first. [ENTER] to continue.");
+			myView.showNewLineMessage("Error: Cannot save, missing game data. Start a new game first. [ENTER] to continue.");
 			myView.getUserInput();
 			return;
 		}
@@ -456,11 +441,11 @@ public class DungeonAdventure {
 			out.writeObject(myHeroCurX);
 			out.writeObject(myHeroCurY);
 
-			myView.showMessage("Game saved successfully! [ENTER] to continue.");
+			myView.showNewLineMessage("Game saved successfully! [ENTER] to continue.");
 			myView.getUserInput();
 
 		} catch (IOException e) {
-			myView.showMessage("Error saving the game: " + e.getMessage());
+			myView.showNewLineMessage("Error saving the game: " + e.getMessage());
 		}
 	}
 
@@ -477,19 +462,19 @@ public class DungeonAdventure {
 			myHeroCurY = (int) in.readObject();
 			myHeroCurRoom = myDungeon.getRoomAt(myHeroCurX, myHeroCurY);
 
-			myView.showMessage("Game loaded successfully! [ENTER] to continue.");
+			myView.showNewLineMessage("Game loaded successfully! [ENTER] to continue.");
 			myView.getUserInput();
 
 			playGame();
 
 		} catch (FileNotFoundException e) {
-			myView.showMessage("No saved game found. Start a new game first. [ENTER] to continue.");
+			myView.showNewLineMessage("No saved game found. Start a new game first. [ENTER] to continue.");
 			myView.getUserInput();
 		} catch (EOFException e) {
-			myView.showMessage("Save file is empty or corrupted. [ENTER] to continue.");
+			myView.showNewLineMessage("Save file is empty or corrupted. [ENTER] to continue.");
 			myView.getUserInput();
 		} catch (IOException | ClassNotFoundException e) {
-			myView.showMessage("Error loading the game: " + e.getMessage());
+			myView.showNewLineMessage("Error loading the game: " + e.getMessage());
 		}
 	}
 	
