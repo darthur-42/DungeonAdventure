@@ -1,4 +1,4 @@
-/**
+/*
  * TCSS 360 Group Project
  */
 package view;
@@ -13,10 +13,14 @@ import model.HeroType;
 import model.Room;
 
 /**
- * Handles console-based user interactions for the game.
+ * Represents the user interface for the Dungeon Adventure game.
+ * 
+ * This includes displaying menus, selecting heroes and difficulty levels,
+ * showing the current game state and battle interfaces, and reading user input
+ * from the console.
  *
  * @author Justin Le, Anna Brewer
- * @version 20 Mar 2025
+ * @version 21 Mar 2025
  */
 public class ConsoleView {
 
@@ -28,7 +32,11 @@ public class ConsoleView {
 		myScanner = new Scanner(System.in);
 	}
 
-	/** Displays the main menu options. */
+	/**
+	 * Displays the main menu options for the game. Includes starting a new game,
+	 * loading or saving progress, enabling cheats (not yet implemented), a quick
+	 * start for debugging, or exiting the game.
+	 */
 	public void showMainMenu() {
 		clearConsole();
 		System.out.println("=== Dungeon Adventure ===");
@@ -41,7 +49,10 @@ public class ConsoleView {
 		System.out.print("\nEnter your choice: ");
 	}
 
-	/** Displays hero selection options. */
+	/**
+	 * Displays the hero selection menu. 
+	 * The player can choose from Warrior, Priestess, Thief, or Berserker.
+	 */
 	public void showHeroSelection() {
 		clearConsole();
 		System.out.println("Choose your hero:");
@@ -51,7 +62,10 @@ public class ConsoleView {
 		System.out.print("\nEnter your choice: ");
 	}
 
-	/** Displays difficulty selection options. */
+	/**
+	 * Displays the difficulty selection menu. 
+	 * The player can choose from Easy, Medium, or Hard.
+	 */
 	public void showDifficultySelection() {
 		clearConsole();
 		System.out.println("Choose your difficulty:");
@@ -61,22 +75,30 @@ public class ConsoleView {
 		System.out.print("\nEnter your choice: ");
 	}
 
-	/** Prompts the user to enter a hero name. */
+	/**
+	 * Prompts the player to enter a name for their hero. 
+	 * The name must be 20 characters or fewer. 
+	 * If left empty, the default name will be the selected hero type.
+	 */
 	public void showHeroNameInput() {
 		clearConsole();
 		System.out.print("\nEnter your hero's name (20 characters max, leave empty for default): ");
 	}
 
 	/**
-	 * Displays the current room and hero's status.
+	 * Displays the hero’s current status and room layout. 
+	 * Shows hero stats, room contents, and available actions based on the current room state. 
+	 * If the room contains a monster, the player is prompted before battle begins.
+	 * If the hero wins or loses the game, a corresponding message is displayed.
 	 *
 	 * @param theHero the hero character
-	 * @param theRoom the current room
+	 * @param theRoom the room the hero is currently in
 	 */
 	public void showHeroCurRoom(final DungeonCharacter theHero, final Room theRoom) {
 		clearConsole();
 		showNewLineMessage(theHero.toString());
-		showNewLineMessage(((Hero) theHero).getHasAllPillars() ? "(DEBUG) Has All Pillars" : "(DEBUG) Not Have All Pillars");
+		showNewLineMessage(
+				((Hero) theHero).getHasAllPillars() ? "(DEBUG) Has All Pillars" : "(DEBUG) Not Have All Pillars");
 		showNewLine();
 		showNewLineMessage(theRoom.stringUI());
 
@@ -109,6 +131,7 @@ public class ConsoleView {
 				showNewLine();
 				showControl("`", "Spawn Monster (DEBUG)");
 				showControl("~", "Win Game (DEBUG)");
+				showControl("K", "Save Game");
 				showControl("M", "Return to Main Menu");
 				showNewLine();
 
@@ -123,11 +146,13 @@ public class ConsoleView {
 	}
 
 	/**
-	 * Displays the battle interface.
+	 * Displays the battle interface showing the hero and monster status, turn
+	 * number, and available combat actions. Includes debug options for winning or
+	 * losing instantly.
 	 *
 	 * @param theHero    the hero character
-	 * @param theMonster the monster opponent
-	 * @param theCurTurn the current turn number
+	 * @param theMonster the monster being fought
+	 * @param theCurTurn the current turn in the battle
 	 */
 	public void showBattle(final DungeonCharacter theHero, final DungeonCharacter theMonster, final int theCurTurn) {
 		clearConsole();
@@ -149,52 +174,52 @@ public class ConsoleView {
 	}
 
 	/**
-	 * Reads user input and converts it to uppercase.
-	 * 
-	 * @return user input, all uppercase
+	 * Returns the user's input in uppercase.
+	 *
+	 * @return the user input in uppercase
 	 */
 	public String getUserInput() {
 		return myScanner.nextLine().toUpperCase();
 	}
 
 	/**
-	 * Reads user input while keeping the original case.
-	 * 
-	 * @return user input, case sensitive
+	 * Returns the user's input with original casing.
+	 *
+	 * @return the user input with original casing
 	 */
 	public String getUserInputCaseSensitive() {
 		return myScanner.nextLine();
 	}
 
 	/**
-	 * Displays a message to the console and terminates the line.
+	 * Prints a message and moves to the next line.
 	 *
-	 * @param theMessage the message to display
+	 * @param theMessage the message to print
 	 */
 	public void showNewLineMessage(final String theMessage) {
 		System.out.println(theMessage);
 	}
-	
+
 	/**
-	 * Displays a message to the console.
-	 *
-	 * @param theMessage the message to display
+	 * Prints a message without a newline.
+	 * 
+	 * @param theMessage the message to print
 	 */
 	public void showMessage(final String theMessage) {
 		System.out.print(theMessage);
 	}
 
 	/**
-	 * Displays a control option in the console.
+	 * Displays a control key with its action label.
 	 *
-	 * @param theButton  the key/button to press
-	 * @param theMessage the action description
+	 * @param theButton  the control key
+	 * @param theMessage the description of the action
 	 */
 	public void showControl(final String theButton, final String theMessage) {
 		System.out.printf("[%s] %s  ", theButton, theMessage);
 	}
 
-	/** Prints a blank line for spacing. */
+	/** Prints a blank line for visual spacing. */
 	public void showNewLine() {
 		System.out.println();
 	}
@@ -218,6 +243,7 @@ public class ConsoleView {
 		}
 	}
 
+	/** Closes the input scanner. */
 	public void closeScanner() {
 		if (myScanner != null) {
 			myScanner.close();

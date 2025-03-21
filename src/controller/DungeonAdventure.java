@@ -1,4 +1,4 @@
-/**
+/*
  * TCSS 360 Group Project
  */
 package controller;
@@ -20,13 +20,17 @@ import model.Room;
 import view.ConsoleView;
 
 /**
- * Controller for the DungeonAdventure game.
+ * Controller for the Dungeon Adventure game.
+ * 
+ * Manages the game flow, user input, and interactions between the player and the dungeon.
+ * This includes hero selection, starting and loading games, running battles, and saving or loading progress.
  * 
  * @author Justin Le, Anna Brewer
- * @version 20 Mar 2025
+ * @version 21 Mar 2025
  */
 public class DungeonAdventure {
 
+	/** Used for generating random values. */
 	private Random myRandom;
 
 	/** Factory for creating DungeonCharacters. */
@@ -56,7 +60,7 @@ public class DungeonAdventure {
 	/**
 	 * Constructs a DungeonAdventure controller.
 	 * 
-	 * @param theView the console view for user interaction
+	 * @param theView the ConsoleView used for user interaction
 	 */
 	public DungeonAdventure(ConsoleView theView) {
 		myRandom = new Random();
@@ -65,7 +69,9 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Starts the DungeonAdventure game. Displays the main menu and handles user input.
+	 * Starts the Dungeon Adventure by displaying the main menu and responding to the player's selection.
+	 * Options include starting a new game, loading or saving progress, initiating a quick start (for debugging),
+	 * or exiting the game. Invalid inputs prompt the player to try again.
 	 */
 	public void startDungeonAdventure() {
 		while (true) {
@@ -94,6 +100,9 @@ public class DungeonAdventure {
 		}
 	}
 
+	/**
+	 * Starts a new game with a quick setup. Used for debugging purposes.
+	 */
 	private void quickStart() {
 		myHero = myCharFactory.createDungeonCharacter(HeroType.WARRIOR);
 		myDifficulty = Difficulty.MEDIUM;
@@ -103,29 +112,22 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Starts a new game by prompting the player to select a hero, a difficulty level, and a name.
+	 * Starts a new game by prompting the player to choose a hero type, select a difficulty level,
+	 * enter a name, and generate a new dungeon. 
+	 * Once setup is complete, the game begins.
 	 */
 	private void startNewGame() {
 		selectHero();
-		if (myHero == null) {
-			myView.showNewLineMessage("Error: Hero was not initialized correctly. Restarting game.");
-			myView.getUserInput();
-			return;
-		}
 		selectDifficulty();
 		enterHeroName();
 		createNewDungeon();
-		if (myDungeon == null) {
-			myView.showNewLineMessage("Error: Dungeon was not initialized correctly. Restarting game.");
-			myView.getUserInput();
-			return;
-		}
-		
 		playGame();
 	}
 
 	/**
-	 * Prompts the player to select a Hero.
+	 * Prompts the player to choose a hero type: Warrior, Priestess, Thief, or Berserker.
+	 * If the input is valid, the selected hero is created and displayed.
+	 * Invalid input prompts the player to try again.
 	 */
 	private void selectHero() {
 		String heroChoice = "";
@@ -133,7 +135,7 @@ public class DungeonAdventure {
 		while (heroChoice == "") {
 			myView.showHeroSelection();
 			heroChoice = myView.getUserInput();
-			
+
 			try {
 				int heroChoiceInt = Integer.parseInt(heroChoice) - 1;
 				if (heroChoiceInt >= 0 && heroChoiceInt < HeroType.values().length) {
@@ -150,18 +152,14 @@ public class DungeonAdventure {
 			}
 		}
 
-		if (myHero == null) {
-			myView.showNewLineMessage("Error: Hero creation failed. Restarting game.");
-			myView.getUserInput();
-			return;
-		}
-
 		myView.showNewLineMessage("You have chosen: " + myHero.getName() + ". [ENTER] to continue.");
 		myView.getUserInput();
 	}
 
 	/**
-	 * Prompts the player to select a difficulty level.
+	 * Prompts the player to choose a difficulty level: Easy, Medium, or Hard.
+	 * If the input is valid, the selected level is applied.
+	 * If not, the player is prompted to try again.
 	 */
 	private void selectDifficulty() {
 		String difficultyChoice = "";
@@ -169,7 +167,7 @@ public class DungeonAdventure {
 		while (difficultyChoice == "") {
 			myView.showDifficultySelection();
 			difficultyChoice = myView.getUserInput();
-			
+
 			try {
 				int difficultyChoiceInt = Integer.parseInt(difficultyChoice) - 1;
 				if (difficultyChoiceInt >= 0 && difficultyChoiceInt < Difficulty.values().length) {
@@ -192,6 +190,10 @@ public class DungeonAdventure {
 
 	/**
 	 * Prompts the player to enter a hero name.
+	 * The name can be up to 20 characters long. 
+	 * If left empty, a default name based on the selected hero type is used.
+	 * If the input exceeds the limit, the player is prompted to try again.
+	 * Once a valid name is entered, it is assigned to the hero.
 	 */
 	private void enterHeroName() {
 		String nameInput = "";
@@ -217,21 +219,18 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Creates a new dungeon for the game.
+	 * Creates a new dungeon using the selected difficulty level and places the hero at the dungeon entrance.
 	 */
 	private void createNewDungeon() {
 		myDungeon = new Dungeon(myCharFactory, myDifficulty);
-		if (myDungeon == null) {
-			myView.showNewLineMessage("Error: Dungeon creation failed. Restarting game.");
-			myView.getUserInput();
-			return;
-		}
-
 		updateHeroPosition(myDungeon.getEntrance().getRoomX(), myDungeon.getEntrance().getRoomY());
 	}
 
 	/**
-	 * Runs the main game loop.
+	 * Runs the main game loop and updates the game state based on the hero's actions.
+	 * While navigating the dungeon, the player can move between rooms, collect items, fall into pit traps, 
+	 * trigger debug features, or encounter a monster. If a monster is present in the current room, a battle begins. 
+	 * The player can save the game or return to the main menu as long as they are not in combat.
 	 */
 	private void playGame() {
 		String statusMessage = "";
@@ -244,7 +243,7 @@ public class DungeonAdventure {
 					dealPitDamage();
 					statusMessage = "Fell into a pit! Lost some health.";
 				}
-				
+
 				myView.showHeroCurRoom(myHero, myHeroCurRoom);
 				myView.showNewLine();
 				if (!statusMessage.isBlank()) {
@@ -253,87 +252,94 @@ public class DungeonAdventure {
 				statusMessage = "";
 				myView.showMessage("Enter your choice: ");
 				String userInput = myView.getUserInput();
-				
+
+				if (userInput.equals("K")) {
+					saveGame("dungeonadventure.dat");
+					statusMessage = "Game saved!";
+					continue;
+				}
+
 				if (userInput.equals("M")) {
 					myView.showNewLineMessage("Returning to main menu... [ENTER] to continue.");
 					myView.getUserInput();
 					return;
 				}
-				
+
 				switch (userInput) {
-					case "W":
-						if (myHeroCurRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
-							updateHeroPosition(myHeroCurX, myHeroCurY - 1);
-						} else {
-							statusMessage = "Cannot move North!";
-						}
-						break;
-					case "A":
-						if (myHeroCurRoom.getHasDoors()[Direction.WEST.ordinal()]) {
-							updateHeroPosition(myHeroCurX - 1, myHeroCurY);
-						} else {
-							statusMessage = "Cannot move West!";
-						}
-						break;
-					case "S":
-						if (myHeroCurRoom.getHasDoors()[Direction.SOUTH.ordinal()]) {
-							updateHeroPosition(myHeroCurX, myHeroCurY + 1);
-						} else {
-							statusMessage = "Cannot move South!";
-						}
-						break;
-					case "D":
-						if (myHeroCurRoom.getHasDoors()[Direction.EAST.ordinal()]) {
-							updateHeroPosition(myHeroCurX + 1, myHeroCurY);
-						} else {
-							statusMessage = "Cannot move East!";
-						}
-						break;
-					case "P":
-						if (myHeroCurRoom.getHasPillarOO()) {
-							((Hero) myHero).collectPillar(myHeroCurRoom.getPillar());
-							myHeroCurRoom.setHasPillarOO(false);
-							statusMessage = "Collected a Pillar of OO.";
-						} else {
-							statusMessage = "Invalid choice.";
-						}
-						break;
-					case "H":
-						if (myHeroCurRoom.getHasHealingPotion()) {
-							((Hero) myHero).collectHealingPotion();
-							myHeroCurRoom.setHasHealingPotion(false);
-							statusMessage = "Collected a Healing Potion.";
-						} else {
-							statusMessage = "Invalid choice.";
-						}
-						break;
-					case "V":
-						if (myHeroCurRoom.getHasVisionPotion()) {
-							((Hero) myHero).collectVisionPotion();
-							myHeroCurRoom.setHasVisionPotion(false);
-							statusMessage = "Collected a Vision Potion.";
-						} else {
-							statusMessage = "Invalid choice.";
-						}
-						break;
-					case "`":
-						myHeroCurRoom.setHasMonster(true);
-						MonsterType randomMonsterType = MonsterType.values()[myRandom.nextInt(MonsterType.values().length)];
-						Monster newMonster = (Monster) myCharFactory.createDungeonCharacter(randomMonsterType, myDifficulty);
-						myHeroCurRoom.setMonster(newMonster);
-						break;
-					case "~":
-						for (PillarOO curPillar : PillarOO.values()) {
-							((Hero) myHero).collectPillar(curPillar);
-						}
-						myHeroCurRoom.forceHasExit();
-						break;
-					default:
+				case "W":
+					if (myHeroCurRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
+						updateHeroPosition(myHeroCurX, myHeroCurY - 1);
+					} else {
+						statusMessage = "Cannot move North!";
+					}
+					break;
+				case "A":
+					if (myHeroCurRoom.getHasDoors()[Direction.WEST.ordinal()]) {
+						updateHeroPosition(myHeroCurX - 1, myHeroCurY);
+					} else {
+						statusMessage = "Cannot move West!";
+					}
+					break;
+				case "S":
+					if (myHeroCurRoom.getHasDoors()[Direction.SOUTH.ordinal()]) {
+						updateHeroPosition(myHeroCurX, myHeroCurY + 1);
+					} else {
+						statusMessage = "Cannot move South!";
+					}
+					break;
+				case "D":
+					if (myHeroCurRoom.getHasDoors()[Direction.EAST.ordinal()]) {
+						updateHeroPosition(myHeroCurX + 1, myHeroCurY);
+					} else {
+						statusMessage = "Cannot move East!";
+					}
+					break;
+				case "P":
+					if (myHeroCurRoom.getHasPillarOO()) {
+						((Hero) myHero).collectPillar(myHeroCurRoom.getPillar());
+						myHeroCurRoom.setHasPillarOO(false);
+						statusMessage = "Collected a Pillar of OO.";
+					} else {
 						statusMessage = "Invalid choice.";
+					}
+					break;
+				case "H":
+					if (myHeroCurRoom.getHasHealingPotion()) {
+						((Hero) myHero).collectHealingPotion();
+						myHeroCurRoom.setHasHealingPotion(false);
+						statusMessage = "Collected a Healing Potion.";
+					} else {
+						statusMessage = "Invalid choice.";
+					}
+					break;
+				case "V":
+					if (myHeroCurRoom.getHasVisionPotion()) {
+						((Hero) myHero).collectVisionPotion();
+						myHeroCurRoom.setHasVisionPotion(false);
+						statusMessage = "Collected a Vision Potion.";
+					} else {
+						statusMessage = "Invalid choice.";
+					}
+					break;
+				case "`":
+					myHeroCurRoom.setHasMonster(true);
+					MonsterType randomMonsterType = MonsterType.values()[myRandom.nextInt(MonsterType.values().length)];
+					Monster newMonster = (Monster) myCharFactory.createDungeonCharacter(randomMonsterType,
+							myDifficulty);
+					myHeroCurRoom.setMonster(newMonster);
+					break;
+				case "~":
+					for (PillarOO curPillar : PillarOO.values()) {
+						((Hero) myHero).collectPillar(curPillar);
+					}
+					myHeroCurRoom.forceHasExit();
+					break;
+				default:
+					statusMessage = "Invalid choice.";
 				}
 			}
 		}
-		
+
 		if (myHeroCurRoom.getHasExit() && ((Hero) myHero).getHasAllPillars()) {
 			myView.showHeroCurRoom(myHero, myHeroCurRoom);
 			myView.getUserInput();
@@ -344,7 +350,11 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Starts a battle between the hero and a monster.
+	 * Starts a battle between the hero and a monster. 
+	 * The battle alternates between the hero's and the monster's turns. 
+	 * During the hero's turn, the player can choose to attack, use a special attack, or heal with a potion. 
+	 * The player inputs their choice each round. 
+	 * Once the battle ends, the player is notified whether the hero won or lost.
 	 *
 	 * @param theHero    the hero character
 	 * @param theMonster the monster character
@@ -412,7 +422,8 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Updates the hero's position in the dungeon.
+	 * Updates the hero's position in the dungeon by setting their new coordinates.
+	 * The hero's current room is also updated based on the new position.
 	 *
 	 * @param theX the new X-coordinate
 	 * @param theY the new Y-coordinate
@@ -424,11 +435,16 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Saves the current game state to a file using serialization.
+	 * Saves the current game state to a file using serialization. 
+	 * If the dungeon or hero is missing, an error message is displayed. 
+	 * A confirmation message is shown if the game is saved successfully.
+	 *
+	 * @param filename the file to save the current game state to
 	 */
 	private void saveGame(String filename) {
 		if (myDungeon == null || myHero == null) {
-			myView.showNewLineMessage("Error: Cannot save, missing game data. Start a new game first. [ENTER] to continue.");
+			myView.showNewLineMessage(
+					"Error: Cannot save, missing game data. Start a new game first. [ENTER] to continue.");
 			myView.getUserInput();
 			return;
 		}
@@ -450,7 +466,11 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Loads a saved game state from a file using serialization.
+	 * Loads a saved game state from a file using serialization. 
+	 * If the saved game file is missing, empty, or corrupted, an error message is displayed. 
+	 * A confirmation message is shown if the game is loaded successfully.
+	 *
+	 * @param filename the file to load the saved game state from
 	 */
 	private void loadGame(String filename) {
 		try (FileInputStream fileIn = new FileInputStream(filename);
@@ -477,10 +497,13 @@ public class DungeonAdventure {
 			myView.showNewLineMessage("Error loading the game: " + e.getMessage());
 		}
 	}
-	
+
+	/**
+	 * Applies random damage to the hero when falling into a pit. 
+	 * The damage is a randomly generated value between 1 and 10.
+	 */
 	private void dealPitDamage() {
 		int maxPitDamage = 10;
 		((Hero) myHero).receiveTrueDamage(myRandom.nextInt(1, maxPitDamage + 1));
 	}
-
 }
