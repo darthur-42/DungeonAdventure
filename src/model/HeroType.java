@@ -1,4 +1,4 @@
-/*
+/**
  * TCSS 360 Group Project
  */
 package model;
@@ -7,7 +7,7 @@ package model;
  * Represents the types of heroes that can be selected in the game.
  * 
  * @author Justin Le
- * @version 11 Mar 2025
+ * @version 21 Mar 2025
  */
 public enum HeroType {
 	WARRIOR(
@@ -36,6 +36,8 @@ public enum HeroType {
 	
 	/** The type of the HeroType. */
 	private final String myType;
+	
+	/** The description of the HeroType. */
 	private final String myDescription;
 	
 	/**

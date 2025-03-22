@@ -83,7 +83,7 @@ public class Room implements Serializable {
 	/**
 	 * Sets if the Room has the Entrance. 
 	 */
-	public void setHasEntrance() {
+	void setHasEntrance() {
 		if (!this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO) {
 			this.myHasEntrance = true;
 		}
@@ -101,17 +101,10 @@ public class Room implements Serializable {
 	/**
 	 * Sets if the Room has the Exit.
 	 */
-	public void setHasExit() {
+	void setHasExit() {
 		if (!this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO) {
 			this.myHasExit = true;
 		}
-	}
-	
-	/**
-	 * Forces the Room to have the Exit; DEBUG ONLY!!!
-	 */
-	public void forceHasExit() {
-		this.myHasExit = true;
 	}
 	
 	/**
@@ -168,7 +161,7 @@ public class Room implements Serializable {
 	/**
 	 * Sets if the Room has a pit. 
 	 */
-	public void setHasPit(final boolean theHasPit) {
+	void setHasPit(final boolean theHasPit) {
 		if (theHasPit && !this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO || !theHasPit) {
 			this.myHasPit = theHasPit;
 		}
@@ -208,7 +201,7 @@ public class Room implements Serializable {
 	 * 
 	 * @param the Direction of the Door being added. 
 	 */
-	public void setHasDoors(final Direction theDirection) {
+	void setHasDoors(final Direction theDirection) {
 		this.myHasDoors[theDirection.ordinal()] = true;
 	}
 	
@@ -283,7 +276,7 @@ public class Room implements Serializable {
 	 * 
 	 * @param theMonster the Monster being placed.
 	 */
-	public void setMonster(final Monster theMonster) {
+	void setMonster(final Monster theMonster) {
 		this.myMonster = theMonster;
 	}
 	

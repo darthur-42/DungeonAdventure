@@ -147,8 +147,6 @@ public class ConsoleView {
 				}
 				showNewLine();
 				showControl("M", "Return to Main Menu");
-				showControl("`", "Spawn Monster (DEBUG)");
-				showControl("~", "Win Game (DEBUG)");
 				showControl("K", "Save Game");
 				showControl("M", "Return to Main Menu");
 				showNewLine();

@@ -15,9 +15,6 @@ import model.DungeonCharacter;
 import model.DungeonCharacterFactory;
 import model.Hero;
 import model.HeroType;
-import model.Monster;
-import model.MonsterType;
-import model.PillarOO;
 import model.Room;
 import view.ConsoleView;
 
@@ -385,18 +382,6 @@ public class DungeonAdventure implements PropertyChangeListener {
 							statusMessage = "You do not have any Vision Potions.";
 						}
 						break;
-					case "`":
-						myHeroCurRoom.setHasMonster(true);
-						MonsterType randomMonsterType = MonsterType.values()[myRandom.nextInt(MonsterType.values().length)];
-						Monster newMonster = (Monster) myCharFactory.createDungeonCharacter(randomMonsterType, myDifficulty);
-						myHeroCurRoom.setMonster(newMonster);
-						break;
-					case "~":
-						for (PillarOO curPillar : PillarOO.values()) {
-							((Hero) myHero).collectPillar(curPillar);
-						}
-						myHeroCurRoom.forceHasExit();
-						break;
 					default:
 						statusMessage = "Invalid choice.";
 					}
@@ -458,7 +443,7 @@ public class DungeonAdventure implements PropertyChangeListener {
 								myView.getUserInput();
 								((Hero) theHero).useHealingPotion();
 							} else {
-								statusMessage = "You don't have any healing potions.";
+								statusMessage = "You don't have any Healing Potions.";
 								battleInput = "";
 							}
 							break;
@@ -476,7 +461,7 @@ public class DungeonAdventure implements PropertyChangeListener {
 			} else {
 				myView.showBattle(theHero, theMonster);
 				
-				myView.showMessage(String.format("%s attacked you! [ENTER] to continue.", theMonster.getName()));
+				myView.showMessage(String.format("%s attacked! [ENTER] to continue.", theMonster.getName()));
 				myView.getUserInput();
 				theMonster.attack(theHero);
 				curTurn++;
