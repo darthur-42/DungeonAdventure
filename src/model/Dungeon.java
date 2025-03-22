@@ -97,7 +97,9 @@ public class Dungeon implements Serializable {
 	 * @param theMap the map being used to make the dungeon. 
 	 * @param theActiveRooms the array generated from generateMaze().
 	 */
-	public Dungeon(Random theRandomInstance, Room[][] theMap, Room[] theActiveRooms) {
+	public Dungeon(final Random theRandomInstance, final Room[][] theMap, final Room[] theActiveRooms) {
+		this.myFactory = new DungeonCharacterFactory();
+		this.myDifficulty = Difficulty.MEDIUM;
 		this.myRandom = theRandomInstance;
 		this.myMap = theMap;
 		this.myActiveRooms = theActiveRooms;
