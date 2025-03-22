@@ -62,6 +62,9 @@ public class DungeonAdventure implements PropertyChangeListener {
 	/** How many steps the Hero has Vision for. */
 	private int myHeroVisionStepCount;
 
+	/** Whether or not the Hero is in a battle. */
+	private boolean myHeroIsInBattle;
+
 	/** The console-based view for user interaction. */
 	private ConsoleView myView;
 
@@ -259,24 +262,28 @@ public class DungeonAdventure implements PropertyChangeListener {
 	private void playGame() {
 		String statusMessage = "";
 		Room[] adjacentRooms = new Room[4];
-		
+		boolean hasTakenPitDamage = false;
+
 		while (myHero.isAlive() && !(myHeroCurRoom.getHasExit() && ((Hero) myHero).getHasAllPillars())) {
 			adjacentRooms[Direction.NORTH.ordinal()] = myDungeon.getRoomAt(myHeroCurX, myHeroCurY - 1);
 			adjacentRooms[Direction.WEST.ordinal()] = myDungeon.getRoomAt(myHeroCurX - 1, myHeroCurY);
 			adjacentRooms[Direction.SOUTH.ordinal()] = myDungeon.getRoomAt(myHeroCurX, myHeroCurY + 1);
 			adjacentRooms[Direction.EAST.ordinal()] = myDungeon.getRoomAt(myHeroCurX + 1, myHeroCurY);
-			
-			if (myHeroCurRoom.getHasPit()) {
-				dealPitDamage();
-				statusMessage += "Fell into a pit! Lost some health.";
+
+			if (!hasTakenPitDamage && myHeroCurRoom.getHasPit()) {
+				if (!statusMessage.isBlank()) {
+					statusMessage += " ";
+				}
+				statusMessage += "Fell into a pit! Lost " + dealPitDamage() +" HP!";
+				hasTakenPitDamage = true;
 			}
-			
+
 			myView.showHeroCurRoom(myHero, myHeroCurRoom, adjacentRooms, myHeroVisionStepCount > 0);
 			if (!statusMessage.isBlank()) {
 				myView.showNewLineMessage(statusMessage);
 			}
 			statusMessage = "";
-			
+
 			if (myHeroCurRoom.getHasMonster()) {
 				startBattle(myHero, myHeroCurRoom.getMonster());
 			} else {
@@ -300,6 +307,7 @@ public class DungeonAdventure implements PropertyChangeListener {
 						if (myHeroCurRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
 							updateHeroPosition(myHeroCurX, myHeroCurY - 1);
 							statusMessage = updateHeroVisionStepCount();
+							hasTakenPitDamage = false;
 						} else {
 							statusMessage = "Cannot move North!";
 						}
@@ -308,6 +316,7 @@ public class DungeonAdventure implements PropertyChangeListener {
 						if (myHeroCurRoom.getHasDoors()[Direction.WEST.ordinal()]) {
 							updateHeroPosition(myHeroCurX - 1, myHeroCurY);
 							statusMessage = updateHeroVisionStepCount();
+							hasTakenPitDamage = false;
 						} else {
 							statusMessage = "Cannot move West!";
 						}
@@ -316,6 +325,7 @@ public class DungeonAdventure implements PropertyChangeListener {
 						if (myHeroCurRoom.getHasDoors()[Direction.SOUTH.ordinal()]) {
 							updateHeroPosition(myHeroCurX, myHeroCurY + 1);
 							statusMessage = updateHeroVisionStepCount();
+							hasTakenPitDamage = false;
 						} else {
 							statusMessage = "Cannot move South!";
 						}
@@ -324,6 +334,7 @@ public class DungeonAdventure implements PropertyChangeListener {
 						if (myHeroCurRoom.getHasDoors()[Direction.EAST.ordinal()]) {
 							updateHeroPosition(myHeroCurX + 1, myHeroCurY);
 							statusMessage = updateHeroVisionStepCount();
+							hasTakenPitDamage = false;
 						} else {
 							statusMessage = "Cannot move East!";
 						}
@@ -415,6 +426,7 @@ public class DungeonAdventure implements PropertyChangeListener {
 	 * @param theMonster the monster character
 	 */
 	private void startBattle(final DungeonCharacter theHero, final DungeonCharacter theMonster) {
+		myHeroIsInBattle = true;
 		theMonster.addPropertyChangeListener(this);
 		String statusMessage = "";
 		int curTurn = 0;
@@ -434,14 +446,14 @@ public class DungeonAdventure implements PropertyChangeListener {
 					
 					switch (battleInput) {
 						case "1":
-							theHero.attack(theMonster);
 							myView.showMessage(String.format("Attacked %s! [ENTER] to continue.", theMonster.getName()));
 							myView.getUserInput();
+							theHero.attack(theMonster);
 							break;
 						case "2":
-							((Hero) theHero).specialAttack(theMonster);
 							myView.showMessage("Used special attack! [ENTER] to continue.");
 							myView.getUserInput();
+							((Hero) theHero).specialAttack(theMonster);
 							break;
 						case "3":
 							if (((Hero) theHero).getHasHealingPotions()) {
@@ -477,9 +489,9 @@ public class DungeonAdventure implements PropertyChangeListener {
 			} else {
 				myView.showBattle(theHero, theMonster);
 				
-				theMonster.attack(theHero);
 				myView.showMessage(String.format("%s attacked you! [ENTER] to continue.", theMonster.getName()));
 				myView.getUserInput();
+				theMonster.attack(theHero);
 				curTurn++;
 			}
 		}
@@ -493,6 +505,8 @@ public class DungeonAdventure implements PropertyChangeListener {
 			myView.showMessage("You lost the battle... [ENTER] to continue.");
 			myView.getUserInput();
 		}
+		
+		myHeroIsInBattle = false;
 	}
 
 	/**
@@ -575,13 +589,23 @@ public class DungeonAdventure implements PropertyChangeListener {
 
 	/**
 	 * Deals random non-lethal damage to the Hero when they're over a Pit.
+	 * 
+	 * @return a string message of the random non-lethal damage
 	 */
-	private void dealPitDamage() {
+	private String dealPitDamage() {
 		int maxPitDamage = 10;
 		int maxPossibleDamage = Math.min(maxPitDamage, myHero.getCurHealthPoints() - 1);
-		((Hero) myHero).receiveTrueDamage(myRandom.nextInt(1, maxPossibleDamage + 1));
+		int result = myRandom.nextInt(1, maxPossibleDamage + 1);
+		((Hero) myHero).receiveTrueDamage(result);
+		
+		return Integer.toString(result);
 	}
-	
+
+	/**
+	 * Updates the step counter for the Hero's Vision effect.
+	 * 
+	 * @return a string message if the Vision effect runs out
+	 */
 	private String updateHeroVisionStepCount() {
 		String result = "";
 		
@@ -607,26 +631,29 @@ public class DungeonAdventure implements PropertyChangeListener {
 		String property = theEvent.getPropertyName();
 		DungeonCharacter character = (DungeonCharacter) theEvent.getSource();
 
-		switch (property) {
-		case "damageTaken":
-			myView.showNewLineMessage(character.getName() + " took " + theEvent.getNewValue() + " damage!");
-			break;
-		case "healingReceived":
-			myView.showNewLineMessage(character.getName() + " healed for " + theEvent.getNewValue() + " HP!");
-			break;
-		case "health":
-			myView.showNewLineMessage(character.getName() + "'s HP changed: " +
-					theEvent.getOldValue() + " → " + theEvent.getNewValue());
-			break;
-		case "extraTurn":
-			myView.showNewLineMessage(character.getName() + " earned an extra turn!");
-			heroGetsExtraTurn = true;
-			break;
-		default:
-			break;
+		if (myHeroIsInBattle) {
+			switch (property) {
+				case "damageReceived":
+					myView.showMessage(character.getName() + " received "
+							+ theEvent.getNewValue() + " damage!");
+					break;
+				case "healingReceived":
+					myView.showMessage(character.getName() + " received "
+							+ theEvent.getNewValue() + " healing!");
+					break;
+				case "extraTurnReceived":
+					myView.showMessage(character.getName() + " received an extra turn!");
+					heroGetsExtraTurn = true;
+					break;
+				case "specialDidNothing":
+					myView.showMessage(character.getName() + "'s special attack did nothing!");
+					break;
+				default:
+					break;
+			}
+			
+			myView.showMessage(" [ENTER] to continue.");
+			myView.getUserInput();
 		}
-
-		myView.showNewLineMessage("[ENTER] to continue.");
-		myView.getUserInput();
 	}
 }

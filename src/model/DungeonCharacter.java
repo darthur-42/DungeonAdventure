@@ -140,18 +140,18 @@ public abstract class DungeonCharacter implements Serializable {
 	}
 
 	/**
-	 * Returns whether the DungeonCharacter is alive or not.
+	 * Returns whether or not the DungeonCharacter is alive.
 	 * 
-	 * @return whether the DungeonCharacter is alive or not
+	 * @return whether or not the DungeonCharacter is alive
 	 */
 	public boolean isAlive() {
 		return myCurHealthPoints > 0;
 	}
 
 	/**
-	 * Returns whether the DungeonCharacter is at full health or not.
+	 * Returns whether or not the DungeonCharacter is at full health.
 	 * 
-	 * @return whether the DungeonCharacter is at full health or not
+	 * @return whether or not the DungeonCharacter is at full health
 	 */
 	public boolean isFullHealth() {
 		return myCurHealthPoints == myMaxHealthPoints;
@@ -297,10 +297,8 @@ public abstract class DungeonCharacter implements Serializable {
 	 * @param theDamageAmount the amount of damage received
 	 */
 	protected void receiveDamage(final int theDamageAmount) {
-		int oldHealth = getCurHealthPoints();
 		updateCurHealthPoints(-theDamageAmount);
-		myChanges.firePropertyChange("health", oldHealth, getCurHealthPoints());
-		myChanges.firePropertyChange("damageTaken", null, theDamageAmount);
+		myChanges.firePropertyChange("damageReceived", null, theDamageAmount);
 	}
 
 	/**
@@ -309,9 +307,7 @@ public abstract class DungeonCharacter implements Serializable {
 	 * @param theHealingAmount the amount of healing received
 	 */
 	protected void receiveHealing(final int theHealingAmount) {
-		int oldHealth = getCurHealthPoints();
 		updateCurHealthPoints(theHealingAmount);
-		myChanges.firePropertyChange("health", oldHealth, getCurHealthPoints());
 		myChanges.firePropertyChange("healingReceived", null, theHealingAmount);
 	}
 

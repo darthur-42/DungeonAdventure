@@ -47,8 +47,10 @@ public class Thief extends Hero implements Serializable {
 			otherCharacter.receiveDamage(getRandomDamage());
 			
 			if (hitChance >= extraTurnRequirement) {
-			myChanges.firePropertyChange("extraTurn", false, true);
+				myChanges.firePropertyChange("extraTurnReceived", false, true);
 			}
+		} else {
+			myChanges.firePropertyChange("specialDidNothing", false, true);
 		}
 	}
 	

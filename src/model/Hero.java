@@ -223,9 +223,10 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	protected void receiveDamage(final int theDamageAmount) {
 		double blockRequirement = myRandom.nextDouble(0.0, 1.0);
 		
-		if (getBlockChance() < blockRequirement) {
+		if (getBlockChance() >= blockRequirement) {
+			myChanges.firePropertyChange("damageBlocked", null, null);
+		} else {
 			super.receiveDamage(theDamageAmount);
-			myChanges.firePropertyChange("health", getCurHealthPoints() + theDamageAmount, getCurHealthPoints());				
 		}
 	}
 	
@@ -236,7 +237,6 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 */
 	public final void receiveTrueDamage(final int theDamageAmount) {
 		super.receiveDamage(theDamageAmount);
-		myChanges.firePropertyChange("health", getCurHealthPoints() + theDamageAmount, getCurHealthPoints());
 	}
 	
 	/**
