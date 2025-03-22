@@ -262,9 +262,21 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	}
 	
 	/**
-	 * Performs a special attack on another DungeonCharacter.
+	 * Performs a special attack on another DungeonCharacter with a damage/hit chance scale of 1.
 	 * 
 	 * @param theOtherCharacter the other DungeonCharacter
 	 */
-	public abstract void specialAttack(final DungeonCharacter theOtherCharacter);
+	public void specialAttack(final DungeonCharacter theOtherCharacter) {
+		this.specialAttack(theOtherCharacter, 1, 1);
+	}
+	
+	/**
+	 * Performs a special attack on another DungeonCharacter with a custom damage/hit chance scale.
+	 * 
+	 * @param theOtherCharacter the other DungeonCharacter
+	 * @param theDamageScale the damage scale
+	 * @param theHitChanceScale the hit chance scale
+	 */
+	public abstract void specialAttack(final DungeonCharacter theOtherCharacter,
+			final int theDamageScale, final double theHitChanceScale);
 }

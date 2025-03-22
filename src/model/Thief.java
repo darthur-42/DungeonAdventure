@@ -38,13 +38,14 @@ public final class Thief extends Hero implements Serializable {
 	 * to give an additional turn, and a low chance to do nothing.
 	 */
 	@Override
-	public void specialAttack(final DungeonCharacter otherCharacter) {
-		double hitChance = myRandom.nextDouble(0.0, 1.0);
+	public void specialAttack(final DungeonCharacter otherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
+		double hitChance = myRandom.nextDouble(0.0, 1.0) * theHitChanceScale;
 		double hitRequirement = 0.2;
 		double extraTurnRequirement = 0.6;
 		
 		if (hitChance >= hitRequirement) {
-			otherCharacter.receiveDamage(getRandomDamage());
+			otherCharacter.receiveDamage(getRandomDamage() * theDamageScale);
 			
 			if (hitChance >= extraTurnRequirement) {
 				myChanges.firePropertyChange("extraTurnReceived", false, true);

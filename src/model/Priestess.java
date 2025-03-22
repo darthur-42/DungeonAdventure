@@ -98,7 +98,8 @@ public final class Priestess extends Hero implements Healable, Serializable {
 	 * {@inheritDoc} This special attack heals the caster.
 	 */
 	@Override
-	public void specialAttack(final DungeonCharacter otherCharacter) {
+	public void specialAttack(final DungeonCharacter otherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
 		heal();
 	}
 	

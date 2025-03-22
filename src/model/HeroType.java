@@ -10,6 +10,7 @@ package model;
  * @version 21 Mar 2025
  */
 public enum HeroType {
+	
 	WARRIOR(
 			"Warrior",
 			"The Warrior is a Hero that has high health, high damage, low attack speed, high hit "
@@ -59,7 +60,7 @@ public enum HeroType {
 	public String getDescription() {
 		return myDescription;
 	}
-
+	
 	/**
 	 * Returns a string representation of the HeroType.
 	 *
@@ -69,4 +70,5 @@ public enum HeroType {
 	public String toString() {
 		return myType;
 	}
+	
 }

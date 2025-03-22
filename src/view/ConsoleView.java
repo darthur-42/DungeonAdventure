@@ -38,14 +38,14 @@ public class ConsoleView {
 	 * loading or saving progress, enabling cheats (not yet implemented), a quick
 	 * start for debugging, or exiting the game.
 	 */
-	public void showMainMenu() {
+	public void showMainMenu(final boolean theHasCheatsEnabled) {
 		clearConsole();
 		showNewLineMessage("=== Dungeon Adventure ===");
 		showNewLineMessage("1. Start a New Game");
 		showNewLineMessage("2. Load Game");
-		showNewLineMessage("`. Quick Start (DEBUG)");
+		showNewLineMessage(String.format("3. Toggle Cheats (%s)", theHasCheatsEnabled ? "On" : "Off"));
 		showNewLineMessage("0. Exit");
-		System.out.print("\nEnter your choice: ");
+		showNewLine();
 	}
 
 	/**
@@ -71,6 +71,7 @@ public class ConsoleView {
 		System.out.println("Choose your difficulty:");
 		for (int i = 0; i < Difficulty.values().length; i++) {
 			showNewLineMessage(String.format("%d. %s", i + 1, Difficulty.values()[i]));
+			showNewLineMessage(String.format("   %s", wrapText(Difficulty.values()[i].getDescription(), 50)));
 		}
 		showNewLine();
 	}
@@ -94,7 +95,8 @@ public class ConsoleView {
 	 * @param theRoom the room the hero is currently in
 	 */
 	public void showHeroCurRoom(final DungeonCharacter theHero, final Room theRoom,
-			final Room[] theAdjacentRooms, final boolean theHasDrankVisionPotion) {
+			final Room[] theAdjacentRooms, final boolean theHasDrankVisionPotion,
+			final boolean theHasCheatsEnabled) {
 		clearConsole();
 		showNewLineMessage(theHero.toString());
 		showNewLine();
@@ -146,9 +148,15 @@ public class ConsoleView {
 					showControl("E", "Pick Up Vision Potion");
 				}
 				showNewLine();
-				showControl("M", "Return to Main Menu");
 				showControl("K", "Save Game");
 				showControl("M", "Return to Main Menu");
+				if (theHasCheatsEnabled) {
+					showNewLine();
+					showMessage("Cheats: ");
+					showControl("!", "Infinite Health");
+					showControl("@", "Infinite Vision");
+					showControl("#", "Infinite Damage");
+				}
 				showNewLine();
 				showNewLine();
 			}

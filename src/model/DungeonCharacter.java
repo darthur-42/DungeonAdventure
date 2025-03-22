@@ -312,16 +312,28 @@ public abstract class DungeonCharacter implements Serializable {
 	}
 
 	/**
-	 * Performs an attack on another DungeonCharacter.
+	 * Performs an attack on another DungeonCharacter with a damage/hit chance scale of 1.
 	 * 
 	 * @param theOtherCharacter the target DungeonCharacter
 	 */
 	public void attack(final DungeonCharacter theOtherCharacter) {
-		double hitChance = getHitChance();
+		this.attack(theOtherCharacter, 1, 1);
+	}
+
+	/**
+	 * Performs an attack on another DungeonCharacter with a custom damage/hit chance scale.
+	 * 
+	 * @param theOtherCharacter the target DungeonCharacter
+	 * @param theDamageScale the damage scale
+	 * @param theHitChanceScale the hit chance scale
+	 */
+	public void attack(final DungeonCharacter theOtherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
+		double hitChance = getHitChance() * theHitChanceScale;
 		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
 
 		if (hitChance >= hitRequirement) {
-			theOtherCharacter.receiveDamage(getRandomDamage());
+			theOtherCharacter.receiveDamage(getRandomDamage() * theDamageScale);
 		}
 	}
 

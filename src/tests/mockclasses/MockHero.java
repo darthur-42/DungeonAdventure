@@ -27,7 +27,8 @@ public class MockHero extends Hero {
 	}
 
 	@Override
-	public void specialAttack(DungeonCharacter otherCharacter) {
+	public void specialAttack(DungeonCharacter otherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
 		return;
 	}	
 }

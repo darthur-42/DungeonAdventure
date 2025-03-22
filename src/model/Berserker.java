@@ -99,12 +99,13 @@ public final class Berserker extends Hero implements Healable, Serializable {
 	 * slightly heals the caster.
 	 */
 	@Override
-	public void specialAttack(final DungeonCharacter otherCharacter) {
-		double hitChance = getHitChance();
+	public void specialAttack(final DungeonCharacter otherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
+		double hitChance = getHitChance() * theHitChanceScale;
 		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
 		
 		if (hitChance >= hitRequirement) {
-			int randomSpecialAttackDamage = Math.max(getRandomDamage() - 20, 0);
+			int randomSpecialAttackDamage = Math.max(getRandomDamage() - 20, 0) * theDamageScale;
 			
 			otherCharacter.receiveDamage(randomSpecialAttackDamage);
 			heal();

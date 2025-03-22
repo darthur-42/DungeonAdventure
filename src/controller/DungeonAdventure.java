@@ -33,10 +33,10 @@ public class DungeonAdventure implements PropertyChangeListener {
 	private static final int VISION_MAX_STEP_COUNT = 3;
 
 	/** Random instance used to generate random numbers. */
-	private Random myRandom;
+	private Random myRandom = new Random();
 
 	/** Factory for creating DungeonCharacters. */
-	private DungeonCharacterFactory myCharFactory;
+	private DungeonCharacterFactory myCharFactory = new DungeonCharacterFactory();
 
 	/** The player's Hero. */
 	private DungeonCharacter myHero;
@@ -65,8 +65,17 @@ public class DungeonAdventure implements PropertyChangeListener {
 	/** The console-based view for user interaction. */
 	private ConsoleView myView;
 
-	/** Flag to track if the hero gets an extra turn. */
-	private boolean heroGetsExtraTurn = false;
+	/** Flag to track if the Hero has an extra turn. */
+	private boolean myHeroHasExtraTurn = false;
+
+	/** Whether or not the player has cheats enabled. */
+	private boolean myHasCheatsEnabled = false;
+
+	/** Whether or not the player has infinite health enabled. */
+	private boolean myHasInfiniteHealth = false;
+
+	/** Whether or not the player has infinite damage enabled. */
+	private boolean myHasInfiniteDamage = false;
 
 	/**
 	 * Constructs a DungeonAdventure controller.
@@ -74,8 +83,6 @@ public class DungeonAdventure implements PropertyChangeListener {
 	 * @param theView the ConsoleView used for user interaction
 	 */
 	public DungeonAdventure(ConsoleView theView) {
-		myRandom = new Random();
-		myCharFactory = new DungeonCharacterFactory();
 		myView = theView;
 	}
 
@@ -85,39 +92,39 @@ public class DungeonAdventure implements PropertyChangeListener {
 	 * or exiting the game. Invalid inputs prompt the player to try again.
 	 */
 	public void startDungeonAdventure() {
-		while (true) {
-			myView.showMainMenu();
-			String mainMenuChoice = myView.getUserInput();
+		boolean isRunning = true;
+		String mainMenuChoice = "";
+		String statusMessage = "";
+		
+		while (isRunning) {
+			myView.showMainMenu(myHasCheatsEnabled);
+			if (!statusMessage.isBlank()) {
+				myView.showNewLineMessage(statusMessage);
+			}
+			statusMessage = "";
+			myView.showMessage("Enter your choice: ");
+			mainMenuChoice = myView.getUserInput();
+			
 			switch (mainMenuChoice) {
-			case "1":
-				startNewGame();
-				break;
-			case "2":
-				loadGame("dungeonadventure.dat");
-				break;
-			case "`":
-				quickStart();
-				break;
-			case "0":
-				myView.showMessage("Exiting game.");
-				return;
-			default:
-				myView.showMessage("Invalid choice. Please try again. [ENTER] to continue.");
-				myView.getUserInput();
+				case "1":
+					startNewGame();
+					break;
+				case "2":
+					loadGame("dungeonadventure.dat");
+					break;
+				case "3":
+					myHasCheatsEnabled = !myHasCheatsEnabled;
+					statusMessage = String.format("Cheats %s.",
+							myHasCheatsEnabled ? "enabled" : "disabled");
+					break;
+				case "0":
+					myView.showMessage("Exiting game.");
+					isRunning = false;
+					break;
+				default:
+					statusMessage = "Invalid choice.";
 			}
 		}
-	}
-
-	/**
-	 * Starts a new game with a quick setup. Used for debugging purposes.
-	 */
-	private void quickStart() {
-		myHero = myCharFactory.createDungeonCharacter(HeroType.WARRIOR);
-		myHero.addPropertyChangeListener(this);
-		myDifficulty = Difficulty.MEDIUM;
-		createNewDungeon();
-
-		playGame();
 	}
 
 	/**
@@ -272,7 +279,11 @@ public class DungeonAdventure implements PropertyChangeListener {
 				hasTakenPitDamage = true;
 			}
 
-			myView.showHeroCurRoom(myHero, myHeroCurRoom, adjacentRooms, myHeroVisionStepCount > 0);
+			if (myHasInfiniteHealth) {
+				myHero.setCurHealthPoints(myHero.getMaxHealthPoints());
+			}
+
+			myView.showHeroCurRoom(myHero, myHeroCurRoom, adjacentRooms, myHeroVisionStepCount > 0, myHasCheatsEnabled);
 			if (!statusMessage.isBlank()) {
 				myView.showNewLineMessage(statusMessage);
 			}
@@ -382,6 +393,35 @@ public class DungeonAdventure implements PropertyChangeListener {
 							statusMessage = "You do not have any Vision Potions.";
 						}
 						break;
+					case "!":
+						if (myHasCheatsEnabled) {
+							myHasInfiniteHealth = !myHasInfiniteHealth;
+							statusMessage = String.format("%s infinite health.",
+									myHasInfiniteHealth ? "Enabled" : "Disabled"
+							);
+						} else {
+							statusMessage = "Invalid choice.";
+						}
+						break;
+					case "@":
+						if (myHasCheatsEnabled) {
+							if (myHeroVisionStepCount < 3) {
+								myHeroVisionStepCount = Integer.MAX_VALUE;
+								statusMessage = "Enabled infinite vision.";
+							} else {
+								myHeroVisionStepCount = 0;
+								statusMessage = "Disabled infinite vision.";
+							}
+						} else {
+							statusMessage = "Invalid choice.";
+						}
+						break;
+					case "#":
+						myHasInfiniteDamage = !myHasInfiniteDamage;
+						statusMessage = String.format("%s infinite damage.",
+								myHasInfiniteDamage ? "Enabled" : "Disabled"
+						);
+						break;
 					default:
 						statusMessage = "Invalid choice.";
 					}
@@ -389,10 +429,10 @@ public class DungeonAdventure implements PropertyChangeListener {
 		}
 
 		if (myHeroCurRoom.getHasExit() && ((Hero) myHero).getHasAllPillars()) {
-			myView.showHeroCurRoom(myHero, myHeroCurRoom, adjacentRooms, myHeroVisionStepCount > 0);
+			myView.showHeroCurRoom(myHero, myHeroCurRoom, adjacentRooms, myHeroVisionStepCount > 0, myHasCheatsEnabled);
 			myView.getUserInput();
 		} else if (!myHero.isAlive()) {
-			myView.showHeroCurRoom(myHero, myHeroCurRoom, adjacentRooms, myHeroVisionStepCount > 0);
+			myView.showHeroCurRoom(myHero, myHeroCurRoom, adjacentRooms, myHeroVisionStepCount > 0, myHasCheatsEnabled);
 			myView.getUserInput();
 		}
 	}
@@ -414,6 +454,10 @@ public class DungeonAdventure implements PropertyChangeListener {
 		int curTurn = 0;
 		
 		while (theHero.isAlive() && theMonster.isAlive()) {
+			if (myHasInfiniteHealth) {
+				myHero.setCurHealthPoints(myHero.getMaxHealthPoints());
+			}
+			
 			if (curTurn % 2 == 0) {
 				String battleInput = "";
 				
@@ -430,12 +474,20 @@ public class DungeonAdventure implements PropertyChangeListener {
 						case "1":
 							myView.showMessage(String.format("Attacked %s! [ENTER] to continue.", theMonster.getName()));
 							myView.getUserInput();
-							theHero.attack(theMonster);
+							if (myHasInfiniteDamage) {
+								theHero.attack(theMonster, 999, 1);
+							} else {
+								theHero.attack(theMonster);
+							}
 							break;
 						case "2":
 							myView.showMessage("Used special attack! [ENTER] to continue.");
 							myView.getUserInput();
-							((Hero) theHero).specialAttack(theMonster);
+							if (myHasInfiniteDamage) {
+								((Hero) theHero).specialAttack(theMonster, 999, 1);
+							} else {
+								((Hero) theHero).specialAttack(theMonster);
+							}
 							break;
 						case "3":
 							if (((Hero) theHero).getHasHealingPotions()) {
@@ -453,8 +505,8 @@ public class DungeonAdventure implements PropertyChangeListener {
 					}
 				}
 
-				if (heroGetsExtraTurn) {
-					heroGetsExtraTurn = false; 
+				if (myHeroHasExtraTurn) {
+					myHeroHasExtraTurn = false; 
 				} else {
 					curTurn++;
 				}
@@ -463,7 +515,11 @@ public class DungeonAdventure implements PropertyChangeListener {
 				
 				myView.showMessage(String.format("%s attacked! [ENTER] to continue.", theMonster.getName()));
 				myView.getUserInput();
-				theMonster.attack(theHero);
+				if (myHasInfiniteHealth) {
+					theMonster.attack(theHero, 0, 1);
+				} else {
+					theMonster.attack(theHero);
+				}
 				curTurn++;
 			}
 		}
@@ -565,9 +621,13 @@ public class DungeonAdventure implements PropertyChangeListener {
 	 * @return a string message of the random non-lethal damage
 	 */
 	private String dealPitDamage() {
+		int result = 0;
+		
 		int maxPitDamage = 10;
 		int maxPossibleDamage = Math.min(maxPitDamage, myHero.getCurHealthPoints() - 1);
-		int result = myRandom.nextInt(1, maxPossibleDamage + 1);
+		if (!myHasInfiniteHealth) {
+			result = myRandom.nextInt(1, maxPossibleDamage + 1);
+		}
 		((Hero) myHero).receiveTrueDamage(result);
 		
 		return Integer.toString(result);
@@ -618,7 +678,7 @@ public class DungeonAdventure implements PropertyChangeListener {
 					break;
 				case "extraTurnReceived":
 					myView.showMessage(character.getName() + " received an extra turn!");
-					heroGetsExtraTurn = true;
+					myHeroHasExtraTurn = true;
 					break;
 				case "specialDidNothing":
 					myView.showMessage(character.getName() + "'s special attack did nothing!");
