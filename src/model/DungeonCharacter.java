@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Random;
 
 /**
- * Superclass for heroes and monsters, representing a character in the dungeon.
+ * Abstract superclass for heroes and monsters, representing a character in the dungeon.
  * 
  * Defines shared behavior such as health, damage, speed, hit chance, and combat.
  * Supports property change events to notify listeners of damage, healing, and health updates.
