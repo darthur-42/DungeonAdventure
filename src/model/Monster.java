@@ -1,38 +1,36 @@
-/**
+/*
  * TCSS 360 Group Project
  */
 package model;
 
 import java.io.Serializable;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Random;
 
 /**
  * Represents a monster in the dungeon.
  * 
+ * Monsters can attack heroes, take damage, and heal themselves after a successful hit.
+ * Supports property change events to notify listeners of health updates.
+ * 
  * @author Anna Brewer, Justin Le
- * @version 19 Mar 2025
+ * @version 21 Mar 2025
  */
 public class Monster extends DungeonCharacter implements Healable, Serializable {
 
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2138794081851463063L;
 
-	/** The minimum heal amount for the monster. */
+	/** The minimum amount the monster can heal. */
 	private int myHealingMin;
 
-	/** The maximum heal amount for the monster. */
+	/** The maximum amount the monster can heal. */
 	private int myHealingMax;
 
 	/** The chance for the monster to heal. */
 	private double myHealingChance;
 
-	/** Property change support for event-based updates. */
-	private final PropertyChangeSupport myChanges;
-
 	/**
-	 * Constructs a Monster. Can pass in a random instance for testing.
+	 * Constructs a Monster with stats, healing attributes, and a Random instance for testing.
 	 * 
 	 * @param theName          the monster's name
 	 * @param theHealthPoints  the monster's health points
@@ -51,31 +49,12 @@ public class Monster extends DungeonCharacter implements Healable, Serializable 
 		super(theName, theHealthPoints, theDamageMin, theDamageMax, theAttackSpeed, theHitChance, theRandom);
 		setHealingRange(theHealingMin, theHealingMax);
 		setHealingChance(theHealingChance);
-		myChanges = new PropertyChangeSupport(this);
 	}
 
 	/**
-	 * Adds a listener for property changes.
-	 *
-	 * @param theListener the listener to add
-	 */
-	public void addPropertyChangeListener(final PropertyChangeListener theListener) {
-		myChanges.addPropertyChangeListener(theListener);
-	}
-
-	/**
-	 * Removes a listener.
-	 *
-	 * @param theListener the listener to remove
-	 */
-	public void removePropertyChangeListener(final PropertyChangeListener theListener) {
-		myChanges.removePropertyChangeListener(theListener);
-	}
-
-	/**
-	 * Returns the chance that the monster will heal.
+	 * Returns the monster's healing chance (0.0 to 1.0).
 	 * 
-	 * @return the healing chance (percentage as a decimal)
+	 * @return the monster's healing chance
 	 */
 	@Override
 	public double getHealingChance() {
@@ -83,9 +62,9 @@ public class Monster extends DungeonCharacter implements Healable, Serializable 
 	}
 
 	/**
-	 * Sets the chance for the monster to heal.
+	 * Sets the monster's healing chance (0.0 to 1.0).
 	 * 
-	 * @param theHealingChance the healing chance as a decimal
+	 * @param theHealingChance the chance that the monster will heal
 	 * @throws IllegalArgumentException if the value is zero or negative
 	 */
 	@Override
@@ -98,7 +77,7 @@ public class Monster extends DungeonCharacter implements Healable, Serializable 
 	}
 
 	/**
-	 * Returns the minimum possible healing amount.
+	 * Returns the minimum healing amount.
 	 * 
 	 * @return the minimum heal value
 	 */
@@ -108,7 +87,7 @@ public class Monster extends DungeonCharacter implements Healable, Serializable 
 	}
 
 	/**
-	 * Returns the maximum possible healing amount.
+	 * Returns the maximum healing amount.
 	 * 
 	 * @return the maximum heal value
 	 */
@@ -118,7 +97,7 @@ public class Monster extends DungeonCharacter implements Healable, Serializable 
 	}
 
 	/**
-	 * Sets the healing range for the monster.
+	 * Sets the monster's healing range.
 	 * 
 	 * @param theHealingMin the minimum healing value
 	 * @param theHealingMax the maximum healing value
@@ -140,7 +119,7 @@ public class Monster extends DungeonCharacter implements Healable, Serializable 
 	}
 
 	/**
-	 * Returns a random healing amount within the allowed range.
+	 * Returns a random healing amount within the monster's healing range.
 	 * 
 	 * @return a random healing value
 	 */
@@ -150,7 +129,8 @@ public class Monster extends DungeonCharacter implements Healable, Serializable 
 	}
 
 	/**
-	 * Heals the monster if it has a chance to recover health.
+	 * Attempts to heal the monster if it's alive and chance succeeds.
+	 * Notifies listeners of updated HP after healing.
 	 */
 	@Override
 	public void heal() {
@@ -162,24 +142,24 @@ public class Monster extends DungeonCharacter implements Healable, Serializable 
 	}
 
 	/**
-	 * Attacks the target character. If the attack lands, the Monster has a chance
-	 * to heal.
+	 * Attacks a target and attempts to heal if the attack causes damage.
+	 * Healing only triggers if the monster survives and the target loses HP.
 	 * 
 	 * @param theOtherCharacter the character being attacked
 	 */
-	public void castAttackOn(final DungeonCharacter otherCharacter) {
-		int originalHealth = otherCharacter.getCurHealthPoints();
-		attack(otherCharacter);
+	public void castAttackOn(final DungeonCharacter theOtherCharacter) {
+		int originalHealth = theOtherCharacter.getCurHealthPoints();
+		attack(theOtherCharacter);
 
-		if (otherCharacter.getCurHealthPoints() < originalHealth && getCurHealthPoints() > 0) {
+		if (theOtherCharacter.getCurHealthPoints() < originalHealth && getCurHealthPoints() > 0) {
 			heal();
 		}
 	}
 
 	/**
-	 * Receive damage and update current health.
+	 * Applies damage to the monster.
 	 * 
-	 * @param theDamageAmount amount of damage received
+	 * @param theDamageAmount the amount of damage taken
 	 */
 	public void takeDamage(final int theDamageAmount) {
 		receiveDamage(theDamageAmount);
