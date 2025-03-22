@@ -1,11 +1,11 @@
-/**
+/*
  * TCSS 360 Group Project
  */
 package model;
 
 /**
- * Represents the types of Monsters that can be created.
- * 
+ * Represents the types of monsters that can appear in the dungeon.
+ *
  * @author Anna Brewer, Justin Le
  * @version 11 Mar 2025
  */
@@ -23,13 +23,13 @@ public enum MonsterType {
 		if (theName == null) {
 			throw new IllegalArgumentException("Monster name cannot be null.");
 		}
-		
+
 		return switch (theName.trim().toUpperCase()) {
-			case "OGRE" -> OGRE;
-			case "GREMLIN" -> GREMLIN;
-			case "SKELETON" -> SKELETON;
-			case "DRAGON" -> DRAGON;
-			default -> throw new IllegalArgumentException("Invalid Monster name.");
+		case "OGRE" -> OGRE;
+		case "GREMLIN" -> GREMLIN;
+		case "SKELETON" -> SKELETON;
+		case "DRAGON" -> DRAGON;
+		default -> throw new IllegalArgumentException("Invalid Monster name.");
 		};
 	}
 }
