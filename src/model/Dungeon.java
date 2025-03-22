@@ -18,8 +18,8 @@ import java.util.HashSet;
 public class Dungeon implements Serializable {
 	
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -8453475755925824131L;
+
 	/** An integer used in creation of the Map. It sets the max bounds of each array. */
 	private final int MAP_SIZE = 10;
 	

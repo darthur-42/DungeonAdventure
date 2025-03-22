@@ -14,8 +14,8 @@ import java.io.Serializable;
 public class Room implements Serializable {
 	
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -8906470120784019548L;
+
 	/** If the Room has the Entrance. */
 	private boolean myHasEntrance;
 	

@@ -13,6 +13,7 @@ import model.DungeonCharacter;
  * @author Justin Le
  * @version 4 Mar 2025
  */
+@SuppressWarnings("serial")
 public class MockDungeonCharacter extends DungeonCharacter {
 	
 	/**
@@ -23,5 +24,4 @@ public class MockDungeonCharacter extends DungeonCharacter {
 	public MockDungeonCharacter(Random theRandomInstance) {
 		super("MockDngnChar", 100, 10, 20, 5, 0.5, theRandomInstance);
 	}
-	
 }

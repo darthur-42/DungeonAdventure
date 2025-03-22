@@ -14,6 +14,7 @@ import model.Hero;
  * @author Justin Le
  * @version 4 Mar 2025
  */
+@SuppressWarnings("serial")
 public class MockHero extends Hero {
 	
 	/**
@@ -28,6 +29,5 @@ public class MockHero extends Hero {
 	@Override
 	public void specialAttack(DungeonCharacter otherCharacter) {
 		return;
-	}
-	
+	}	
 }
