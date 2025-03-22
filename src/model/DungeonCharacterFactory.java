@@ -1,4 +1,4 @@
-/**
+/*
  * TCSS 360 Group Project
  */
 package model;
@@ -41,6 +41,10 @@ public class DungeonCharacterFactory implements Serializable {
 	 * @throws IllegalArgumentException if the HeroType is invalid
 	 */
 	public DungeonCharacter createDungeonCharacter(final HeroType theHeroType) {
+	    if (theHeroType == null) {
+	        throw new IllegalArgumentException("HeroType cannot be null.");
+	    }
+	    
 		return switch (theHeroType) {
 			case WARRIOR -> new Warrior();
 			case PRIESTESS -> new Priestess();
