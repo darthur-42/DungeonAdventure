@@ -1,10 +1,10 @@
-/**
+/*
  * TCSS 360 Group Project
  */
 package model;
 
 /**
- * Represents the types of Heroes that can be created.
+ * Represents the types of heroes that can be selected in the game.
  * 
  * @author Justin Le
  * @version 11 Mar 2025
@@ -34,9 +34,16 @@ public enum HeroType {
 			+ "attack and additionally heals themselves slightly if it lands."
 	);
 	
+	/** The type of the HeroType. */
 	private final String myType;
 	private final String myDescription;
 	
+	/**
+	 * Sets the type and description for the HeroType.
+	 *
+	 * @param theType the type
+	 * @param theDescription the description
+	 */
 	private HeroType(final String theType, final String theDescription) {
 		myType = theType;
 		myDescription = theDescription;
@@ -50,7 +57,12 @@ public enum HeroType {
 	public String getDescription() {
 		return myDescription;
 	}
-	
+
+	/**
+	 * Returns a string representation of the HeroType.
+	 *
+	 * @return a string representation of the HeroType
+	 */
 	@Override
 	public String toString() {
 		return myType;
