@@ -16,7 +16,7 @@ import java.util.Random;
 public class Warrior extends Hero implements Serializable {
 	
 	/** Unique identifier for serialization. */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7385047344949709882L;
     
 	/**
 	 * Constructs a Warrior.

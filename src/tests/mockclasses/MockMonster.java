@@ -13,9 +13,10 @@ import model.Monster;
  * @author Anna Brewer
  * @version 3 Mar 2025
  */
+@SuppressWarnings("serial")
 public class MockMonster extends Monster {
 
-    /**
+	/**
      * Constructs a MockMonster with custom stats for testing.
      * 
      * @param theName         the monster's name

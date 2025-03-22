@@ -16,10 +16,9 @@ import model.Room;
  * @author Arthur Fornia
  * @version 4 Mar 2025
  */
+@SuppressWarnings("serial")
 public class MockDungeon extends Dungeon {
 	
-	//TODO Serialize me 
-
 	/**
 	 * Constructs a MockDungeon.
 	 * 

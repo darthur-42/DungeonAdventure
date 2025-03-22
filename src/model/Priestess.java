@@ -16,7 +16,7 @@ import java.util.Random;
 public class Priestess extends Hero implements Healable, Serializable {
 	
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5033392977196160211L;
 	
 	/** The minimum healing of the Priestess. */
 	private int myHealingMin;

@@ -16,8 +16,8 @@ import java.util.Random;
 public class DungeonCharacterFactory implements Serializable {
 	
 	/** Unique identifier for serialization. */
-    private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = 511481721386794433L;
+
     /** Database for retrieving monster data. Not serialized. */
 	private transient MonsterDatabase myMonsterDatabase;
 	
