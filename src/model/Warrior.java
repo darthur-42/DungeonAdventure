@@ -13,11 +13,11 @@ import java.util.Random;
  * @author Justin Le
  * @version 4 Mar 2025
  */
-public class Warrior extends Hero implements Serializable {
+public final class Warrior extends Hero implements Serializable {
 	
 	/** Unique identifier for serialization. */
 	private static final long serialVersionUID = -7385047344949709882L;
-    
+	
 	/**
 	 * Constructs a Warrior.
 	 */
@@ -29,7 +29,7 @@ public class Warrior extends Hero implements Serializable {
 	 * Constructs a Warrior. Can pass in a random instance for testing.
 	 */
 	public Warrior(final Random theRandomInstance) {
-		super("Warrior", 125, 35, 60, 4, 0.8, 0.2, theRandomInstance);
+		super("Warrior", "Charge", 125, 35, 60, 4, 0.8, 0.2, theRandomInstance);
 	}
 	
 	/**

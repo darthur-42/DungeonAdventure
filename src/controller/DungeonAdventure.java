@@ -1,4 +1,4 @@
-/*
+/**
  * TCSS 360 Group Project
  */
 package controller;
@@ -97,9 +97,6 @@ public class DungeonAdventure implements PropertyChangeListener {
 				break;
 			case "2":
 				loadGame("dungeonadventure.dat");
-				break;
-			case "3":
-				saveGame("dungeonadventure.dat");
 				break;
 			case "`":
 				quickStart();
@@ -457,23 +454,13 @@ public class DungeonAdventure implements PropertyChangeListener {
 							break;
 						case "3":
 							if (((Hero) theHero).getHasHealingPotions()) {
-								((Hero) theHero).useHealingPotion();
-								myView.showMessage("Used a Healing Potion! ");
-								if (theHero.isFullHealth()) {
-									myView.showMessage("Full health! ");
-								}
-								myView.showMessage("[ENTER] to continue.");
+								myView.showMessage("Used a Healing Potion! [ENTER] to continue.");
 								myView.getUserInput();
+								((Hero) theHero).useHealingPotion();
 							} else {
 								statusMessage = "You don't have any healing potions.";
 								battleInput = "";
 							}
-							break;
-						case "`":
-							theMonster.setCurHealthPoints(0);
-							break;
-						case "~":
-							theHero.setCurHealthPoints(0);
 							break;
 						default:
 							statusMessage = "Invalid choice.";
@@ -640,6 +627,9 @@ public class DungeonAdventure implements PropertyChangeListener {
 				case "healingReceived":
 					myView.showMessage(character.getName() + " received "
 							+ theEvent.getNewValue() + " healing!");
+					break;
+				case "damageBlocked":
+					myView.showMessage(character.getName() + " blocked the attack!");
 					break;
 				case "extraTurnReceived":
 					myView.showMessage(character.getName() + " received an extra turn!");

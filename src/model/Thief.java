@@ -14,11 +14,11 @@ import java.util.Random;
  * @author Justin Le
  * @version 4 Mar 2025
  */
-public class Thief extends Hero implements Serializable {
+public final class Thief extends Hero implements Serializable {
 	
 	/** Unique identifier for serialization. */
 	private static final long serialVersionUID = 3067400149798334927L;
-
+	
 	/**
 	 * Constructs a Thief.
 	 */
@@ -30,7 +30,7 @@ public class Thief extends Hero implements Serializable {
 	 * Constructs a Thief. Can pass in a random instance for testing.
 	 */
 	public Thief(final Random theRandomInstance) {
-		super("Thief", 75, 20, 40, 6, 0.8, 0.4, theRandomInstance);
+		super("Thief", "Bamboozle", 75, 20, 40, 6, 0.8, 0.4, theRandomInstance);
 	}
 	
 	/**

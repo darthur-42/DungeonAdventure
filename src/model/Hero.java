@@ -35,6 +35,9 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	/** The block chance of the Hero. */
 	private double myBlockChance;
 	
+	/** The name of the Hero's special attack. */
+	private String mySpecialAttackName;
+	
 	/** The number of healing potions the Hero has. */
 	private int myNumHealingPotions;
 	
@@ -49,6 +52,7 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 * and a block chance. Can pass in a random instance for testing.
 	 * 
 	 * @param theName the name
+	 * @param theSpecialAttackName the special attack name
 	 * @param theHealthPoints the health points
 	 * @param theDamageMin the minimum damage
 	 * @param theDamageMax the maximum damage
@@ -57,13 +61,14 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 * @param theBlockChance the block chance
 	 * @param theRandomInstance the random instance
 	 */
-	public Hero(final String theName, final int theHealthPoints, final int theDamageMin,
-			final int theDamageMax, final int theAttackSpeed, final double theHitChance,
-			final double theBlockChance, final Random theRandomInstance) {
+	public Hero(final String theName, final String theSpecialAttackName, final int theHealthPoints,
+			final int theDamageMin, final int theDamageMax, final int theAttackSpeed,
+			final double theHitChance, final double theBlockChance, final Random theRandomInstance) {
 		super(theName, theHealthPoints, theDamageMin, theDamageMax, theAttackSpeed, theHitChance,
 				theRandomInstance);
 		
 		setBlockChance(theBlockChance);
+		setSpecialAttackName(theSpecialAttackName);
 		myNumHealingPotions = STARTING_NUM_POTIONS;
 		myNumVisionPotions = STARTING_NUM_POTIONS;
 		myCollectedPillars = new ArrayList<PillarOO>();
@@ -136,9 +141,8 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 		if (myNumHealingPotions > 0) {
 			myNumHealingPotions--;
 			int healingAmount = myRandom.nextInt(POTION_HEALING_MIN, POTION_HEALING_MAX + 1);
-	        receiveHealing(healingAmount);
-	        myChanges.firePropertyChange("health", getCurHealthPoints() - healingAmount, getCurHealthPoints());
-	    }
+			receiveHealing(healingAmount);
+		}
 	}
 	
 	/**
@@ -180,7 +184,7 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	}
 	
 	/**
-	 * Use a vision potion to gain vision of surrounding Rooms for the Hero to see.
+	 * Use a vision potion to gain vision of adjacent Rooms.
 	 */
 	public void useVisionPotion() {
 		if (myNumVisionPotions > 0) {
@@ -237,6 +241,24 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 */
 	public final void receiveTrueDamage(final int theDamageAmount) {
 		super.receiveDamage(theDamageAmount);
+	}
+	
+	/**
+	 * Returns the name of the Hero's special attack.
+	 * 
+	 * @return the name of the Hero's special attack
+	 */
+	public String getSpecialAttackName() {
+		return mySpecialAttackName;
+	}
+	
+	/**
+	 * Sets the name of the Hero's special attack.
+	 * 
+	 * @param theSpecialAttackName the name of the Hero's special attack
+	 */
+	private void setSpecialAttackName(final String theSpecialAttackName) {
+		mySpecialAttackName = theSpecialAttackName;
 	}
 	
 	/**

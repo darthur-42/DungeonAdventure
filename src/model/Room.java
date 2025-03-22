@@ -168,9 +168,9 @@ public class Room implements Serializable {
 	/**
 	 * Sets if the Room has a pit. 
 	 */
-	public void setHasPit() {
-		if (!this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO) {
-			this.myHasPit = true;
+	public void setHasPit(final boolean theHasPit) {
+		if (theHasPit && !this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO || !theHasPit) {
+			this.myHasPit = theHasPit;
 		}
 	}
 	

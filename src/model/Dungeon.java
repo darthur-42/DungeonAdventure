@@ -221,7 +221,7 @@ public class Dungeon implements Serializable {
 				}
 				
 				if (myRandom.nextInt(LOOT_CHANCE) == 0) {
-					currentRoom.setHasPit();
+					currentRoom.setHasPit(true);
 				}
 				
 				if (myRandom.nextInt(MONSTER_CHANCE) == 0) {

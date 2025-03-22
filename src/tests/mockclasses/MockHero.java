@@ -23,7 +23,7 @@ public class MockHero extends Hero {
 	 * @param theRandomInstance the random instance
 	 */
 	public MockHero(Random theRandomInstance) {
-		super("MockHero", 100, 10, 20, 5, 0.5, 0.75, theRandomInstance);
+		super("MockHero", "Special Attack", 100, 10, 20, 5, 0.5, 0.75, theRandomInstance);
 	}
 
 	@Override
