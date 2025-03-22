@@ -13,7 +13,7 @@ import java.util.Random;
  * behaviors that subclasses must implement.
  * 
  * @author Justin Le
- * @version 4 Mar 2025
+ * @version 21 Mar 2025
  */
 public abstract class Hero extends DungeonCharacter implements Serializable {
 	
@@ -101,6 +101,15 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	}
 	
 	/**
+	 * Returns whether or not the Hero has any Healing Potions.
+	 * 
+	 * @return whether or not the Hero has any Healing Potions
+	 */
+	public boolean getHasHealingPotions() {
+		return myNumHealingPotions > 0;
+	}
+	
+	/**
 	 * Set the number of healing potions to a new number.
 	 * 
 	 * @param newNumHealingPotions new number of healing potions
@@ -140,6 +149,15 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	}
 	
 	/**
+	 * Returns whether or not the Hero has any Vision Potions.
+	 * 
+	 * @return whether or not the Hero has any Vision Potions
+	 */
+	public boolean getHasVisionPotions() {
+		return myNumVisionPotions > 0;
+	}
+	
+	/**
 	 * Set the number of vision potions to a new number.
 	 * 
 	 * @param newNumVisionPotions new number of vision potions
@@ -165,7 +183,6 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	public void useVisionPotion() {
 		if (myNumVisionPotions > 0) {
 			myNumVisionPotions--;
-			// Maybe do stuff here?
 		}
 	}
 	

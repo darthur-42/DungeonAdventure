@@ -16,7 +16,7 @@ import model.Room;
  * Handles console-based user interactions for the game.
  *
  * @author Justin Le, Anna Brewer
- * @version 20 Mar 2025
+ * @version 21 Mar 2025
  */
 public class ConsoleView {
 
@@ -31,24 +31,23 @@ public class ConsoleView {
 	/** Displays the main menu options. */
 	public void showMainMenu() {
 		clearConsole();
-		System.out.println("=== Dungeon Adventure ===");
-		System.out.println("1. Start a New Game");
-		System.out.println("2. Load Game");
-		System.out.println("3. Save Game");
-		System.out.println("4. Cheats (Not Yet Implemented)");
-		System.out.println("`. Quick Start (DEBUG)");
-		System.out.println("0. Exit");
+		showNewLineMessage("=== Dungeon Adventure ===");
+		showNewLineMessage("1. Start a New Game");
+		showNewLineMessage("2. Load Game");
+		showNewLineMessage("3. Save Game");
+		showNewLineMessage("`. Quick Start (DEBUG)");
+		showNewLineMessage("0. Exit");
 		System.out.print("\nEnter your choice: ");
 	}
 
 	/** Displays hero selection options. */
 	public void showHeroSelection() {
 		clearConsole();
-		System.out.println("Choose your hero:");
+		showNewLineMessage("Choose your hero:");
 		for (int i = 0; i < HeroType.values().length; i++) {
-			System.out.printf("%d. %s\n", i + 1, HeroType.values()[i]);
+			showNewLineMessage(String.format("%d. %s", i + 1, HeroType.values()[i]));
 		}
-		System.out.print("\nEnter your choice: ");
+		showNewLine();
 	}
 
 	/** Displays difficulty selection options. */
@@ -56,15 +55,15 @@ public class ConsoleView {
 		clearConsole();
 		System.out.println("Choose your difficulty:");
 		for (int i = 0; i < Difficulty.values().length; i++) {
-			System.out.printf("%d. %s\n", i + 1, Difficulty.values()[i]);
+//			System.out.printf("%d. %s\n", i + 1, Difficulty.values()[i]);
+			showNewLineMessage(String.format("%d. %s", i + 1, Difficulty.values()[i]));
 		}
-		System.out.print("\nEnter your choice: ");
+		showNewLine();
 	}
 
 	/** Prompts the user to enter a hero name. */
 	public void showHeroNameInput() {
-		clearConsole();
-		System.out.print("\nEnter your hero's name (20 characters max, leave empty for default): ");
+		showMessage("Enter your hero's name (20 characters max, leave empty for default): ");
 	}
 
 	/**
@@ -73,16 +72,23 @@ public class ConsoleView {
 	 * @param theHero the hero character
 	 * @param theRoom the current room
 	 */
-	public void showHeroCurRoom(final DungeonCharacter theHero, final Room theRoom) {
+	public void showHeroCurRoom(final DungeonCharacter theHero, final Room theRoom,
+			final Room[] theAdjacentRooms, final boolean theHasDrankVisionPotion) {
 		clearConsole();
 		showNewLineMessage(theHero.toString());
-		showNewLineMessage(((Hero) theHero).getHasAllPillars() ? "(DEBUG) Has All Pillars" : "(DEBUG) Not Have All Pillars");
 		showNewLine();
-		showNewLineMessage(theRoom.stringUI());
+		showNewLineMessage(theRoom.textUI(theAdjacentRooms, theHasDrankVisionPotion));
+		showNewLineMessage("Key:");
+		showNewLineMessage("Y - You  Ent - Entrance  Ext - Exit  Plr - Pillar of OO");
+		showNewLineMessage("M - Monster  H - Healing Potion  V - Vision Potion  Pt - Pit");
+		showNewLine();
 
 		if (theHero.isAlive() && !(theRoom.getHasExit() && ((Hero) theHero).getHasAllPillars())) {
 			if (theRoom.getHasMonster()) {
-				showNewLineMessage("\nEnemy encounter! [ENTER] to continue.");
+				showNewLineMessage("==============================");
+				showNewLineMessage(">>>>>> Enemy Encounter! <<<<<<");
+				showNewLineMessage("==============================");
+				showMessage("[ENTER] to continue.");
 				getUserInput();
 			} else {
 				if (theRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
@@ -97,28 +103,35 @@ public class ConsoleView {
 				if (theRoom.getHasDoors()[Direction.EAST.ordinal()]) {
 					showControl("D", "Right");
 				}
+				showNewLine();
+				showControl("H", String.format("Use Healing Potion (%d)", ((Hero) theHero).getNumHealingPotions()));
+				showControl("V", String.format("Use Vision Potion (%d)", ((Hero) theHero).getNumVisionPotions()));
+				if (theRoom.getHasPillarOO() || theRoom.getHasHealingPotion() || theRoom.getHasVisionPotion()) {
+					showNewLine();
+				}
 				if (theRoom.getHasPillarOO()) {
-					showControl("P", "Pick Up Pillar");
+					showControl("E", "Pick Up Pillar");
 				}
 				if (theRoom.getHasHealingPotion()) {
-					showControl("H", "Pick Up Healing Potion");
+					showControl("E", "Pick Up Healing Potion");
 				}
 				if (theRoom.getHasVisionPotion()) {
-					showControl("V", "Pick Up Vision Potion");
+					showControl("E", "Pick Up Vision Potion");
 				}
 				showNewLine();
+//				showControl("C", "Cheats (Not Yet Implemented)");
+				showControl("M", "Return to Main Menu");
 				showControl("`", "Spawn Monster (DEBUG)");
 				showControl("~", "Win Game (DEBUG)");
-				showControl("M", "Return to Main Menu");
 				showNewLine();
-
+				showNewLine();
 			}
 		} else if (theRoom.getHasExit() && ((Hero) theHero).getHasAllPillars()) {
 			showNewLineMessage("\nYou win! You found the exit and got all pillars!");
-			showNewLineMessage("Going back to main menu. [ENTER] to continue.");
+			showMessage("Returning to main menu. [ENTER] to continue.");
 		} else {
 			showNewLineMessage("\nGame over...");
-			showNewLineMessage("Going back to main menu. [ENTER] to continue.");
+			showMessage("Returning to main menu. [ENTER] to continue.");
 		}
 	}
 
@@ -129,10 +142,8 @@ public class ConsoleView {
 	 * @param theMonster the monster opponent
 	 * @param theCurTurn the current turn number
 	 */
-	public void showBattle(final DungeonCharacter theHero, final DungeonCharacter theMonster, final int theCurTurn) {
+	public void showBattle(final DungeonCharacter theHero, final DungeonCharacter theMonster) {
 		clearConsole();
-		showNewLineMessage(String.format("Turn #%s", theCurTurn + 1));
-		showNewLineMessage("---");
 		showNewLineMessage(theHero.toString());
 		showNewLineMessage("---");
 		showNewLineMessage(theMonster.toString());
@@ -143,9 +154,7 @@ public class ConsoleView {
 		showControl("`", "Win Battle (DEBUG)");
 		showControl("~", "Lose Battle (DEBUG)");
 		showNewLine();
-		if (theCurTurn % 2 == 0 && theHero.isAlive() && theMonster.isAlive()) {
-			System.out.print("\nEnter your choice: ");
-		}
+		showNewLine();
 	}
 
 	/**
