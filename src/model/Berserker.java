@@ -7,17 +7,17 @@ import java.io.Serializable;
 import java.util.Random;
 
 /**
- * The Berserker is a Hero that has high health, very hjgh damage, medium attack speed, high hit
- * chance,and zero block chance. Their special attack does a weaker attack and additionally heals
+ * The Berserker is a Hero that has high health, very high damage, medium attack speed, high hit
+ * chance, and zero block chance. Their special attack does a weaker attack and additionally heals
  * themselves slightly if it lands.
  * 
  * @author Justin Le
  * @version 11 Mar 2025
  */
-public class Berserker extends Hero implements Healable, Serializable {
+public final class Berserker extends Hero implements Healable, Serializable {
 	
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6203193104150126190L;
 	
 	/** The minimum healing of the Berserker. */
 	private int myHealingMin;
@@ -39,7 +39,7 @@ public class Berserker extends Hero implements Healable, Serializable {
 	 * Constructs a Berserker. Can pass in a random instance for testing.
 	 */
 	public Berserker(final Random theRandomInstance) {
-		super("Berserker", 125, 50, 70, 5, 0.8, 0.0, theRandomInstance);
+		super("Berserker", "Leech", 125, 50, 70, 5, 0.8, 0.0, theRandomInstance);
 		
 		setHealingRange(25, 40);
 		setHealingChance(1.0);
@@ -80,7 +80,7 @@ public class Berserker extends Hero implements Healable, Serializable {
 	public double getHealingChance() {
 		return myHealingChance;
 	}
-
+	
 	@Override
 	public void setHealingChance(final double newHealingChance) {
 		if (newHealingChance <= 0.0) {
@@ -89,23 +89,23 @@ public class Berserker extends Hero implements Healable, Serializable {
 		
 		myHealingChance = Math.min(newHealingChance, CHANCE_MAX_LIMIT);
 	}
-
+	
 	@Override
 	public void heal() {
 		heal(myRandom);
 	}
-
 	/**
 	 * {@inheritDoc} This special attack does a weaker attack and, if it lands, additionally
 	 * slightly heals the caster.
 	 */
 	@Override
-	public void specialAttack(final DungeonCharacter otherCharacter) {
-		double hitChance = getHitChance();
+	public void specialAttack(final DungeonCharacter otherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
+		double hitChance = getHitChance() * theHitChanceScale;
 		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
 		
 		if (hitChance >= hitRequirement) {
-			int randomSpecialAttackDamage = Math.max(getRandomDamage() - 20, 0);
+			int randomSpecialAttackDamage = Math.max(getRandomDamage() - 20, 0) * theDamageScale;
 			
 			otherCharacter.receiveDamage(randomSpecialAttackDamage);
 			heal();

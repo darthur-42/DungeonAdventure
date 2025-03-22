@@ -1,4 +1,4 @@
-/*
+/**
  * TCSS 360 Group Project
  */
 package view;
@@ -10,6 +10,7 @@ import model.Direction;
 import model.DungeonCharacter;
 import model.Hero;
 import model.HeroType;
+import model.PillarOO;
 import model.Room;
 
 /**
@@ -37,16 +38,14 @@ public class ConsoleView {
 	 * loading or saving progress, enabling cheats (not yet implemented), a quick
 	 * start for debugging, or exiting the game.
 	 */
-	public void showMainMenu() {
+	public void showMainMenu(final boolean theHasCheatsEnabled) {
 		clearConsole();
-		System.out.println("=== Dungeon Adventure ===");
-		System.out.println("1. Start a New Game");
-		System.out.println("2. Load Game");
-		System.out.println("3. Save Game");
-		System.out.println("4. Cheats (Not Yet Implemented)");
-		System.out.println("`. Quick Start (DEBUG)");
-		System.out.println("0. Exit");
-		System.out.print("\nEnter your choice: ");
+		showNewLineMessage("=== Dungeon Adventure ===");
+		showNewLineMessage("1. Start a New Game");
+		showNewLineMessage("2. Load Game");
+		showNewLineMessage(String.format("3. Toggle Cheats (%s)", theHasCheatsEnabled ? "On" : "Off"));
+		showNewLineMessage("0. Exit");
+		showNewLine();
 	}
 
 	/**
@@ -55,11 +54,12 @@ public class ConsoleView {
 	 */
 	public void showHeroSelection() {
 		clearConsole();
-		System.out.println("Choose your hero:");
+		showNewLineMessage("Choose your hero:");
 		for (int i = 0; i < HeroType.values().length; i++) {
-			System.out.printf("%d. %s\n", i + 1, HeroType.values()[i]);
+			showNewLineMessage(String.format("%d. %s", i + 1, HeroType.values()[i]));
+			showNewLineMessage(String.format("   %s", wrapText(HeroType.values()[i].getDescription(), 50)));
+			showNewLine();
 		}
-		System.out.print("\nEnter your choice: ");
 	}
 
 	/**
@@ -70,9 +70,10 @@ public class ConsoleView {
 		clearConsole();
 		System.out.println("Choose your difficulty:");
 		for (int i = 0; i < Difficulty.values().length; i++) {
-			System.out.printf("%d. %s\n", i + 1, Difficulty.values()[i]);
+			showNewLineMessage(String.format("%d. %s", i + 1, Difficulty.values()[i]));
+			showNewLineMessage(String.format("   %s", wrapText(Difficulty.values()[i].getDescription(), 50)));
 		}
-		System.out.print("\nEnter your choice: ");
+		showNewLine();
 	}
 
 	/**
@@ -81,8 +82,7 @@ public class ConsoleView {
 	 * If left empty, the default name will be the selected hero type.
 	 */
 	public void showHeroNameInput() {
-		clearConsole();
-		System.out.print("\nEnter your hero's name (20 characters max, leave empty for default): ");
+		showMessage("Enter your hero's name (20 characters max, leave empty for default): ");
 	}
 
 	/**
@@ -94,17 +94,30 @@ public class ConsoleView {
 	 * @param theHero the hero character
 	 * @param theRoom the room the hero is currently in
 	 */
-	public void showHeroCurRoom(final DungeonCharacter theHero, final Room theRoom) {
+	public void showHeroCurRoom(final DungeonCharacter theHero, final Room theRoom,
+			final Room[] theAdjacentRooms, final boolean theHasDrankVisionPotion,
+			final boolean theHasCheatsEnabled) {
 		clearConsole();
 		showNewLineMessage(theHero.toString());
-		showNewLineMessage(
-				((Hero) theHero).getHasAllPillars() ? "(DEBUG) Has All Pillars" : "(DEBUG) Not Have All Pillars");
 		showNewLine();
-		showNewLineMessage(theRoom.stringUI());
+		showNewLineMessage(theRoom.textUI(theAdjacentRooms, theHasDrankVisionPotion));
+		showNewLineMessage(String.format(
+				"Find all Pillars of OOP and get to the Exit! (%d/%d Pillars)",
+				((Hero) theHero).getCollectedPillars().size(),
+				PillarOO.values().length
+		));
+		showNewLine();
+		showNewLineMessage("Key:");
+		showNewLineMessage("Y - You  Ent - Entrance  Ext - Exit  Plr - Pillar of OOP");
+		showNewLineMessage("M - Monster  H - Healing Potion  V - Vision Potion  Pt - Pit");
+		showNewLine();
 
 		if (theHero.isAlive() && !(theRoom.getHasExit() && ((Hero) theHero).getHasAllPillars())) {
 			if (theRoom.getHasMonster()) {
-				showNewLineMessage("\nEnemy encounter! [ENTER] to continue.");
+				showNewLineMessage("==============================");
+				showNewLineMessage(">>>>>> Enemy Encounter! <<<<<<");
+				showNewLineMessage("==============================");
+				showMessage("[ENTER] to continue.");
 				getUserInput();
 			} else {
 				if (theRoom.getHasDoors()[Direction.NORTH.ordinal()]) {
@@ -119,29 +132,40 @@ public class ConsoleView {
 				if (theRoom.getHasDoors()[Direction.EAST.ordinal()]) {
 					showControl("D", "Right");
 				}
+				showNewLine();
+				showControl("H", String.format("Use Healing Potion (%d)", ((Hero) theHero).getNumHealingPotions()));
+				showControl("V", String.format("Use Vision Potion (%d)", ((Hero) theHero).getNumVisionPotions()));
+				if (theRoom.getHasPillarOO() || theRoom.getHasHealingPotion() || theRoom.getHasVisionPotion()) {
+					showNewLine();
+				}
 				if (theRoom.getHasPillarOO()) {
-					showControl("P", "Pick Up Pillar");
+					showControl("E", "Pick Up Pillar");
 				}
 				if (theRoom.getHasHealingPotion()) {
-					showControl("H", "Pick Up Healing Potion");
+					showControl("E", "Pick Up Healing Potion");
 				}
 				if (theRoom.getHasVisionPotion()) {
-					showControl("V", "Pick Up Vision Potion");
+					showControl("E", "Pick Up Vision Potion");
 				}
 				showNewLine();
-				showControl("`", "Spawn Monster (DEBUG)");
-				showControl("~", "Win Game (DEBUG)");
 				showControl("K", "Save Game");
 				showControl("M", "Return to Main Menu");
+				if (theHasCheatsEnabled) {
+					showNewLine();
+					showMessage("Cheats: ");
+					showControl("!", "Infinite Health");
+					showControl("@", "Infinite Vision");
+					showControl("#", "Infinite Damage");
+				}
 				showNewLine();
-
+				showNewLine();
 			}
 		} else if (theRoom.getHasExit() && ((Hero) theHero).getHasAllPillars()) {
-			showNewLineMessage("\nYou win! You found the exit and got all pillars!");
-			showNewLineMessage("Going back to main menu. [ENTER] to continue.");
+			showNewLineMessage("You win! You found the Exit and got all Pillars of OOP!");
+			showMessage("Returning to main menu. [ENTER] to continue.");
 		} else {
-			showNewLineMessage("\nGame over...");
-			showNewLineMessage("Going back to main menu. [ENTER] to continue.");
+			showNewLineMessage("Game over...");
+			showMessage("Returning to main menu. [ENTER] to continue.");
 		}
 	}
 
@@ -154,23 +178,17 @@ public class ConsoleView {
 	 * @param theMonster the monster being fought
 	 * @param theCurTurn the current turn in the battle
 	 */
-	public void showBattle(final DungeonCharacter theHero, final DungeonCharacter theMonster, final int theCurTurn) {
+	public void showBattle(final DungeonCharacter theHero, final DungeonCharacter theMonster) {
 		clearConsole();
-		showNewLineMessage(String.format("Turn #%s", theCurTurn + 1));
-		showNewLineMessage("---");
 		showNewLineMessage(theHero.toString());
 		showNewLineMessage("---");
 		showNewLineMessage(theMonster.toString());
 		showNewLine();
 		showControl("1", "Attack");
-		showControl("2", "Special Attack");
+		showControl("2", String.format("Special Attack (%s)", ((Hero) theHero).getSpecialAttackName()));
 		showControl("3", String.format("Healing Potion (%d)", ((Hero) theHero).getNumHealingPotions()));
-		showControl("`", "Win Battle (DEBUG)");
-		showControl("~", "Lose Battle (DEBUG)");
 		showNewLine();
-		if (theCurTurn % 2 == 0 && theHero.isAlive() && theMonster.isAlive()) {
-			System.out.print("\nEnter your choice: ");
-		}
+		showNewLine();
 	}
 
 	/**
@@ -219,12 +237,45 @@ public class ConsoleView {
 		System.out.printf("[%s] %s  ", theButton, theMessage);
 	}
 
-	/** Prints a blank line for visual spacing. */
+	/**
+	 * Prints a blank line for visual spacing.
+	 */
 	public void showNewLine() {
 		System.out.println();
 	}
 
-	/** Clears the console screen. */
+	/**
+	 * Wraps text based on a max width.
+	 * 
+	 * @param theText the text to wrap
+	 * @param theMaxWidth the max width
+	 * @return the text wrapped around a max width
+	 */
+	public static String wrapText(String theText, int theMaxWidth) {
+		StringBuilder wrappedText = new StringBuilder();
+		int lineLength = 0;
+
+		for (String curWord : theText.split(" ")) {
+			if (lineLength + curWord.length() > theMaxWidth) {
+				wrappedText.append("\n\t");
+				lineLength = 0;
+			}
+
+			if (lineLength > 0) {
+				wrappedText.append(" ");
+				lineLength++;
+			}
+
+			wrappedText.append(curWord);
+			lineLength += curWord.length();
+		}
+
+		return wrappedText.toString();
+	}
+
+	/**
+	 * Clears the console screen.
+	 */
 	public void clearConsole() {
 		for (int i = 0; i < 100; i++) {
 			System.out.println();
@@ -239,11 +290,13 @@ public class ConsoleView {
 				System.out.flush();
 			}
 		} catch (Exception e) {
-			System.out.println("Could not clear console.");
+			// Do nothing.
 		}
 	}
 
-	/** Closes the input scanner. */
+	/**
+	 * Closes the input scanner.
+	 */
 	public void closeScanner() {
 		if (myScanner != null) {
 			myScanner.close();

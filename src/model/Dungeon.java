@@ -13,13 +13,13 @@ import java.util.HashSet;
  * It will be implemented as a 2D array of Rooms.
  * 
  * @author Arthur Fornia, Justin Le
- * @version 16 Mar 2025
+ * @version 21 Mar 2025
  */
 public class Dungeon implements Serializable {
 	
 	/** Unique identifier for serialization. */
-    private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -8453475755925824131L;
+
 	/** An integer used in creation of the Map. It sets the max bounds of each array. */
 	private final int MAP_SIZE = 10;
 	
@@ -146,7 +146,9 @@ public class Dungeon implements Serializable {
 	}
 	
 	public Room getRoomAt(final int theX, final int theY) {
-		if (Arrays.asList(myActiveRooms).contains(myMap[theX][theY])) {
+		if (theX >= 0 && theX < myMap.length
+				&& theY >= 0 && theY < myMap[0].length
+				&& Arrays.asList(myActiveRooms).contains(myMap[theX][theY])) {
 			return myMap[theX][theY];
 		} else {
 			return null;
@@ -219,7 +221,7 @@ public class Dungeon implements Serializable {
 				}
 				
 				if (myRandom.nextInt(LOOT_CHANCE) == 0) {
-					currentRoom.setHasPit();
+					currentRoom.setHasPit(true);
 				}
 				
 				if (myRandom.nextInt(MONSTER_CHANCE) == 0) {

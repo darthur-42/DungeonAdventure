@@ -14,6 +14,7 @@ import model.Hero;
  * @author Justin Le
  * @version 4 Mar 2025
  */
+@SuppressWarnings("serial")
 public class MockHero extends Hero {
 	
 	/**
@@ -22,12 +23,12 @@ public class MockHero extends Hero {
 	 * @param theRandomInstance the random instance
 	 */
 	public MockHero(Random theRandomInstance) {
-		super("MockHero", 100, 10, 20, 5, 0.5, 0.75, theRandomInstance);
+		super("MockHero", "Special Attack", 100, 10, 20, 5, 0.5, 0.75, theRandomInstance);
 	}
 
 	@Override
-	public void specialAttack(DungeonCharacter otherCharacter) {
+	public void specialAttack(DungeonCharacter otherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
 		return;
-	}
-	
+	}	
 }

@@ -13,10 +13,10 @@ import java.util.Random;
  * @author Justin Le
  * @version 3 Mar 2025
  */
-public class Priestess extends Hero implements Healable, Serializable {
+public final class Priestess extends Hero implements Healable, Serializable {
 	
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5033392977196160211L;
 	
 	/** The minimum healing of the Priestess. */
 	private int myHealingMin;
@@ -38,7 +38,7 @@ public class Priestess extends Hero implements Healable, Serializable {
 	 * Constructs a Priestess. Can pass in a random instance for testing.
 	 */
 	public Priestess(final Random theRandomInstance) {
-		super("Priestess", 75, 25, 45, 5, 0.7, 0.3, theRandomInstance);
+		super("Priestess", "Heal", 75, 25, 45, 5, 0.7, 0.3, theRandomInstance);
 		
 		setHealingRange(50, 75);
 		setHealingChance(1.0);
@@ -98,7 +98,8 @@ public class Priestess extends Hero implements Healable, Serializable {
 	 * {@inheritDoc} This special attack heals the caster.
 	 */
 	@Override
-	public void specialAttack(final DungeonCharacter otherCharacter) {
+	public void specialAttack(final DungeonCharacter otherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
 		heal();
 	}
 	

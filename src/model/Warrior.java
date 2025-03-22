@@ -13,11 +13,11 @@ import java.util.Random;
  * @author Justin Le
  * @version 4 Mar 2025
  */
-public class Warrior extends Hero implements Serializable {
+public final class Warrior extends Hero implements Serializable {
 	
 	/** Unique identifier for serialization. */
-    private static final long serialVersionUID = 1L;
-    
+	private static final long serialVersionUID = -7385047344949709882L;
+	
 	/**
 	 * Constructs a Warrior.
 	 */
@@ -29,19 +29,23 @@ public class Warrior extends Hero implements Serializable {
 	 * Constructs a Warrior. Can pass in a random instance for testing.
 	 */
 	public Warrior(final Random theRandomInstance) {
-		super("Warrior", 125, 35, 60, 4, 0.8, 0.2, theRandomInstance);
+		super("Warrior", "Charge", 125, 35, 60, 4, 0.8, 0.2, theRandomInstance);
 	}
 	
 	/**
 	 * {@inheritDoc} This special attack has a low chance to deal even higher damage.
 	 */
 	@Override
-	public void specialAttack(final DungeonCharacter otherCharacter) {
-		double hitChance = 0.4;
+	public void specialAttack(final DungeonCharacter otherCharacter,
+			final int theDamageScale, final double theHitChanceScale) {
+		int specialAttackMinDamage = 75;
+		int specialAttackMaxDamage = 175;
+		double hitChance = 0.4 * theHitChanceScale;
 		double hitRequirement = myRandom.nextDouble(0.0, 1.0);
 		
 		if (hitChance >= hitRequirement) {
-			int randomSpecialAttackDamage = myRandom.nextInt(75, 176);
+			int randomSpecialAttackDamage = myRandom.nextInt(specialAttackMinDamage, specialAttackMaxDamage + 1)
+					* theDamageScale;
 			
 			otherCharacter.receiveDamage(randomSpecialAttackDamage);
 		}

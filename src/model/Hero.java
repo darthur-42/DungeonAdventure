@@ -13,13 +13,13 @@ import java.util.Random;
  * behaviors that subclasses must implement.
  * 
  * @author Justin Le
- * @version 4 Mar 2025
+ * @version 21 Mar 2025
  */
 public abstract class Hero extends DungeonCharacter implements Serializable {
 	
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -3640831552268585675L;
+
 	/** The starting number of potions for the Hero. */
 	private static final int STARTING_NUM_POTIONS = 3;
 	
@@ -35,6 +35,9 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	/** The block chance of the Hero. */
 	private double myBlockChance;
 	
+	/** The name of the Hero's special attack. */
+	private String mySpecialAttackName;
+	
 	/** The number of healing potions the Hero has. */
 	private int myNumHealingPotions;
 	
@@ -49,6 +52,7 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 * and a block chance. Can pass in a random instance for testing.
 	 * 
 	 * @param theName the name
+	 * @param theSpecialAttackName the special attack name
 	 * @param theHealthPoints the health points
 	 * @param theDamageMin the minimum damage
 	 * @param theDamageMax the maximum damage
@@ -57,13 +61,14 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 * @param theBlockChance the block chance
 	 * @param theRandomInstance the random instance
 	 */
-	public Hero(final String theName, final int theHealthPoints, final int theDamageMin,
-			final int theDamageMax, final int theAttackSpeed, final double theHitChance,
-			final double theBlockChance, final Random theRandomInstance) {
+	public Hero(final String theName, final String theSpecialAttackName, final int theHealthPoints,
+			final int theDamageMin, final int theDamageMax, final int theAttackSpeed,
+			final double theHitChance, final double theBlockChance, final Random theRandomInstance) {
 		super(theName, theHealthPoints, theDamageMin, theDamageMax, theAttackSpeed, theHitChance,
 				theRandomInstance);
 		
 		setBlockChance(theBlockChance);
+		setSpecialAttackName(theSpecialAttackName);
 		myNumHealingPotions = STARTING_NUM_POTIONS;
 		myNumVisionPotions = STARTING_NUM_POTIONS;
 		myCollectedPillars = new ArrayList<PillarOO>();
@@ -101,6 +106,15 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	}
 	
 	/**
+	 * Returns whether or not the Hero has any Healing Potions.
+	 * 
+	 * @return whether or not the Hero has any Healing Potions
+	 */
+	public boolean getHasHealingPotions() {
+		return myNumHealingPotions > 0;
+	}
+	
+	/**
 	 * Set the number of healing potions to a new number.
 	 * 
 	 * @param newNumHealingPotions new number of healing potions
@@ -126,7 +140,8 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	public void useHealingPotion() {
 		if (myNumHealingPotions > 0) {
 			myNumHealingPotions--;
-			receiveHealing(myRandom.nextInt(POTION_HEALING_MIN, POTION_HEALING_MAX + 1));
+			int healingAmount = myRandom.nextInt(POTION_HEALING_MIN, POTION_HEALING_MAX + 1);
+			receiveHealing(healingAmount);
 		}
 	}
 	
@@ -137,6 +152,15 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 */
 	public int getNumVisionPotions() {
 		return myNumVisionPotions;
+	}
+	
+	/**
+	 * Returns whether or not the Hero has any Vision Potions.
+	 * 
+	 * @return whether or not the Hero has any Vision Potions
+	 */
+	public boolean getHasVisionPotions() {
+		return myNumVisionPotions > 0;
 	}
 	
 	/**
@@ -160,12 +184,11 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	}
 	
 	/**
-	 * Use a vision potion to gain vision of surrounding Rooms for the Hero to see.
+	 * Use a vision potion to gain vision of adjacent Rooms.
 	 */
 	public void useVisionPotion() {
 		if (myNumVisionPotions > 0) {
 			myNumVisionPotions--;
-			// Maybe do stuff here?
 		}
 	}
 	
@@ -204,8 +227,9 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	protected void receiveDamage(final int theDamageAmount) {
 		double blockRequirement = myRandom.nextDouble(0.0, 1.0);
 		
-		// When target fails block check, perform damage operation
-		if (getBlockChance() < blockRequirement) {
+		if (getBlockChance() >= blockRequirement) {
+			myChanges.firePropertyChange("damageBlocked", null, null);
+		} else {
 			super.receiveDamage(theDamageAmount);
 		}
 	}
@@ -220,9 +244,39 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	}
 	
 	/**
-	 * Perform a special attack on another DungeonCharacter.
+	 * Returns the name of the Hero's special attack.
 	 * 
-	 * @param otherCharacter the other DungeonCharacter
+	 * @return the name of the Hero's special attack
 	 */
-	public abstract void specialAttack(final DungeonCharacter otherCharacter);
+	public String getSpecialAttackName() {
+		return mySpecialAttackName;
+	}
+	
+	/**
+	 * Sets the name of the Hero's special attack.
+	 * 
+	 * @param theSpecialAttackName the name of the Hero's special attack
+	 */
+	private void setSpecialAttackName(final String theSpecialAttackName) {
+		mySpecialAttackName = theSpecialAttackName;
+	}
+	
+	/**
+	 * Performs a special attack on another DungeonCharacter with a damage/hit chance scale of 1.
+	 * 
+	 * @param theOtherCharacter the other DungeonCharacter
+	 */
+	public void specialAttack(final DungeonCharacter theOtherCharacter) {
+		this.specialAttack(theOtherCharacter, 1, 1);
+	}
+	
+	/**
+	 * Performs a special attack on another DungeonCharacter with a custom damage/hit chance scale.
+	 * 
+	 * @param theOtherCharacter the other DungeonCharacter
+	 * @param theDamageScale the damage scale
+	 * @param theHitChanceScale the hit chance scale
+	 */
+	public abstract void specialAttack(final DungeonCharacter theOtherCharacter,
+			final int theDamageScale, final double theHitChanceScale);
 }

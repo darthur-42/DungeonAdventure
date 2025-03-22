@@ -1,4 +1,4 @@
-/**
+/*
  * TCSS 360 Group Project
  */
 package model;
@@ -16,8 +16,8 @@ import java.util.Random;
 public class DungeonCharacterFactory implements Serializable {
 	
 	/** Unique identifier for serialization. */
-    private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = 511481721386794433L;
+
     /** Database for retrieving monster data. Not serialized. */
 	private transient MonsterDatabase myMonsterDatabase;
 	
@@ -41,6 +41,10 @@ public class DungeonCharacterFactory implements Serializable {
 	 * @throws IllegalArgumentException if the HeroType is invalid
 	 */
 	public DungeonCharacter createDungeonCharacter(final HeroType theHeroType) {
+	    if (theHeroType == null) {
+	        throw new IllegalArgumentException("HeroType cannot be null.");
+	    }
+	    
 		return switch (theHeroType) {
 			case WARRIOR -> new Warrior();
 			case PRIESTESS -> new Priestess();

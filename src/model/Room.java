@@ -9,13 +9,13 @@ import java.io.Serializable;
  * This class represents the Rooms of the Dungeon in which the adventure occurs.
  * 
  * @author Arthur Fornia, Justin Le
- * @version 20 Mar 2025
+ * @version 21 Mar 2025
  */
 public class Room implements Serializable {
 	
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -8906470120784019548L;
+
 	/** If the Room has the Entrance. */
 	private boolean myHasEntrance;
 	
@@ -41,7 +41,7 @@ public class Room implements Serializable {
 	private boolean[] myHasDoors;
 	
 	/** The Pillar of OOP in the Room */
-	private PillarOO myPillar;
+	private PillarOO myPillarOO;
 	
 	/** An integer marking the Rooms horizontal position in the Map. */
 	private int myRoomX;
@@ -65,7 +65,7 @@ public class Room implements Serializable {
 		this.myHasPillarOO = false;
 		this.myHasMonster = false; 
 		this.myHasDoors = new boolean[Direction.values().length];
-		this.myPillar = null;
+		this.myPillarOO = null;
 		this.myRoomX = theX;
 		this.myRoomY = theY;
 		this.myMonster = null;
@@ -83,7 +83,7 @@ public class Room implements Serializable {
 	/**
 	 * Sets if the Room has the Entrance. 
 	 */
-	public void setHasEntrance() {
+	void setHasEntrance() {
 		if (!this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO) {
 			this.myHasEntrance = true;
 		}
@@ -101,17 +101,10 @@ public class Room implements Serializable {
 	/**
 	 * Sets if the Room has the Exit.
 	 */
-	public void setHasExit() {
+	void setHasExit() {
 		if (!this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO) {
 			this.myHasExit = true;
 		}
-	}
-	
-	/**
-	 * Forces the Room to have the Exit; DEBUG ONLY!!!
-	 */
-	public void forceHasExit() {
-		this.myHasExit = true;
 	}
 	
 	/**
@@ -168,9 +161,9 @@ public class Room implements Serializable {
 	/**
 	 * Sets if the Room has a pit. 
 	 */
-	public void setHasPit() {
-		if (!this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO) {
-			this.myHasPit = true;
+	void setHasPit(final boolean theHasPit) {
+		if (theHasPit && !this.myHasEntrance && !this.myHasExit && !this.myHasPillarOO || !theHasPit) {
+			this.myHasPit = theHasPit;
 		}
 	}
 	
@@ -208,7 +201,7 @@ public class Room implements Serializable {
 	 * 
 	 * @param the Direction of the Door being added. 
 	 */
-	public void setHasDoors(final Direction theDirection) {
+	void setHasDoors(final Direction theDirection) {
 		this.myHasDoors[theDirection.ordinal()] = true;
 	}
 	
@@ -218,7 +211,7 @@ public class Room implements Serializable {
 	 * @return the Room's PillarOO.
 	 */
 	public PillarOO getPillar() {
-		return this.myPillar;
+		return this.myPillarOO;
 	}
 	
 	/**
@@ -227,7 +220,7 @@ public class Room implements Serializable {
 	 * @param thePillarOO the PillarOO.
 	 */
 	public void setPillarOO(final PillarOO thePillarOO) {
-		this.myPillar = thePillarOO;
+		this.myPillarOO = thePillarOO;
 	}
 	
 	/**
@@ -283,7 +276,7 @@ public class Room implements Serializable {
 	 * 
 	 * @param theMonster the Monster being placed.
 	 */
-	public void setMonster(final Monster theMonster) {
+	void setMonster(final Monster theMonster) {
 		this.myMonster = theMonster;
 	}
 	
@@ -349,7 +342,7 @@ public class Room implements Serializable {
 		} 
 		
 		if (this.myHasPillarOO) {
-			center = this.myPillar.toString().charAt(0);
+			center = this.myPillarOO.toString().charAt(0);
 			accumulator++;
 		} 
 		
@@ -380,12 +373,18 @@ public class Room implements Serializable {
 	}
 	
 	/**
-	 * Returns the Room in a more detailed view.  
+	 * Returns a string representation of the Room and its adjacent Rooms based on whether or not
+	 * the Hero has consumed a Vision Potion.
 	 * 
-	 * @return String representing the Room in a more detailed view. 
+	 * @return a string representation of the Room and its adjacent Rooms based on whether or not
+	 * 		   the Hero has consumed a Vision Potion
 	 */
-	public String stringUI() {
+	public String textUI(final Room[] theAdjacentRooms, final boolean theHasDrankVisionPotion) {
 		String output = "";
+		Room northRoom = theAdjacentRooms[Direction.NORTH.ordinal()];
+		Room westRoom = theAdjacentRooms[Direction.WEST.ordinal()];
+		Room southRoom = theAdjacentRooms[Direction.SOUTH.ordinal()];
+		Room eastRoom = theAdjacentRooms[Direction.EAST.ordinal()];
 		
 		for (int i = 0; i < 3; i++) {
 			output += "    ";
@@ -393,7 +392,15 @@ public class Room implements Serializable {
 				if (i == 0) {
 					output += "*~~~*";
 				} else {
-					output += "~   ~";
+					output += "~";
+					for (int j = 0; j < 3; j++) {
+						if (theHasDrankVisionPotion) {
+							output += northRoom.getRoomContentsAsCharAt(j, i - 1, false);
+						} else {
+							output += " ";
+						}
+					}
+					output += "~";
 				}
 			}
 			output += "\n";
@@ -401,71 +408,54 @@ public class Room implements Serializable {
 		
 		String centerTop = "";
 		if (myHasDoors[Direction.WEST.ordinal()]) {
-			centerTop += "*~~~*";
+			centerTop += "*~~~";
 		} else {
-			centerTop += "    *";
+			centerTop += "    ";
 		}
 		if (myHasDoors[Direction.NORTH.ordinal()]) {
-			centerTop += "^^^";
+			centerTop += "*^^^*";
 		} else {
-			centerTop += "---";
+			centerTop += "*---*";
 		}
 		if (myHasDoors[Direction.EAST.ordinal()]) {
-			centerTop += "*~~~*\n";
+			centerTop += "~~~*\n";
 		} else {
-			centerTop += "*\n";
+			centerTop += "\n";
 		}
 		
 		String centerMiddle = "";
 		for (int i = 0; i < 2; i++) {
 			if (myHasDoors[Direction.WEST.ordinal()]) {
-				centerMiddle += "~   <";
+				centerMiddle += "~";
+				for (int j = 0; j < 3; j++) {
+					if (theHasDrankVisionPotion) {
+						centerMiddle += westRoom.getRoomContentsAsCharAt(j, i, false);
+					} else {
+						centerMiddle += " ";
+					}
+				}
+				centerMiddle += "<";
 			} else {
 				centerMiddle += "    |";
 			}
-//			centerMiddle += "   ";
-			if (i == 0) {
-				if (myHasEntrance) {
-					centerMiddle += "Ent";
-				} else if (myHasExit) {
-					centerMiddle += "Ext";
-				} else if (myHasPillarOO) {
-					centerMiddle += "Plr";
-				} else {
-					if (myHasHealingPotion) {
-						centerMiddle += "H";
-					} else {
-						centerMiddle += " ";
-					}
-					if (myHasMonster) {
-						centerMiddle += "M";
-					} else {
-						centerMiddle += " ";
-					}
-					if (myHasPit) {
-						centerMiddle += "P";
-					} else {
-						centerMiddle += " ";
-					}
-				}
-			} else {
-				if (myHasVisionPotion) {
-					centerMiddle += "V";
-				} else {
-					centerMiddle += " ";
-				}
-				centerMiddle += "Y";
-				if (myHasPit) {
-					centerMiddle += "t";
-				} else {
-					centerMiddle += " ";
-				}
+			for (int j = 0; j < 3; j++) {
+				centerMiddle += getRoomContentsAsCharAt(j, i, true);
 			}
 			if (myHasDoors[Direction.EAST.ordinal()]) {
-				centerMiddle += ">   ~\n";
+//				centerMiddle += ">   ~";
+				centerMiddle += ">";
+				for (int j = 0; j < 3; j++) {
+					if (theHasDrankVisionPotion) {
+						centerMiddle += eastRoom.getRoomContentsAsCharAt(j, i, false);
+					} else {
+						centerMiddle += " ";
+					}
+				}
+				centerMiddle += "~";
 			} else {
-				centerMiddle += "|\n";
+				centerMiddle += "|";
 			}
+			centerMiddle += "\n";
 		}
 		
 		String centerBottom = "";
@@ -493,7 +483,15 @@ public class Room implements Serializable {
 				if (i == 2) {
 					output += "*~~~*";
 				} else {
-					output += "~   ~";
+					output += "~";
+					for (int j = 0; j < 3; j++) {
+						if (theHasDrankVisionPotion) {
+							output += southRoom.getRoomContentsAsCharAt(j, i, false);
+						} else {
+							output += " ";
+						}
+					}
+					output += "~";
 				}
 			}
 			output += "\n";
@@ -501,4 +499,88 @@ public class Room implements Serializable {
 		
 		return output;
 	}
+	
+	/**
+	 * Returns a character representation of room contents at a certain coordinate of the Room.
+	 * 
+	 * @param theX the X-coordinate
+	 * @param theY the Y-coordinate
+	 * @return a character representation of room contents at a certain coordinate of the Room
+	 */
+	private String getRoomContentsAsCharAt(final int theX, final int theY, final boolean theHasHero) {
+		final int firstRow = 0;
+		final int secondRow = 1;
+		final int firstColumn = 0;
+		final int secondColumn = 1;
+		final int thirdColumn = 2;
+		
+		String result = "";
+		
+		if (theY == firstRow) {
+			switch (theX) {
+				case firstColumn:
+					if (myHasEntrance || myHasExit) {
+						result = "E";
+					} else if (myHasPillarOO) {
+						result = "P";
+					} else if (myHasHealingPotion) {
+						result = "H";
+					} else {
+						result = " ";
+					}
+					break;
+				case secondColumn:
+					if (myHasEntrance) {
+						result = "n";
+					} else if (myHasExit) {
+						result = "x";
+					} else if (myHasPillarOO) {
+						result = "l";
+					} else if (myHasMonster) {
+						result = "M";
+					} else {
+						result = " ";
+					}
+					break;
+				case thirdColumn:
+					if (myHasEntrance || myHasExit) {
+						result = "t";
+					} else if (myHasPillarOO) {
+						result = "r";
+					} else if (myHasPit) {
+						result = "P";
+					} else {
+						result = " ";
+					}
+					break;
+			}
+		} else if (theY == secondRow) {
+			switch (theX) {
+				case firstColumn:
+					if (myHasVisionPotion) {
+						result = "V";
+					} else {
+						result = " ";
+					}
+					break;
+				case secondColumn:
+					if (theHasHero) {
+						result = "Y";
+					} else {
+						result = " ";
+					}
+					break;
+				case thirdColumn:
+					if (myHasPit) {
+						result = "t";
+					} else {
+						result = " ";
+					}
+					break;
+			}
+		}
+		
+		return result;
+	}
+	
 }
