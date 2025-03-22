@@ -18,8 +18,8 @@ import java.util.Random;
 public abstract class Hero extends DungeonCharacter implements Serializable {
 	
 	/** Unique identifier for serialization. */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -3640831552268585675L;
+
 	/** The starting number of potions for the Hero. */
 	private static final int STARTING_NUM_POTIONS = 3;
 	
@@ -126,8 +126,10 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	public void useHealingPotion() {
 		if (myNumHealingPotions > 0) {
 			myNumHealingPotions--;
-			receiveHealing(myRandom.nextInt(POTION_HEALING_MIN, POTION_HEALING_MAX + 1));
-		}
+			int healingAmount = myRandom.nextInt(POTION_HEALING_MIN, POTION_HEALING_MAX + 1);
+	        receiveHealing(healingAmount);
+	        myChanges.firePropertyChange("health", getCurHealthPoints() - healingAmount, getCurHealthPoints());
+	    }
 	}
 	
 	/**
@@ -204,9 +206,9 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	protected void receiveDamage(final int theDamageAmount) {
 		double blockRequirement = myRandom.nextDouble(0.0, 1.0);
 		
-		// When target fails block check, perform damage operation
 		if (getBlockChance() < blockRequirement) {
 			super.receiveDamage(theDamageAmount);
+			myChanges.firePropertyChange("health", getCurHealthPoints() + theDamageAmount, getCurHealthPoints());				
 		}
 	}
 	
@@ -217,12 +219,13 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
 	 */
 	public final void receiveTrueDamage(final int theDamageAmount) {
 		super.receiveDamage(theDamageAmount);
+		myChanges.firePropertyChange("health", getCurHealthPoints() + theDamageAmount, getCurHealthPoints());
 	}
 	
 	/**
-	 * Perform a special attack on another DungeonCharacter.
+	 * Performs a special attack on another DungeonCharacter.
 	 * 
-	 * @param otherCharacter the other DungeonCharacter
+	 * @param theOtherCharacter the other DungeonCharacter
 	 */
-	public abstract void specialAttack(final DungeonCharacter otherCharacter);
+	public abstract void specialAttack(final DungeonCharacter theOtherCharacter);
 }

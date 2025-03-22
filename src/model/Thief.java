@@ -17,8 +17,8 @@ import java.util.Random;
 public class Thief extends Hero implements Serializable {
 	
 	/** Unique identifier for serialization. */
-    private static final long serialVersionUID = 1L;
-    
+	private static final long serialVersionUID = 3067400149798334927L;
+
 	/**
 	 * Constructs a Thief.
 	 */
@@ -47,7 +47,7 @@ public class Thief extends Hero implements Serializable {
 			otherCharacter.receiveDamage(getRandomDamage());
 			
 			if (hitChance >= extraTurnRequirement) {
-				// TODO Get extra turn
+			myChanges.firePropertyChange("extraTurn", false, true);
 			}
 		}
 	}

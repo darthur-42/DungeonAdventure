@@ -3,6 +3,8 @@
  */
 package controller;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.Random;
 
@@ -28,9 +30,9 @@ import view.ConsoleView;
  * @author Justin Le, Anna Brewer
  * @version 21 Mar 2025
  */
-public class DungeonAdventure {
+public class DungeonAdventure implements PropertyChangeListener {
 
-	/** Used for generating random values. */
+	/** Random number generator */
 	private Random myRandom;
 
 	/** Factory for creating DungeonCharacters. */
@@ -56,6 +58,9 @@ public class DungeonAdventure {
 
 	/** The console-based view for user interaction. */
 	private ConsoleView myView;
+
+	/** Flag to track if the hero gets an extra turn. */
+	private boolean heroGetsExtraTurn = false;
 
 	/**
 	 * Constructs a DungeonAdventure controller.
@@ -105,6 +110,7 @@ public class DungeonAdventure {
 	 */
 	private void quickStart() {
 		myHero = myCharFactory.createDungeonCharacter(HeroType.WARRIOR);
+		myHero.addPropertyChangeListener(this);
 		myDifficulty = Difficulty.MEDIUM;
 		createNewDungeon();
 
@@ -126,8 +132,8 @@ public class DungeonAdventure {
 
 	/**
 	 * Prompts the player to choose a hero type: Warrior, Priestess, Thief, or Berserker.
-	 * If the input is valid, the selected hero is created and displayed.
-	 * Invalid input prompts the player to try again.
+	 * Creates and displays the selected hero when a valid input is provided.
+	 * Prompts the player again for invalid input.
 	 */
 	private void selectHero() {
 		String heroChoice = "";
@@ -140,6 +146,7 @@ public class DungeonAdventure {
 				int heroChoiceInt = Integer.parseInt(heroChoice) - 1;
 				if (heroChoiceInt >= 0 && heroChoiceInt < HeroType.values().length) {
 					myHero = myCharFactory.createDungeonCharacter(HeroType.values()[Integer.parseInt(heroChoice) - 1]);
+					myHero.addPropertyChangeListener(this);
 				} else {
 					myView.showNewLineMessage("Invalid choice. Please try again. [ENTER] to continue.");
 					myView.getUserInput();
@@ -158,8 +165,7 @@ public class DungeonAdventure {
 
 	/**
 	 * Prompts the player to choose a difficulty level: Easy, Medium, or Hard.
-	 * If the input is valid, the selected level is applied.
-	 * If not, the player is prompted to try again.
+	 * Applies the selected level when valid, or prompts the player again if not.
 	 */
 	private void selectDifficulty() {
 		String difficultyChoice = "";
@@ -189,11 +195,9 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Prompts the player to enter a hero name.
-	 * The name can be up to 20 characters long. 
-	 * If left empty, a default name based on the selected hero type is used.
-	 * If the input exceeds the limit, the player is prompted to try again.
-	 * Once a valid name is entered, it is assigned to the hero.
+	 * Prompts the player to enter a hero name, up to 20 characters long.
+	 * Uses a default name based on the selected hero type if left empty, or prompts again if the input is too long.
+	 * Assigns the entered name to the hero once valid.
 	 */
 	private void enterHeroName() {
 		String nameInput = "";
@@ -360,6 +364,7 @@ public class DungeonAdventure {
 	 * @param theMonster the monster character
 	 */
 	private void startBattle(final DungeonCharacter theHero, final DungeonCharacter theMonster) {
+		theMonster.addPropertyChangeListener(this);
 		String battleInput = "";
 		int curTurn = 0;
 
@@ -399,13 +404,18 @@ public class DungeonAdventure {
 					myView.showNewLineMessage("Invalid choice. Please try again. [ENTER] to continue.");
 					myView.getUserInput();
 				}
+
+				if (heroGetsExtraTurn) {
+					heroGetsExtraTurn = false; 
+				} else {
+					curTurn++;
+				}
 			} else {
 				theMonster.attack(theHero);
 				myView.showNewLineMessage(String.format("%s attacked you! [ENTER] to continue.", theMonster.getName()));
 				myView.getUserInput();
+				curTurn++;
 			}
-
-			curTurn++;
 		}
 
 		curTurn--;
@@ -435,10 +445,10 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Saves the current game state to a file using serialization. 
-	 * If the dungeon or hero is missing, an error message is displayed. 
-	 * A confirmation message is shown if the game is saved successfully.
-	 *
+	 * Saves the current game state to a file using serialization.
+	 * Displays an error message if the dungeon or hero is missing,
+	 * and a confirmation message if saved successfully.
+	 * 
 	 * @param filename the file to save the current game state to
 	 */
 	private void saveGame(String filename) {
@@ -466,9 +476,9 @@ public class DungeonAdventure {
 	}
 
 	/**
-	 * Loads a saved game state from a file using serialization. 
-	 * If the saved game file is missing, empty, or corrupted, an error message is displayed. 
-	 * A confirmation message is shown if the game is loaded successfully.
+	 * Loads a saved game state from a file using serialization.
+	 * Displays an error if the file is missing, empty, or corrupted,
+	 * and a confirmation message if the game loads successfully.
 	 *
 	 * @param filename the file to load the saved game state from
 	 */
@@ -478,6 +488,7 @@ public class DungeonAdventure {
 
 			myDungeon = (Dungeon) in.readObject();
 			myHero = (Hero) in.readObject();
+			myHero.addPropertyChangeListener(this);
 			myHeroCurX = (int) in.readObject();
 			myHeroCurY = (int) in.readObject();
 			myHeroCurRoom = myDungeon.getRoomAt(myHeroCurX, myHeroCurY);
@@ -505,5 +516,42 @@ public class DungeonAdventure {
 	private void dealPitDamage() {
 		int maxPitDamage = 10;
 		((Hero) myHero).receiveTrueDamage(myRandom.nextInt(1, maxPitDamage + 1));
+	}
+
+	/**
+	 * Responds to character status updates during gameplay.
+	 * 
+	 * Displays messages in response to property change events triggered by the hero or a monster, 
+	 * including damage taken, healing received, health updates, and extra turns. 
+	 * Called automatically when registered characters fire events.
+	 * 
+	 * @param theEvent the property change event triggered by a character
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent theEvent) {
+		String property = theEvent.getPropertyName();
+		DungeonCharacter character = (DungeonCharacter) theEvent.getSource();
+
+		switch (property) {
+		case "damageTaken":
+			myView.showNewLineMessage(character.getName() + " took " + theEvent.getNewValue() + " damage!");
+			break;
+		case "healingReceived":
+			myView.showNewLineMessage(character.getName() + " healed for " + theEvent.getNewValue() + " HP!");
+			break;
+		case "health":
+			myView.showNewLineMessage(character.getName() + "'s HP changed: " +
+					theEvent.getOldValue() + " → " + theEvent.getNewValue());
+			break;
+		case "extraTurn":
+			myView.showNewLineMessage(character.getName() + " earned an extra turn!");
+			heroGetsExtraTurn = true;
+			break;
+		default:
+			break;
+		}
+
+		myView.showNewLineMessage("[ENTER] to continue.");
+		myView.getUserInput();
 	}
 }
